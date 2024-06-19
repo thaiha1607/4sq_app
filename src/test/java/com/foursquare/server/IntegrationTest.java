@@ -2,6 +2,7 @@ package com.foursquare.server;
 
 import com.foursquare.server.config.AsyncSyncConfiguration;
 import com.foursquare.server.config.EmbeddedElasticsearch;
+import com.foursquare.server.config.EmbeddedKafka;
 import com.foursquare.server.config.EmbeddedRedis;
 import com.foursquare.server.config.EmbeddedSQL;
 import com.foursquare.server.config.JacksonConfiguration;
@@ -20,5 +21,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 @EmbeddedRedis
 @EmbeddedElasticsearch
 @EmbeddedSQL
+@EmbeddedKafka
 public @interface IntegrationTest {
 }
