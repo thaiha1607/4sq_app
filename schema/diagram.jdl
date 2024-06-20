@@ -1,0 +1,260 @@
+// 5MB is the default max size for TextBlob fields. You can change it as needed.
+DEFAULT_MAX_SIZE = 5242880
+
+entity UserDetails {
+    /** Phone number in E.164 format. */
+    phone String pattern(/^\+[1-9]\d{1,14}$/)
+}
+entity Address {
+    id UUID
+    line1 String required
+    line2 String
+    city String required
+    state String required
+    country String required
+    zipOrPostalCode String
+    otherInfo String
+}
+entity Colour {
+    id UUID
+    /** Colour name. */
+    name String required
+    /** Hexadecimal colour code. RGB */
+    hexCode String required pattern(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/)
+}
+entity Conversation {
+    id UUID
+    title String required maxlength(100)
+}
+entity Participant {
+    id UUID
+    isAdmin Boolean
+}
+entity InvoiceStatus {
+    @Id statusCode Integer
+    description String required
+}
+entity Invoice {
+    id UUID
+    totalAmount BigDecimal required min(0)
+    type InvoiceType required
+    paymentMethod PaymentMethod required
+    note String
+}
+enum InvoiceType {
+    PRO_FORMA,
+    REGULAR,
+    PAST_DUE,
+    INTERIM,
+    TIMESHEET,
+    FINAL,
+    CREDIT,
+    DEBIT,
+    MIXED,
+    COMMERCIAL,
+    RECURRING,
+    OTHER
+}
+enum PaymentMethod {
+    CASH,
+    EFT,
+    GIFT_CARD,
+    CREDIT_CARD,
+    DEBIT_CARD,
+    PREPAID_CARD,
+    CHECK,
+    OTHER
+}
+entity Message {
+    id UUID
+    type MessageType required
+    content String
+    isSeen Boolean
+}
+enum MessageType {
+    TEXT,
+    IMAGE,
+    OTHER
+}
+entity OrderItem {
+    id UUID
+    orderedQty Integer required min(0)
+    receivedQty Integer required min(0)
+    unitPrice BigDecimal required min(0)
+    note String
+}
+entity OrderStatus {
+    @Id statusCode Integer
+    description String required
+}
+entity Order {
+    id UUID
+    type OrderType required
+    priority Integer min(0) max(100)
+    isInternal Boolean
+    note String
+}
+enum OrderType {
+    SALE,
+    RETURN,
+    EXCHANGE,
+    TRANSFER,
+    OTHER
+}
+entity ProductQuantity {
+    id UUID
+    qty Integer required min(0)
+}
+entity ProductCategory {
+    id UUID
+    // We won't include SKU, UPC, EAN, JAN, ISBN, MPN, GTIN, etc. for simplicity. Also, we won't include weight, dimensions, etc.
+    // Barcode is also excluded
+    name String
+    price BigDecimal required min(0)
+    // Discount is optional. It can be a percentage or a fixed amount. It can be applied to the product or the order.
+    // For simplicity, we won't include the discount type (percentage or fixed amount) and the discount target (product or order).
+    // We also won't include the discount start date, end date, and conditions.
+    /** Discount in percentage. Max 100%. Applied only to the product. */
+    discount BigDecimal min(0) max(100)
+    description String
+    imageUri String
+}
+entity Product {
+    id UUID
+    name String required
+    description String
+    // Provider is only String for the sake of simplicity. In real-world applications, it should be a separate entity with more details.
+    provider String
+    otherInfo TextBlob maxbytes(DEFAULT_MAX_SIZE)
+}
+entity ProductImage {
+    id UUID
+    imageUri String required
+    altText String
+}
+enum AssignmentStatus {
+    PENDING,
+    ASSIGNED,
+    IN_PROGRESS,
+    COMPLETED,
+    CANCELLED,
+    FAILED,
+    OTHER
+}
+entity ShipmentAssignment {
+    id UUID
+    status AssignmentStatus required
+    note String
+}
+entity ShipmentItem {
+    id UUID
+    qty Integer required min(0)
+    total BigDecimal required min(0)
+}
+entity ShipmentStatus {
+    @Id statusCode Integer
+    description String required
+}
+entity Shipment {
+    id UUID
+    // We won't include fields like tracking number, carrier, shipping method, etc. for simplicity.
+    type ShipmentType required
+    shipmentDate Instant required
+    note String
+}
+enum ShipmentType {
+    OUTBOUND,
+    INBOUND,
+    TRANSFER,
+    RETURN,
+    EXCHANGE,
+    OTHER
+}
+entity Tag {
+    id UUID
+    name String required
+}
+entity UserAddress {
+    id UUID
+    type AddressType required
+    friendlyName String
+    isDefault Boolean
+}
+enum AddressType {
+    HOME,
+    WORK,
+    BILLING,
+    SHIPPING,
+    OTHER
+}
+entity WarehouseAssignment {
+    id UUID
+    status AssignmentStatus required
+    note String
+}
+entity WorkingUnit {
+    id UUID
+    name String required
+    type WorkingUnitType required
+    imageUri String
+}
+enum WorkingUnitType {
+    WAREHOUSE,
+    OFFICE,
+    DELIVERY,
+    OTHER
+}
+/**
+ * One to one relationship.
+ */
+relationship OneToOne {
+    UserDetails{user(login) required} to User with builtInEntity
+}
+/**
+ * One to many relationship.
+ */
+relationship OneToMany {
+    WorkingUnit to UserDetails{workingUnit(name)}
+    Order{invoice} to Invoice{order required}
+    InvoiceStatus to Invoice{status(description) required}
+    Order{orderItem required} to OrderItem{order required}
+    OrderStatus to Order{status(description) required}
+    Address to Order{address}
+    Order{childOrder} to Order{parentOrder}
+    WorkingUnit to ProductQuantity{workingUnit(name) required}
+    ProductCategory to ProductQuantity{productCategory(name) required}
+    Product{productCategory(name) required} to ProductCategory{product(name) required}
+    Colour to ProductCategory{colour(hexCode) required}
+    Product{productImage} to ProductImage{product required}
+    Shipment{assignment} to ShipmentAssignment{shipment required}
+    Shipment{item required} to ShipmentItem{shipment required}
+    OrderItem to ShipmentItem{orderItem required}
+    Order{shipment} to Shipment{order required}
+    Invoice{shipment} to Shipment{invoice required}
+    ShipmentStatus to Shipment{status(description) required}
+    Order to WarehouseAssignment{order required}
+    WorkingUnit to WarehouseAssignment{sourceWorkingUnit(name) required}
+    WorkingUnit to WarehouseAssignment{targetWorkingUnit(name)}
+    Address to WorkingUnit{address}
+}
+/**
+ * Many to one relationship.
+ */
+relationship ManyToOne {
+    Participant{user(login) required} to User with builtInEntity
+    Participant{conversation(title) required} to Conversation{participant required}
+    Message{participant required} to Participant{message}
+    OrderItem{productCategory(name) required} to ProductCategory
+    Order{creator(login) required} to User with builtInEntity
+    Order{customer(login)} to User with builtInEntity
+    ShipmentAssignment{user(login) required} to User with builtInEntity
+    UserAddress{user(login) required} to User with builtInEntity
+    UserAddress{address required} to Address
+    WarehouseAssignment{user(login) required} to User with builtInEntity
+}
+/**
+ * Many to many relationship.
+ */
+relationship ManyToMany {
+    Product{tag(name)} to Tag{product}
+}
