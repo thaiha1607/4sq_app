@@ -13,11 +13,3 @@ services:
     extends:
       file: ./redis.yml
       service: redis
-  kafka:
-    extends:
-      file: ./kafka.yml
-      service: kafka
-  zookeeper:
-    extends:
-      file: ./kafka.yml
-      service: zookeeper
