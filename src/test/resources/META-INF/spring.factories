@@ -1,0 +1,6 @@
+org.springframework.test.context.ContextCustomizerFactory = com.foursquare.\
+    server.config.SqlTestContainersSpringContextCustomizerFactory,com.\
+    foursquare.server.config.TestContainersSpringContextCustomizerFactory,com.\
+    foursquare.server.config.\
+    RedisTestContainersSpringContextCustomizerFactory,com.foursquare.server.\
+    config.KafkaTestContainersSpringContextCustomizerFactory
