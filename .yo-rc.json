@@ -20,7 +20,7 @@
     "enableTranslation": false,
     "entities": [],
     "feignClient": null,
-    "jhipsterVersion": "8.5.0",
+    "jhipsterVersion": "8.6.0",
     "jwtSecretKey": "NDA4NjVmZDMzNTcxM2E1ZTNjN2M5OTQ3MTVkMGI4NDhjMmY2ZmMzYjUzNThiODNjMTcwODAwOGExMWQyZTQzOTI2YzZlNTg3OTk3NjliZjViM2I4MzNiZmIwMzFiYTA4MjdjNDYyZjUwMWNiN2E3MjA2MGFjNjZhMGE5ZjJkM2M=",
     "messageBroker": "kafka",
     "microfrontend": null,

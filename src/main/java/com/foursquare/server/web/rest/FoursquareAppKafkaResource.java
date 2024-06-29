@@ -14,7 +14,7 @@ public class FoursquareAppKafkaResource {
 
     private static final String PRODUCER_BINDING_NAME = "binding-out-0";
 
-    private final Logger log = LoggerFactory.getLogger(FoursquareAppKafkaResource.class);
+    private static final Logger log = LoggerFactory.getLogger(FoursquareAppKafkaResource.class);
     private final KafkaConsumer kafkaConsumer;
     private final StreamBridge streamBridge;
 
