@@ -35,7 +35,6 @@
     "serviceDiscoveryType": false,
     "syncUserWithIdp": null,
     "testFrameworks": ["gatling", "cucumber", "cypress"],
-    "testFrameworks": ["gatling", "cucumber", "cypress"],
     "websocket": "spring-websocket",
     "withAdminUi": true
   }
