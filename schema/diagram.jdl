@@ -1,10 +1,20 @@
 // 5MB is the default max size for TextBlob fields. You can change it as needed.
 DEFAULT_MAX_SIZE = 5242880
 
+@filter
+@dto(no)
+@service(serviceImpl)
+@paginate(no)
+@search(no)
 entity UserDetails {
     /** Phone number in E.164 format. */
     phone String pattern(/^\+[1-9]\d{1,14}$/)
 }
+@filter
+@dto(no)
+@service(serviceClass)
+@paginate(no)
+@search(no)
 entity Address {
     id UUID
     line1 String required
@@ -13,8 +23,12 @@ entity Address {
     state String required
     country String required
     zipOrPostalCode String
-    otherInfo String
 }
+@filter
+@dto(no)
+@service(serviceClass)
+@paginate(pagination)
+@search(elasticsearch)
 entity Colour {
     id UUID
     /** Colour name. */
@@ -22,18 +36,38 @@ entity Colour {
     /** Hexadecimal colour code. RGB */
     hexCode String required pattern(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/)
 }
+@filter
+@dto(mapstruct)
+@service(serviceClass)
+@paginate(pagination)
+@search(no)
 entity Conversation {
     id UUID
     title String required maxlength(100)
 }
+@filter
+@dto(mapstruct)
+@service(serviceClass)
+@paginate(pagination)
+@search(no)
 entity Participant {
     id UUID
     isAdmin Boolean
 }
+@filter
+@dto(no)
+@service(serviceClass)
+@paginate(pagination)
+@search(elasticsearch)
 entity InvoiceStatus {
     @Id statusCode Integer
     description String required
 }
+@filter
+@dto(mapstruct)
+@service(serviceClass)
+@paginate(pagination)
+@search(elasticsearch)
 entity Invoice {
     id UUID
     totalAmount BigDecimal required min(0)
@@ -65,6 +99,11 @@ enum PaymentMethod {
     CHECK,
     OTHER
 }
+@filter
+@dto(mapstruct)
+@service(serviceClass)
+@paginate(pagination)
+@search(no)
 entity Message {
     id UUID
     type MessageType required
@@ -76,6 +115,11 @@ enum MessageType {
     IMAGE,
     OTHER
 }
+@filter
+@dto(mapstruct)
+@service(serviceClass)
+@paginate(pagination)
+@search(elasticsearch)
 entity OrderItem {
     id UUID
     orderedQty Integer required min(0)
@@ -83,10 +127,20 @@ entity OrderItem {
     unitPrice BigDecimal required min(0)
     note String
 }
+@filter
+@dto(no)
+@service(serviceClass)
+@paginate(pagination)
+@search(elasticsearch)
 entity OrderStatus {
     @Id statusCode Integer
     description String required
 }
+@filter
+@dto(mapstruct)
+@service(serviceClass)
+@paginate(pagination)
+@search(elasticsearch)
 entity Order {
     id UUID
     type OrderType required
@@ -101,10 +155,20 @@ enum OrderType {
     TRANSFER,
     OTHER
 }
+@filter
+@dto(no)
+@service(serviceClass)
+@paginate(pagination)
+@search(elasticsearch)
 entity ProductQuantity {
     id UUID
     qty Integer required min(0)
 }
+@filter
+@dto(no)
+@service(serviceClass)
+@paginate(pagination)
+@search(elasticsearch)
 entity ProductCategory {
     id UUID
     // We won't include SKU, UPC, EAN, JAN, ISBN, MPN, GTIN, etc. for simplicity. Also, we won't include weight, dimensions, etc.
@@ -114,11 +178,16 @@ entity ProductCategory {
     // Discount is optional. It can be a percentage or a fixed amount. It can be applied to the product or the order.
     // For simplicity, we won't include the discount type (percentage or fixed amount) and the discount target (product or order).
     // We also won't include the discount start date, end date, and conditions.
-    /** Discount in percentage. Max 100%. Applied only to the product. */
-    discount BigDecimal min(0) max(100)
+    // Discount in percentage. Max 100%. Applied only to the product.
+    // discount BigDecimal min(0) max(100)
     description String
     imageUri String
 }
+@filter
+@dto(no)
+@service(serviceClass)
+@paginate(pagination)
+@search(elasticsearch)
 entity Product {
     id UUID
     name String required
@@ -127,6 +196,10 @@ entity Product {
     provider String
     otherInfo TextBlob maxbytes(DEFAULT_MAX_SIZE)
 }
+@dto(no)
+@service(serviceImpl)
+@paginate(no)
+@search(no)
 entity ProductImage {
     id UUID
     imageUri String required
@@ -141,20 +214,40 @@ enum AssignmentStatus {
     FAILED,
     OTHER
 }
+@filter
+@dto(mapstruct)
+@service(serviceClass)
+@paginate(pagination)
+@search(elasticsearch)
 entity ShipmentAssignment {
     id UUID
     status AssignmentStatus required
     note String
 }
+@filter
+@dto(mapstruct)
+@service(serviceClass)
+@paginate(pagination)
+@search(elasticsearch)
 entity ShipmentItem {
     id UUID
     qty Integer required min(0)
     total BigDecimal required min(0)
 }
+@filter
+@dto(no)
+@service(serviceClass)
+@paginate(pagination)
+@search(elasticsearch)
 entity ShipmentStatus {
     @Id statusCode Integer
     description String required
 }
+@filter
+@dto(mapstruct)
+@service(serviceClass)
+@paginate(pagination)
+@search(elasticsearch)
 entity Shipment {
     id UUID
     // We won't include fields like tracking number, carrier, shipping method, etc. for simplicity.
@@ -170,10 +263,20 @@ enum ShipmentType {
     EXCHANGE,
     OTHER
 }
+@filter
+@dto(no)
+@service(serviceClass)
+@paginate(pagination)
+@search(elasticsearch)
 entity Tag {
     id UUID
     name String required
 }
+@filter
+@dto(no)
+@service(serviceImpl)
+@paginate(no)
+@search(no)
 entity UserAddress {
     id UUID
     type AddressType required
@@ -187,11 +290,21 @@ enum AddressType {
     SHIPPING,
     OTHER
 }
+@filter
+@dto(mapstruct)
+@service(serviceClass)
+@paginate(pagination)
+@search(elasticsearch)
 entity WarehouseAssignment {
     id UUID
     status AssignmentStatus required
     note String
 }
+@filter
+@dto(mapstruct)
+@service(serviceClass)
+@paginate(pagination)
+@search(elasticsearch)
 entity WorkingUnit {
     id UUID
     name String required
