@@ -1,8 +1,5 @@
-// 5MB is the default max size for TextBlob fields. You can change it as needed.
-DEFAULT_MAX_SIZE = 5242880
-
 @filter
-@dto(no)
+@dto(mapstruct)
 @service(serviceImpl)
 @paginate(no)
 @search(no)
@@ -11,7 +8,7 @@ entity UserDetails {
     phone String pattern(/^\+[1-9]\d{1,14}$/)
 }
 @filter
-@dto(no)
+@dto(mapstruct)
 @service(serviceClass)
 @paginate(no)
 @search(no)
@@ -25,7 +22,7 @@ entity Address {
     zipOrPostalCode String
 }
 @filter
-@dto(no)
+@dto(mapstruct)
 @service(serviceClass)
 @paginate(pagination)
 @search(elasticsearch)
@@ -55,7 +52,7 @@ entity Participant {
     isAdmin Boolean
 }
 @filter
-@dto(no)
+@dto(mapstruct)
 @service(serviceClass)
 @paginate(pagination)
 @search(elasticsearch)
@@ -128,7 +125,7 @@ entity OrderItem {
     note String
 }
 @filter
-@dto(no)
+@dto(mapstruct)
 @service(serviceClass)
 @paginate(pagination)
 @search(elasticsearch)
@@ -156,7 +153,7 @@ enum OrderType {
     OTHER
 }
 @filter
-@dto(no)
+@dto(mapstruct)
 @service(serviceClass)
 @paginate(pagination)
 @search(elasticsearch)
@@ -165,7 +162,7 @@ entity ProductQuantity {
     qty Integer required min(0)
 }
 @filter
-@dto(no)
+@dto(mapstruct)
 @service(serviceClass)
 @paginate(pagination)
 @search(elasticsearch)
@@ -184,7 +181,7 @@ entity ProductCategory {
     imageUri String
 }
 @filter
-@dto(no)
+@dto(mapstruct)
 @service(serviceClass)
 @paginate(pagination)
 @search(elasticsearch)
@@ -194,9 +191,9 @@ entity Product {
     description String
     // Provider is only String for the sake of simplicity. In real-world applications, it should be a separate entity with more details.
     provider String
-    otherInfo TextBlob maxbytes(DEFAULT_MAX_SIZE)
+    otherInfo TextBlob
 }
-@dto(no)
+@dto(mapstruct)
 @service(serviceImpl)
 @paginate(no)
 @search(no)
@@ -235,7 +232,7 @@ entity ShipmentItem {
     total BigDecimal required min(0)
 }
 @filter
-@dto(no)
+@dto(mapstruct)
 @service(serviceClass)
 @paginate(pagination)
 @search(elasticsearch)
@@ -264,7 +261,7 @@ enum ShipmentType {
     OTHER
 }
 @filter
-@dto(no)
+@dto(mapstruct)
 @service(serviceClass)
 @paginate(pagination)
 @search(elasticsearch)
@@ -273,7 +270,7 @@ entity Tag {
     name String required
 }
 @filter
-@dto(no)
+@dto(mapstruct)
 @service(serviceImpl)
 @paginate(no)
 @search(no)
@@ -321,34 +318,22 @@ enum WorkingUnitType {
  * One to one relationship.
  */
 relationship OneToOne {
-    UserDetails{user(login) required} to User with builtInEntity
+    UserDetails{user(login) required} to @OnDelete("CASCADE") @Id User with builtInEntity
 }
 /**
  * One to many relationship.
  */
 relationship OneToMany {
-    WorkingUnit to UserDetails{workingUnit(name)}
     Order{invoice} to Invoice{order required}
-    InvoiceStatus to Invoice{status(description) required}
     Order{orderItem required} to OrderItem{order required}
-    OrderStatus to Order{status(description) required}
-    Address to Order{address}
     Order{childOrder} to Order{parentOrder}
-    WorkingUnit to ProductQuantity{workingUnit(name) required}
-    ProductCategory to ProductQuantity{productCategory(name) required}
     Product{productCategory(name) required} to ProductCategory{product(name) required}
-    Colour to ProductCategory{colour(hexCode) required}
     Product{productImage} to ProductImage{product required}
     Shipment{assignment} to ShipmentAssignment{shipment required}
     Shipment{item required} to ShipmentItem{shipment required}
-    OrderItem to ShipmentItem{orderItem required}
     Order{shipment} to Shipment{order required}
     Invoice{shipment} to Shipment{invoice required}
-    ShipmentStatus to Shipment{status(description) required}
-    Order to WarehouseAssignment{order required}
-    WorkingUnit to WarehouseAssignment{sourceWorkingUnit(name) required}
-    WorkingUnit to WarehouseAssignment{targetWorkingUnit(name)}
-    Address to WorkingUnit{address}
+
 }
 /**
  * Many to one relationship.
@@ -364,6 +349,19 @@ relationship ManyToOne {
     UserAddress{user(login) required} to User with builtInEntity
     UserAddress{address required} to Address
     WarehouseAssignment{user(login) required} to User with builtInEntity
+    WarehouseAssignment{sourceWorkingUnit(name) required} to WorkingUnit
+    WarehouseAssignment{targetWorkingUnit(name)} to WorkingUnit
+    UserDetails{workingUnit(name)} to WorkingUnit
+    Invoice{status(description) required} to InvoiceStatus
+    Order{status(description) required} to OrderStatus
+    Order{address} to Address
+    ProductQuantity{workingUnit(name) required} to WorkingUnit
+    ProductQuantity{productCategory(name) required} to ProductCategory
+    ProductCategory{colour(hexCode) required} to Colour
+    ShipmentItem{orderItem required} to OrderItem
+    Shipment{status(description) required} to ShipmentStatus
+    WarehouseAssignment{order required} to Order
+    WorkingUnit{address} to Address
 }
 /**
  * Many to many relationship.
