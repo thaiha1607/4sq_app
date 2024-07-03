@@ -57,7 +57,7 @@ entity Participant {
 @paginate(pagination)
 @search(elasticsearch)
 entity InvoiceStatus {
-    @Id statusCode Integer
+    @Id statusCode Long
     description String required
 }
 @filter
@@ -130,7 +130,7 @@ entity OrderItem {
 @paginate(pagination)
 @search(elasticsearch)
 entity OrderStatus {
-    @Id statusCode Integer
+    @Id statusCode Long
     description String required
 }
 @filter
@@ -237,7 +237,7 @@ entity ShipmentItem {
 @paginate(pagination)
 @search(elasticsearch)
 entity ShipmentStatus {
-    @Id statusCode Integer
+    @Id statusCode Long
     description String required
 }
 @filter
