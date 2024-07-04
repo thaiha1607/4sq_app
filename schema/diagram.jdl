@@ -1,3 +1,30 @@
+application {
+    config {
+        applicationType monolith
+        authenticationType jwt
+        baseName foursquareApp
+        buildTool maven
+        cacheProvider redis
+        clientFramework vue
+        clientTheme litera
+        clientThemeVariant primary
+        databaseType sql
+        devDatabaseType postgresql
+        enableHibernateCache true
+        enableTranslation false
+        languages [en, vi]
+        messageBroker kafka
+        nativeLanguage en
+        packageName com.foursquare.server
+        prodDatabaseType postgresql
+        reactive false
+        searchEngine elasticsearch
+        testFrameworks [cypress, cucumber, gatling]
+        websocket spring-websocket
+    }
+    entities *
+}
+
 @filter
 @dto(mapstruct)
 @service(serviceImpl)
