@@ -1,0 +1,25 @@
+export enum InvoiceType {
+  PRO_FORMA = 'PRO_FORMA',
+
+  REGULAR = 'REGULAR',
+
+  PAST_DUE = 'PAST_DUE',
+
+  INTERIM = 'INTERIM',
+
+  TIMESHEET = 'TIMESHEET',
+
+  FINAL = 'FINAL',
+
+  CREDIT = 'CREDIT',
+
+  DEBIT = 'DEBIT',
+
+  MIXED = 'MIXED',
+
+  COMMERCIAL = 'COMMERCIAL',
+
+  RECURRING = 'RECURRING',
+
+  OTHER = 'OTHER',
+}
