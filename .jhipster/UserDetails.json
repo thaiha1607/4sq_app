@@ -56,7 +56,6 @@
   "relationships": [
     {
       "options": {
-        "id": true,
         "onDelete": "CASCADE"
       },
       "otherEntityField": "login",

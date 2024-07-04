@@ -167,8 +167,6 @@ class UserDetailsResourceIT {
                 assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore + 1);
             });
 
-        assertUserDetailsMapsIdRelationshipPersistedValue(userDetails, returnedUserDetails);
-
         insertedUserDetails = returnedUserDetails;
     }
 
@@ -189,51 +187,6 @@ class UserDetailsResourceIT {
 
         // Validate the UserDetails in the database
         assertSameRepositoryCount(databaseSizeBeforeCreate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(userDetailsSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
-    }
-
-    @Test
-    @Transactional
-    void updateUserDetailsMapsIdAssociationWithNewId() throws Exception {
-        // Initialize the database
-        insertedUserDetails = userDetailsRepository.saveAndFlush(userDetails);
-        long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(userDetailsSearchRepository.findAll());
-        // Add a new parent entity
-        User user = UserResourceIT.createEntity(em);
-        em.persist(user);
-        em.flush();
-
-        // Load the userDetails
-        UserDetails updatedUserDetails = userDetailsRepository.findById(userDetails.getId()).orElseThrow();
-        assertThat(updatedUserDetails).isNotNull();
-        // Disconnect from session so that the updates on updatedUserDetails are not directly saved in db
-        em.detach(updatedUserDetails);
-
-        // Update the User with new association value
-        updatedUserDetails.setUser(user);
-        UserDetailsDTO updatedUserDetailsDTO = userDetailsMapper.toDto(updatedUserDetails);
-        assertThat(updatedUserDetailsDTO).isNotNull();
-
-        // Update the entity
-        restUserDetailsMockMvc
-            .perform(
-                put(ENTITY_API_URL_ID, updatedUserDetailsDTO.getId())
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(om.writeValueAsBytes(updatedUserDetailsDTO))
-            )
-            .andExpect(status().isOk());
-
-        // Validate the UserDetails in the database
-        assertSameRepositoryCount(databaseSizeBeforeCreate);
-
-        /**
-         * Validate the id for MapsId, the ids must be same
-         * Uncomment the following line for assertion. However, please note that there is a known issue and uncommenting will fail the test.
-         * Please look at https://github.com/jhipster/generator-jhipster/issues/9100. You can modify this test as necessary.
-         * assertThat(testUserDetails.getId()).isEqualTo(testUserDetails.getUser().getId());
-         */
         int searchDatabaseSizeAfter = IterableUtil.sizeOf(userDetailsSearchRepository.findAll());
         assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }

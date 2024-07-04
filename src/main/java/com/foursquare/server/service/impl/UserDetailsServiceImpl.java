@@ -2,7 +2,6 @@ package com.foursquare.server.service.impl;
 
 import com.foursquare.server.domain.UserDetails;
 import com.foursquare.server.repository.UserDetailsRepository;
-import com.foursquare.server.repository.UserRepository;
 import com.foursquare.server.repository.search.UserDetailsSearchRepository;
 import com.foursquare.server.service.UserDetailsService;
 import com.foursquare.server.service.dto.UserDetailsDTO;
@@ -34,26 +33,20 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UserDetailsSearchRepository userDetailsSearchRepository;
 
-    private final UserRepository userRepository;
-
     public UserDetailsServiceImpl(
         UserDetailsRepository userDetailsRepository,
         UserDetailsMapper userDetailsMapper,
-        UserDetailsSearchRepository userDetailsSearchRepository,
-        UserRepository userRepository
+        UserDetailsSearchRepository userDetailsSearchRepository
     ) {
         this.userDetailsRepository = userDetailsRepository;
         this.userDetailsMapper = userDetailsMapper;
         this.userDetailsSearchRepository = userDetailsSearchRepository;
-        this.userRepository = userRepository;
     }
 
     @Override
     public UserDetailsDTO save(UserDetailsDTO userDetailsDTO) {
         log.debug("Request to save UserDetails : {}", userDetailsDTO);
         UserDetails userDetails = userDetailsMapper.toEntity(userDetailsDTO);
-        Long userId = userDetails.getUser().getId();
-        userRepository.findById(userId).ifPresent(userDetails::user);
         userDetails = userDetailsRepository.save(userDetails);
         userDetailsSearchRepository.index(userDetails);
         return userDetailsMapper.toDto(userDetails);

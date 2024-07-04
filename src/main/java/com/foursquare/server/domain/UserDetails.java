@@ -23,6 +23,8 @@ public class UserDetails extends AbstractAuditingEntity<Long> implements Seriali
     private static final long serialVersionUID = 1L;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
+    @SequenceGenerator(name = "sequenceGenerator")
     @Column(name = "id")
     private Long id;
 
@@ -43,8 +45,7 @@ public class UserDetails extends AbstractAuditingEntity<Long> implements Seriali
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @NotNull
-    @MapsId
-    @JoinColumn(name = "id")
+    @JoinColumn(unique = true)
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)

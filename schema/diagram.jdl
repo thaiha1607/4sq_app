@@ -345,7 +345,7 @@ enum WorkingUnitType {
  * One to one relationship.
  */
 relationship OneToOne {
-    UserDetails{user(login) required} to @OnDelete("CASCADE") @Id User with builtInEntity
+    UserDetails{user(login) required} to @OnDelete("CASCADE") User with builtInEntity
 }
 /**
  * One to many relationship.

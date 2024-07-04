@@ -56,9 +56,6 @@ public class UserDetailsResource {
         if (userDetailsDTO.getId() != null) {
             throw new BadRequestAlertException("A new userDetails cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        if (Objects.isNull(userDetailsDTO.getUser())) {
-            throw new BadRequestAlertException("Invalid association value provided", ENTITY_NAME, "null");
-        }
         userDetailsDTO = userDetailsService.save(userDetailsDTO);
         return ResponseEntity.created(new URI("/api/user-details/" + userDetailsDTO.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, userDetailsDTO.getId().toString()))
