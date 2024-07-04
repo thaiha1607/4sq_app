@@ -39,7 +39,7 @@ describe('ProductCategory e2e test', () => {
     cy.authenticatedRequest({
       method: 'POST',
       url: '/api/products',
-      body: {"name":"majestic","description":"overcharge if within","provider":"under rarely boiling","otherInfo":"Li4vZmFrZS1kYXRhL2Jsb2IvaGlwc3Rlci50eHQ="},
+      body: {"name":"woot","description":"stalk lily store","provider":"pointless tough"},
     }).then(({ body }) => {
       product = body;
     });

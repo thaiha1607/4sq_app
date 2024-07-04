@@ -28,11 +28,6 @@
       "fieldType": "String"
     },
     {
-      "fieldName": "otherInfo",
-      "fieldType": "byte[]",
-      "fieldTypeBlobContent": "text"
-    },
-    {
       "auditField": true,
       "autoGenerate": true,
       "columnType": "varchar(50)",

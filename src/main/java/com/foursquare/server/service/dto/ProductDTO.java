@@ -1,6 +1,5 @@
 package com.foursquare.server.service.dto;
 
-import jakarta.persistence.Lob;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.time.Instant;
@@ -23,9 +22,6 @@ public class ProductDTO implements Serializable {
     private String description;
 
     private String provider;
-
-    @Lob
-    private String otherInfo;
 
     private String createdBy;
 
@@ -67,14 +63,6 @@ public class ProductDTO implements Serializable {
 
     public void setProvider(String provider) {
         this.provider = provider;
-    }
-
-    public String getOtherInfo() {
-        return otherInfo;
-    }
-
-    public void setOtherInfo(String otherInfo) {
-        this.otherInfo = otherInfo;
     }
 
     public String getCreatedBy() {
@@ -146,7 +134,6 @@ public class ProductDTO implements Serializable {
             ", name='" + getName() + "'" +
             ", description='" + getDescription() + "'" +
             ", provider='" + getProvider() + "'" +
-            ", otherInfo='" + getOtherInfo() + "'" +
             ", createdBy='" + getCreatedBy() + "'" +
             ", createdDate='" + getCreatedDate() + "'" +
             ", lastModifiedBy='" + getLastModifiedBy() + "'" +

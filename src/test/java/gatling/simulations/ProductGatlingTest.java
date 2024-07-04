@@ -71,7 +71,6 @@ public class ProductGatlingTest extends Simulation {
                                 "\"name\": \"SAMPLE_TEXT\"" +
                                 ", \"description\": \"SAMPLE_TEXT\"" +
                                 ", \"provider\": \"SAMPLE_TEXT\"" +
-                                ", \"otherInfo\": null" +
                                 ", \"createdBy\": \"SAMPLE_TEXT\"" +
                                 ", \"createdDate\": \"2020-01-01T00:00:00.000Z\"" +
                                 ", \"lastModifiedBy\": \"SAMPLE_TEXT\"" +

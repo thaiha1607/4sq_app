@@ -15,7 +15,7 @@ describe('Product e2e test', () => {
   const productPageUrlPattern = new RegExp('/product(\\?.*)?$');
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
-  // const productSample = {"name":"stimulating or via"};
+  // const productSample = {"name":"ick kookily"};
 
   let product;
   // let productCategory;
@@ -220,17 +220,14 @@ describe('Product e2e test', () => {
     });
 
     it.skip('should create an instance of Product', () => {
-      cy.get(`[data-cy="name"]`).type('pawn plunge plus');
-      cy.get(`[data-cy="name"]`).should('have.value', 'pawn plunge plus');
+      cy.get(`[data-cy="name"]`).type('respectful');
+      cy.get(`[data-cy="name"]`).should('have.value', 'respectful');
 
-      cy.get(`[data-cy="description"]`).type('composite evenly rightfully');
-      cy.get(`[data-cy="description"]`).should('have.value', 'composite evenly rightfully');
+      cy.get(`[data-cy="description"]`).type('through');
+      cy.get(`[data-cy="description"]`).should('have.value', 'through');
 
-      cy.get(`[data-cy="provider"]`).type('ha around spotless');
-      cy.get(`[data-cy="provider"]`).should('have.value', 'ha around spotless');
-
-      cy.get(`[data-cy="otherInfo"]`).type('../fake-data/blob/hipster.txt');
-      cy.get(`[data-cy="otherInfo"]`).invoke('val').should('match', new RegExp('../fake-data/blob/hipster.txt'));
+      cy.get(`[data-cy="provider"]`).type('plunge plus');
+      cy.get(`[data-cy="provider"]`).should('have.value', 'plunge plus');
 
       cy.get(`[data-cy="productCategory"]`).select([0]);
 

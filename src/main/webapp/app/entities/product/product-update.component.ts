@@ -3,7 +3,6 @@ import { useRoute, useRouter } from 'vue-router';
 import { useVuelidate } from '@vuelidate/core';
 
 import ProductService from './product.service';
-import useDataUtils from '@/shared/data/data-utils.service';
 import { useValidation, useDateFormat } from '@/shared/composables';
 import { useAlertService } from '@/shared/alert/alert.service';
 
@@ -56,8 +55,6 @@ export default defineComponent({
 
     initRelationships();
 
-    const dataUtils = useDataUtils();
-
     const validations = useValidation();
     const validationRules = {
       name: {
@@ -65,7 +62,6 @@ export default defineComponent({
       },
       description: {},
       provider: {},
-      otherInfo: {},
       createdBy: {},
       createdDate: {},
       lastModifiedBy: {},
@@ -83,7 +79,6 @@ export default defineComponent({
       isSaving,
       currentLanguage,
       tags,
-      ...dataUtils,
       v$,
       ...useDateFormat({ entityRef: product }),
     };

@@ -59,9 +59,6 @@ class ProductResourceIT {
     private static final String DEFAULT_PROVIDER = "AAAAAAAAAA";
     private static final String UPDATED_PROVIDER = "BBBBBBBBBB";
 
-    private static final String DEFAULT_OTHER_INFO = "AAAAAAAAAA";
-    private static final String UPDATED_OTHER_INFO = "BBBBBBBBBB";
-
     private static final String ENTITY_API_URL = "/api/products";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
     private static final String ENTITY_SEARCH_API_URL = "/api/products/_search";
@@ -101,11 +98,7 @@ class ProductResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Product createEntity(EntityManager em) {
-        Product product = new Product()
-            .name(DEFAULT_NAME)
-            .description(DEFAULT_DESCRIPTION)
-            .provider(DEFAULT_PROVIDER)
-            .otherInfo(DEFAULT_OTHER_INFO);
+        Product product = new Product().name(DEFAULT_NAME).description(DEFAULT_DESCRIPTION).provider(DEFAULT_PROVIDER);
         return product;
     }
 
@@ -116,11 +109,7 @@ class ProductResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Product createUpdatedEntity(EntityManager em) {
-        Product product = new Product()
-            .name(UPDATED_NAME)
-            .description(UPDATED_DESCRIPTION)
-            .provider(UPDATED_PROVIDER)
-            .otherInfo(UPDATED_OTHER_INFO);
+        Product product = new Product().name(UPDATED_NAME).description(UPDATED_DESCRIPTION).provider(UPDATED_PROVIDER);
         return product;
     }
 
@@ -226,8 +215,7 @@ class ProductResourceIT {
             .andExpect(jsonPath("$.[*].id").value(hasItem(product.getId().toString())))
             .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
             .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION)))
-            .andExpect(jsonPath("$.[*].provider").value(hasItem(DEFAULT_PROVIDER)))
-            .andExpect(jsonPath("$.[*].otherInfo").value(hasItem(DEFAULT_OTHER_INFO.toString())));
+            .andExpect(jsonPath("$.[*].provider").value(hasItem(DEFAULT_PROVIDER)));
     }
 
     @SuppressWarnings({ "unchecked" })
@@ -261,8 +249,7 @@ class ProductResourceIT {
             .andExpect(jsonPath("$.id").value(product.getId().toString()))
             .andExpect(jsonPath("$.name").value(DEFAULT_NAME))
             .andExpect(jsonPath("$.description").value(DEFAULT_DESCRIPTION))
-            .andExpect(jsonPath("$.provider").value(DEFAULT_PROVIDER))
-            .andExpect(jsonPath("$.otherInfo").value(DEFAULT_OTHER_INFO.toString()));
+            .andExpect(jsonPath("$.provider").value(DEFAULT_PROVIDER));
     }
 
     @Test
@@ -286,7 +273,7 @@ class ProductResourceIT {
         Product updatedProduct = productRepository.findById(product.getId()).orElseThrow();
         // Disconnect from session so that the updates on updatedProduct are not directly saved in db
         em.detach(updatedProduct);
-        updatedProduct.name(UPDATED_NAME).description(UPDATED_DESCRIPTION).provider(UPDATED_PROVIDER).otherInfo(UPDATED_OTHER_INFO);
+        updatedProduct.name(UPDATED_NAME).description(UPDATED_DESCRIPTION).provider(UPDATED_PROVIDER);
         ProductDTO productDTO = productMapper.toDto(updatedProduct);
 
         restProductMockMvc
@@ -390,7 +377,7 @@ class ProductResourceIT {
         Product partialUpdatedProduct = new Product();
         partialUpdatedProduct.setId(product.getId());
 
-        partialUpdatedProduct.name(UPDATED_NAME).otherInfo(UPDATED_OTHER_INFO);
+        partialUpdatedProduct.name(UPDATED_NAME);
 
         restProductMockMvc
             .perform(
@@ -418,7 +405,7 @@ class ProductResourceIT {
         Product partialUpdatedProduct = new Product();
         partialUpdatedProduct.setId(product.getId());
 
-        partialUpdatedProduct.name(UPDATED_NAME).description(UPDATED_DESCRIPTION).provider(UPDATED_PROVIDER).otherInfo(UPDATED_OTHER_INFO);
+        partialUpdatedProduct.name(UPDATED_NAME).description(UPDATED_DESCRIPTION).provider(UPDATED_PROVIDER);
 
         restProductMockMvc
             .perform(
@@ -543,8 +530,7 @@ class ProductResourceIT {
             .andExpect(jsonPath("$.[*].id").value(hasItem(product.getId().toString())))
             .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
             .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION)))
-            .andExpect(jsonPath("$.[*].provider").value(hasItem(DEFAULT_PROVIDER)))
-            .andExpect(jsonPath("$.[*].otherInfo").value(hasItem(DEFAULT_OTHER_INFO.toString())));
+            .andExpect(jsonPath("$.[*].provider").value(hasItem(DEFAULT_PROVIDER)));
     }
 
     protected long getRepositoryCount() {

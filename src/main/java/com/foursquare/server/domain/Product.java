@@ -43,11 +43,6 @@ public class Product extends AbstractAuditingEntity<UUID> implements Serializabl
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String provider;
 
-    @Lob
-    @Column(name = "other_info")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
-    private String otherInfo;
-
     // Inherited createdBy definition
     // Inherited createdDate definition
     // Inherited lastModifiedBy definition
@@ -125,19 +120,6 @@ public class Product extends AbstractAuditingEntity<UUID> implements Serializabl
 
     public void setProvider(String provider) {
         this.provider = provider;
-    }
-
-    public String getOtherInfo() {
-        return this.otherInfo;
-    }
-
-    public Product otherInfo(String otherInfo) {
-        this.setOtherInfo(otherInfo);
-        return this;
-    }
-
-    public void setOtherInfo(String otherInfo) {
-        this.otherInfo = otherInfo;
     }
 
     // Inherited createdBy methods
@@ -293,7 +275,6 @@ public class Product extends AbstractAuditingEntity<UUID> implements Serializabl
             ", name='" + getName() + "'" +
             ", description='" + getDescription() + "'" +
             ", provider='" + getProvider() + "'" +
-            ", otherInfo='" + getOtherInfo() + "'" +
             ", createdBy='" + getCreatedBy() + "'" +
             ", createdDate='" + getCreatedDate() + "'" +
             ", lastModifiedBy='" + getLastModifiedBy() + "'" +

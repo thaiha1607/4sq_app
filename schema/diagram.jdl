@@ -218,7 +218,6 @@ entity Product {
     description String
     // Provider is only String for the sake of simplicity. In real-world applications, it should be a separate entity with more details.
     provider String
-    otherInfo TextBlob
 }
 @dto(mapstruct)
 @service(serviceImpl)

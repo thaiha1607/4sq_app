@@ -2,7 +2,6 @@ import { defineComponent, inject, onMounted, ref, type Ref } from 'vue';
 
 import ProductService from './product.service';
 import { type IProduct } from '@/shared/model/product.model';
-import useDataUtils from '@/shared/data/data-utils.service';
 import { useDateFormat } from '@/shared/composables';
 import { useAlertService } from '@/shared/alert/alert.service';
 
@@ -11,7 +10,6 @@ export default defineComponent({
   name: 'Product',
   setup() {
     const dateFormat = useDateFormat();
-    const dataUtils = useDataUtils();
     const productService = inject('productService', () => new ProductService());
     const alertService = inject('alertService', () => useAlertService(), true);
 
@@ -88,7 +86,6 @@ export default defineComponent({
       prepareRemove,
       closeDialog,
       removeProduct,
-      ...dataUtils,
     };
   },
 });

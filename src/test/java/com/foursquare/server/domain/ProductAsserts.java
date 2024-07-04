@@ -51,8 +51,7 @@ public class ProductAsserts {
             .as("Verify Product relevant properties")
             .satisfies(e -> assertThat(e.getName()).as("check name").isEqualTo(actual.getName()))
             .satisfies(e -> assertThat(e.getDescription()).as("check description").isEqualTo(actual.getDescription()))
-            .satisfies(e -> assertThat(e.getProvider()).as("check provider").isEqualTo(actual.getProvider()))
-            .satisfies(e -> assertThat(e.getOtherInfo()).as("check otherInfo").isEqualTo(actual.getOtherInfo()));
+            .satisfies(e -> assertThat(e.getProvider()).as("check provider").isEqualTo(actual.getProvider()));
     }
 
     /**

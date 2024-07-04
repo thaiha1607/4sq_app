@@ -49,17 +49,6 @@
             />
           </div>
           <div class="form-group">
-            <label class="form-control-label" for="product-otherInfo">Other Info</label>
-            <textarea
-              class="form-control"
-              name="otherInfo"
-              id="product-otherInfo"
-              data-cy="otherInfo"
-              :class="{ valid: !v$.otherInfo.$invalid, invalid: v$.otherInfo.$invalid }"
-              v-model="v$.otherInfo.$model"
-            ></textarea>
-          </div>
-          <div class="form-group">
             <label class="form-control-label" for="product-createdBy">Created By</label>
             <input
               type="text"

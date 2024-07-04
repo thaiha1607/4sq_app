@@ -53,7 +53,6 @@
             <th scope="row"><span>Name</span></th>
             <th scope="row"><span>Description</span></th>
             <th scope="row"><span>Provider</span></th>
-            <th scope="row"><span>Other Info</span></th>
             <th scope="row"><span>Created By</span></th>
             <th scope="row"><span>Created Date</span></th>
             <th scope="row"><span>Last Modified By</span></th>
@@ -70,7 +69,6 @@
             <td>{{ product.name }}</td>
             <td>{{ product.description }}</td>
             <td>{{ product.provider }}</td>
-            <td>{{ product.otherInfo }}</td>
             <td>{{ product.createdBy }}</td>
             <td>{{ formatDateShort(product.createdDate) || '' }}</td>
             <td>{{ product.lastModifiedBy }}</td>

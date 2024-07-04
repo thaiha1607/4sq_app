@@ -5,7 +5,6 @@ export interface IProduct {
   name?: string;
   description?: string | null;
   provider?: string | null;
-  otherInfo?: string | null;
   createdBy?: string;
   createdDate?: Date;
   lastModifiedBy?: string;
@@ -19,7 +18,6 @@ export class Product implements IProduct {
     public name?: string,
     public description?: string | null,
     public provider?: string | null,
-    public otherInfo?: string | null,
     public createdBy?: string,
     public createdDate?: Date,
     public lastModifiedBy?: string,

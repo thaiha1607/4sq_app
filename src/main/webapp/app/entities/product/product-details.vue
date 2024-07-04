@@ -23,12 +23,6 @@
             <span>{{ product.provider }}</span>
           </dd>
           <dt>
-            <span>Other Info</span>
-          </dt>
-          <dd>
-            <span>{{ product.otherInfo }}</span>
-          </dd>
-          <dt>
             <span>Created By</span>
           </dt>
           <dd>

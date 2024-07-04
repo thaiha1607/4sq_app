@@ -23,9 +23,6 @@
             <column name="provider" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
-            <column name="other_info" type="${clobType}">
-                <constraints nullable="true" />
-            </column>
             <column name="created_by" type="varchar(50)">
                 <constraints nullable="false" />
             </column>
@@ -78,7 +75,6 @@
             <column name="name" type="string"/>
             <column name="description" type="string"/>
             <column name="provider" type="string"/>
-            <column name="other_info" type="clob"/>
             <column name="created_by" type="string"/>
             <column name="created_date" type="date"/>
             <column name="last_modified_by" type="string"/>
