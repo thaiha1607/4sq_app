@@ -32,7 +32,7 @@ application {
 @search(no)
 entity UserDetails {
     /** Phone number in E.164 format. */
-    phone String pattern(/^\+[1-9]\d{1,14}$/)
+    phone String pattern(/^\+[0-9]\d{1,14}$/)
 }
 @filter
 @dto(mapstruct)
@@ -198,7 +198,6 @@ entity ProductCategory {
     // We won't include SKU, UPC, EAN, JAN, ISBN, MPN, GTIN, etc. for simplicity. Also, we won't include weight, dimensions, etc.
     // Barcode is also excluded
     name String
-    price BigDecimal required min(0)
     // Discount is optional. It can be a percentage or a fixed amount. It can be applied to the product or the order.
     // For simplicity, we won't include the discount type (percentage or fixed amount) and the discount target (product or order).
     // We also won't include the discount start date, end date, and conditions.
@@ -216,6 +215,8 @@ entity Product {
     id UUID
     name String required
     description String
+    // We will let price here instead of in ProductCategory for simplicity.
+    price BigDecimal required min(0)
     // Provider is only String for the sake of simplicity. In real-world applications, it should be a separate entity with more details.
     provider String
 }
@@ -340,6 +341,15 @@ enum WorkingUnitType {
     DELIVERY,
     OTHER
 }
+@filter
+@dto(mapstruct)
+@service(serviceClass)
+@paginate(pagination)
+@search(elasticsearch)
+entity Comment {
+    rating Integer min(1) max(5)
+    content String
+}
 /**
  * One to one relationship.
  */
@@ -359,7 +369,7 @@ relationship OneToMany {
     Shipment{item required} to ShipmentItem{shipment required}
     Order{shipment} to Shipment{order required}
     Invoice{shipment} to Shipment{invoice required}
-
+    Product{comment} to Comment{product required}
 }
 /**
  * Many to one relationship.
@@ -388,6 +398,7 @@ relationship ManyToOne {
     Shipment{status(description) required} to ShipmentStatus
     WarehouseAssignment{order required} to Order
     WorkingUnit{address} to Address
+    Comment{user(login) required} to User with builtInEntity
 }
 /**
  * Many to many relationship.
