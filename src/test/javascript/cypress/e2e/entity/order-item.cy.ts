@@ -31,7 +31,7 @@ describe('OrderItem e2e test', () => {
     cy.authenticatedRequest({
       method: 'POST',
       url: '/api/product-categories',
-      body: {"name":"powerfully inasmuch yippee","price":16368.6,"description":"impound train","imageUri":"until"},
+      body: {"name":"absolute","description":"meanwhile","imageUri":"yippee"},
     }).then(({ body }) => {
       productCategory = body;
     });

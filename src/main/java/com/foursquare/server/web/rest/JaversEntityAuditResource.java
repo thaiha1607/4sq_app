@@ -81,7 +81,8 @@ public class JaversEntityAuditResource {
             "domain.Tag",
             "domain.UserAddress",
             "domain.WarehouseAssignment",
-            "domain.WorkingUnit"
+            "domain.WorkingUnit",
+            "domain.Comment"
         );
     }
 

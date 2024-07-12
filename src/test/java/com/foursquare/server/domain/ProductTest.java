@@ -1,5 +1,6 @@
 package com.foursquare.server.domain;
 
+import static com.foursquare.server.domain.CommentTestSamples.*;
 import static com.foursquare.server.domain.ProductCategoryTestSamples.*;
 import static com.foursquare.server.domain.ProductImageTestSamples.*;
 import static com.foursquare.server.domain.ProductTestSamples.*;
@@ -69,6 +70,28 @@ class ProductTest {
         product.setProductImages(new HashSet<>());
         assertThat(product.getProductImages()).doesNotContain(productImageBack);
         assertThat(productImageBack.getProduct()).isNull();
+    }
+
+    @Test
+    void commentTest() {
+        Product product = getProductRandomSampleGenerator();
+        Comment commentBack = getCommentRandomSampleGenerator();
+
+        product.addComment(commentBack);
+        assertThat(product.getComments()).containsOnly(commentBack);
+        assertThat(commentBack.getProduct()).isEqualTo(product);
+
+        product.removeComment(commentBack);
+        assertThat(product.getComments()).doesNotContain(commentBack);
+        assertThat(commentBack.getProduct()).isNull();
+
+        product.comments(new HashSet<>(Set.of(commentBack)));
+        assertThat(product.getComments()).containsOnly(commentBack);
+        assertThat(commentBack.getProduct()).isEqualTo(product);
+
+        product.setComments(new HashSet<>());
+        assertThat(product.getComments()).doesNotContain(commentBack);
+        assertThat(commentBack.getProduct()).isNull();
     }
 
     @Test

@@ -95,6 +95,10 @@ const WorkingUnit = () => import('@/entities/working-unit/working-unit.vue');
 const WorkingUnitUpdate = () => import('@/entities/working-unit/working-unit-update.vue');
 const WorkingUnitDetails = () => import('@/entities/working-unit/working-unit-details.vue');
 
+const Comment = () => import('@/entities/comment/comment.vue');
+const CommentUpdate = () => import('@/entities/comment/comment-update.vue');
+const CommentDetails = () => import('@/entities/comment/comment-details.vue');
+
 // jhipster-needle-add-entity-to-router-import - JHipster will import entities to the router here
 
 export default {
@@ -651,6 +655,30 @@ export default {
       path: 'working-unit/:workingUnitId/view',
       name: 'WorkingUnitView',
       component: WorkingUnitDetails,
+      meta: { authorities: [Authority.USER] },
+    },
+    {
+      path: 'comment',
+      name: 'Comment',
+      component: Comment,
+      meta: { authorities: [Authority.USER] },
+    },
+    {
+      path: 'comment/new',
+      name: 'CommentCreate',
+      component: CommentUpdate,
+      meta: { authorities: [Authority.USER] },
+    },
+    {
+      path: 'comment/:commentId/edit',
+      name: 'CommentEdit',
+      component: CommentUpdate,
+      meta: { authorities: [Authority.USER] },
+    },
+    {
+      path: 'comment/:commentId/view',
+      name: 'CommentView',
+      component: CommentDetails,
       meta: { authorities: [Authority.USER] },
     },
     // jhipster-needle-add-entity-to-router - JHipster will add entities to the router here

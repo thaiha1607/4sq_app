@@ -11,12 +11,6 @@
             <span>{{ productCategory.name }}</span>
           </dd>
           <dt>
-            <span>Price</span>
-          </dt>
-          <dd>
-            <span>{{ productCategory.price }}</span>
-          </dd>
-          <dt>
             <span>Description</span>
           </dt>
           <dd>

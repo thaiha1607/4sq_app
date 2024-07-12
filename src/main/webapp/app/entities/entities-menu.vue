@@ -92,6 +92,10 @@
       <font-awesome-icon icon="asterisk" />
       <span>Working Unit</span>
     </b-dropdown-item>
+    <b-dropdown-item to="/comment">
+      <font-awesome-icon icon="asterisk" />
+      <span>Comment</span>
+    </b-dropdown-item>
     <!-- jhipster-needle-add-entity-to-menu - JHipster will add entities to the menu here -->
   </div>
 </template>

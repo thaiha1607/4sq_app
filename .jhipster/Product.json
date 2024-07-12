@@ -24,6 +24,12 @@
       "fieldType": "String"
     },
     {
+      "fieldName": "price",
+      "fieldType": "BigDecimal",
+      "fieldValidateRules": ["required", "min"],
+      "fieldValidateRulesMin": "0"
+    },
+    {
       "fieldName": "provider",
       "fieldType": "String"
     },
@@ -77,6 +83,13 @@
       "otherEntityName": "productImage",
       "otherEntityRelationshipName": "product",
       "relationshipName": "productImage",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "comment",
+      "otherEntityRelationshipName": "product",
+      "relationshipName": "comment",
       "relationshipSide": "left",
       "relationshipType": "one-to-many"
     },

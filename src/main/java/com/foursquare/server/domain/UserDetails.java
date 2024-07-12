@@ -31,7 +31,7 @@ public class UserDetails extends AbstractAuditingEntity<Long> implements Seriali
     /**
      * Phone number in E.164 format.
      */
-    @Pattern(regexp = "^\\+[1-9]\\d{1,14}$")
+    @Pattern(regexp = "^\\+[0-9]\\d{1,14}$")
     @Column(name = "phone")
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String phone;

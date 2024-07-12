@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
@@ -39,6 +40,11 @@ public class Product extends AbstractAuditingEntity<UUID> implements Serializabl
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String description;
 
+    @NotNull
+    @DecimalMin(value = "0")
+    @Column(name = "price", precision = 21, scale = 2, nullable = false)
+    private BigDecimal price;
+
     @Column(name = "provider")
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String provider;
@@ -61,6 +67,12 @@ public class Product extends AbstractAuditingEntity<UUID> implements Serializabl
     @org.springframework.data.annotation.Transient
     @JsonIgnoreProperties(value = { "product" }, allowSetters = true)
     private Set<ProductImage> productImages = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "product")
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @org.springframework.data.annotation.Transient
+    @JsonIgnoreProperties(value = { "user", "product" }, allowSetters = true)
+    private Set<Comment> comments = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "rel_product__tag", joinColumns = @JoinColumn(name = "product_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
@@ -107,6 +119,19 @@ public class Product extends AbstractAuditingEntity<UUID> implements Serializabl
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public BigDecimal getPrice() {
+        return this.price;
+    }
+
+    public Product price(BigDecimal price) {
+        this.setPrice(price);
+        return this;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
     }
 
     public String getProvider() {
@@ -225,6 +250,37 @@ public class Product extends AbstractAuditingEntity<UUID> implements Serializabl
         return this;
     }
 
+    public Set<Comment> getComments() {
+        return this.comments;
+    }
+
+    public void setComments(Set<Comment> comments) {
+        if (this.comments != null) {
+            this.comments.forEach(i -> i.setProduct(null));
+        }
+        if (comments != null) {
+            comments.forEach(i -> i.setProduct(this));
+        }
+        this.comments = comments;
+    }
+
+    public Product comments(Set<Comment> comments) {
+        this.setComments(comments);
+        return this;
+    }
+
+    public Product addComment(Comment comment) {
+        this.comments.add(comment);
+        comment.setProduct(this);
+        return this;
+    }
+
+    public Product removeComment(Comment comment) {
+        this.comments.remove(comment);
+        comment.setProduct(null);
+        return this;
+    }
+
     public Set<Tag> getTags() {
         return this.tags;
     }
@@ -274,6 +330,7 @@ public class Product extends AbstractAuditingEntity<UUID> implements Serializabl
             "id=" + getId() +
             ", name='" + getName() + "'" +
             ", description='" + getDescription() + "'" +
+            ", price=" + getPrice() +
             ", provider='" + getProvider() + "'" +
             ", createdBy='" + getCreatedBy() + "'" +
             ", createdDate='" + getCreatedDate() + "'" +

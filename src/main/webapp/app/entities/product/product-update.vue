@@ -37,6 +37,22 @@
             />
           </div>
           <div class="form-group">
+            <label class="form-control-label" for="product-price">Price</label>
+            <input
+              type="number"
+              class="form-control"
+              name="price"
+              id="product-price"
+              data-cy="price"
+              :class="{ valid: !v$.price.$invalid, invalid: v$.price.$invalid }"
+              v-model.number="v$.price.$model"
+              required
+            />
+            <div v-if="v$.price.$anyDirty && v$.price.$invalid">
+              <small class="form-text text-danger" v-for="error of v$.price.$errors" :key="error.$uid">{{ error.$message }}</small>
+            </div>
+          </div>
+          <div class="form-group">
             <label class="form-control-label" for="product-provider">Provider</label>
             <input
               type="text"

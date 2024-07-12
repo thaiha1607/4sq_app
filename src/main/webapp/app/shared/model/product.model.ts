@@ -4,6 +4,7 @@ export interface IProduct {
   id?: string;
   name?: string;
   description?: string | null;
+  price?: number;
   provider?: string | null;
   createdBy?: string;
   createdDate?: Date;
@@ -17,6 +18,7 @@ export class Product implements IProduct {
     public id?: string,
     public name?: string,
     public description?: string | null,
+    public price?: number,
     public provider?: string | null,
     public createdBy?: string,
     public createdDate?: Date,

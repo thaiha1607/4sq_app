@@ -17,9 +17,6 @@
             <column name="name" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
-            <column name="price" type="decimal(21,2)">
-                <constraints nullable="false" />
-            </column>
             <column name="description" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
@@ -68,7 +65,6 @@
                   usePreparedStatements="true">
             <column name="id" type="${uuidType}"/>
             <column name="name" type="string"/>
-            <column name="price" type="numeric"/>
             <column name="description" type="string"/>
             <column name="image_uri" type="string"/>
             <column name="created_by" type="string"/>

@@ -15,7 +15,7 @@ describe('Product e2e test', () => {
   const productPageUrlPattern = new RegExp('/product(\\?.*)?$');
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
-  // const productSample = {"name":"ick kookily"};
+  // const productSample = {"name":"whoever shadow er","price":29233.89};
 
   let product;
   // let productCategory;
@@ -30,7 +30,7 @@ describe('Product e2e test', () => {
     cy.authenticatedRequest({
       method: 'POST',
       url: '/api/product-categories',
-      body: {"name":"during","price":5294.66,"description":"swiftly by nor","imageUri":"of while"},
+      body: {"name":"phew feast","description":"what swiftly by","imageUri":"justly of while"},
     }).then(({ body }) => {
       productCategory = body;
     });
@@ -52,6 +52,11 @@ describe('Product e2e test', () => {
     });
 
     cy.intercept('GET', '/api/product-images', {
+      statusCode: 200,
+      body: [],
+    });
+
+    cy.intercept('GET', '/api/comments', {
       statusCode: 200,
       body: [],
     });
@@ -220,14 +225,17 @@ describe('Product e2e test', () => {
     });
 
     it.skip('should create an instance of Product', () => {
-      cy.get(`[data-cy="name"]`).type('respectful');
-      cy.get(`[data-cy="name"]`).should('have.value', 'respectful');
+      cy.get(`[data-cy="name"]`).type('stark');
+      cy.get(`[data-cy="name"]`).should('have.value', 'stark');
 
-      cy.get(`[data-cy="description"]`).type('through');
-      cy.get(`[data-cy="description"]`).should('have.value', 'through');
+      cy.get(`[data-cy="description"]`).type('once');
+      cy.get(`[data-cy="description"]`).should('have.value', 'once');
 
-      cy.get(`[data-cy="provider"]`).type('plunge plus');
-      cy.get(`[data-cy="provider"]`).should('have.value', 'plunge plus');
+      cy.get(`[data-cy="price"]`).type('7416.03');
+      cy.get(`[data-cy="price"]`).should('have.value', '7416.03');
+
+      cy.get(`[data-cy="provider"]`).type('amidst doubtfully');
+      cy.get(`[data-cy="provider"]`).should('have.value', 'amidst doubtfully');
 
       cy.get(`[data-cy="productCategory"]`).select([0]);
 

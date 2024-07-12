@@ -15,7 +15,7 @@
       "fieldName": "phone",
       "fieldType": "String",
       "fieldValidateRules": ["pattern"],
-      "fieldValidateRulesPattern": "^\\+[1-9]\\d{1,14}$"
+      "fieldValidateRulesPattern": "^\\+[0-9]\\d{1,14}$"
     },
     {
       "auditField": true,

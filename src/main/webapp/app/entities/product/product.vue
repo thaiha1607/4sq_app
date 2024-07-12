@@ -52,6 +52,7 @@
             <th scope="row"><span>ID</span></th>
             <th scope="row"><span>Name</span></th>
             <th scope="row"><span>Description</span></th>
+            <th scope="row"><span>Price</span></th>
             <th scope="row"><span>Provider</span></th>
             <th scope="row"><span>Created By</span></th>
             <th scope="row"><span>Created Date</span></th>
@@ -68,6 +69,7 @@
             </td>
             <td>{{ product.name }}</td>
             <td>{{ product.description }}</td>
+            <td>{{ product.price }}</td>
             <td>{{ product.provider }}</td>
             <td>{{ product.createdBy }}</td>
             <td>{{ formatDateShort(product.createdDate) || '' }}</td>

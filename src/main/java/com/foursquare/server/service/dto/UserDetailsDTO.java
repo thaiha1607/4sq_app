@@ -14,7 +14,7 @@ public class UserDetailsDTO implements Serializable {
 
     private Long id;
 
-    @Pattern(regexp = "^\\+[1-9]\\d{1,14}$")
+    @Pattern(regexp = "^\\+[0-9]\\d{1,14}$")
     @Schema(description = "Phone number in E.164 format.")
     private String phone;
 

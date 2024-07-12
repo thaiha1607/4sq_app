@@ -45,7 +45,7 @@ public class Tag extends AbstractAuditingEntity<UUID> implements Serializable, P
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "tags")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @org.springframework.data.annotation.Transient
-    @JsonIgnoreProperties(value = { "productCategories", "productImages", "tags" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "productCategories", "productImages", "comments", "tags" }, allowSetters = true)
     private Set<Product> products = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here

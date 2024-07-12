@@ -2,7 +2,6 @@ package com.foursquare.server.web.rest;
 
 import static com.foursquare.server.domain.ProductCategoryAsserts.*;
 import static com.foursquare.server.web.rest.TestUtil.createUpdateProxyForBean;
-import static com.foursquare.server.web.rest.TestUtil.sameNumber;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.hasItem;
@@ -20,7 +19,6 @@ import com.foursquare.server.service.ProductCategoryService;
 import com.foursquare.server.service.dto.ProductCategoryDTO;
 import com.foursquare.server.service.mapper.ProductCategoryMapper;
 import jakarta.persistence.EntityManager;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -55,9 +53,6 @@ class ProductCategoryResourceIT {
 
     private static final String DEFAULT_NAME = "AAAAAAAAAA";
     private static final String UPDATED_NAME = "BBBBBBBBBB";
-
-    private static final BigDecimal DEFAULT_PRICE = new BigDecimal(0);
-    private static final BigDecimal UPDATED_PRICE = new BigDecimal(1);
 
     private static final String DEFAULT_DESCRIPTION = "AAAAAAAAAA";
     private static final String UPDATED_DESCRIPTION = "BBBBBBBBBB";
@@ -106,7 +101,6 @@ class ProductCategoryResourceIT {
     public static ProductCategory createEntity(EntityManager em) {
         ProductCategory productCategory = new ProductCategory()
             .name(DEFAULT_NAME)
-            .price(DEFAULT_PRICE)
             .description(DEFAULT_DESCRIPTION)
             .imageUri(DEFAULT_IMAGE_URI);
         // Add required entity
@@ -131,7 +125,6 @@ class ProductCategoryResourceIT {
     public static ProductCategory createUpdatedEntity(EntityManager em) {
         ProductCategory productCategory = new ProductCategory()
             .name(UPDATED_NAME)
-            .price(UPDATED_PRICE)
             .description(UPDATED_DESCRIPTION)
             .imageUri(UPDATED_IMAGE_URI);
         // Add required entity
@@ -216,27 +209,6 @@ class ProductCategoryResourceIT {
 
     @Test
     @Transactional
-    void checkPriceIsRequired() throws Exception {
-        long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(productCategorySearchRepository.findAll());
-        // set the field null
-        productCategory.setPrice(null);
-
-        // Create the ProductCategory, which fails.
-        ProductCategoryDTO productCategoryDTO = productCategoryMapper.toDto(productCategory);
-
-        restProductCategoryMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(productCategoryDTO)))
-            .andExpect(status().isBadRequest());
-
-        assertSameRepositoryCount(databaseSizeBeforeTest);
-
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(productCategorySearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
-    }
-
-    @Test
-    @Transactional
     void getAllProductCategories() throws Exception {
         // Initialize the database
         insertedProductCategory = productCategoryRepository.saveAndFlush(productCategory);
@@ -248,7 +220,6 @@ class ProductCategoryResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(productCategory.getId().toString())))
             .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
-            .andExpect(jsonPath("$.[*].price").value(hasItem(sameNumber(DEFAULT_PRICE))))
             .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION)))
             .andExpect(jsonPath("$.[*].imageUri").value(hasItem(DEFAULT_IMAGE_URI)));
     }
@@ -283,7 +254,6 @@ class ProductCategoryResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(productCategory.getId().toString()))
             .andExpect(jsonPath("$.name").value(DEFAULT_NAME))
-            .andExpect(jsonPath("$.price").value(sameNumber(DEFAULT_PRICE)))
             .andExpect(jsonPath("$.description").value(DEFAULT_DESCRIPTION))
             .andExpect(jsonPath("$.imageUri").value(DEFAULT_IMAGE_URI));
     }
@@ -309,7 +279,7 @@ class ProductCategoryResourceIT {
         ProductCategory updatedProductCategory = productCategoryRepository.findById(productCategory.getId()).orElseThrow();
         // Disconnect from session so that the updates on updatedProductCategory are not directly saved in db
         em.detach(updatedProductCategory);
-        updatedProductCategory.name(UPDATED_NAME).price(UPDATED_PRICE).description(UPDATED_DESCRIPTION).imageUri(UPDATED_IMAGE_URI);
+        updatedProductCategory.name(UPDATED_NAME).description(UPDATED_DESCRIPTION).imageUri(UPDATED_IMAGE_URI);
         ProductCategoryDTO productCategoryDTO = productCategoryMapper.toDto(updatedProductCategory);
 
         restProductCategoryMockMvc
@@ -419,7 +389,7 @@ class ProductCategoryResourceIT {
         ProductCategory partialUpdatedProductCategory = new ProductCategory();
         partialUpdatedProductCategory.setId(productCategory.getId());
 
-        partialUpdatedProductCategory.price(UPDATED_PRICE).description(UPDATED_DESCRIPTION);
+        partialUpdatedProductCategory.description(UPDATED_DESCRIPTION).imageUri(UPDATED_IMAGE_URI);
 
         restProductCategoryMockMvc
             .perform(
@@ -450,7 +420,7 @@ class ProductCategoryResourceIT {
         ProductCategory partialUpdatedProductCategory = new ProductCategory();
         partialUpdatedProductCategory.setId(productCategory.getId());
 
-        partialUpdatedProductCategory.name(UPDATED_NAME).price(UPDATED_PRICE).description(UPDATED_DESCRIPTION).imageUri(UPDATED_IMAGE_URI);
+        partialUpdatedProductCategory.name(UPDATED_NAME).description(UPDATED_DESCRIPTION).imageUri(UPDATED_IMAGE_URI);
 
         restProductCategoryMockMvc
             .perform(
@@ -577,7 +547,6 @@ class ProductCategoryResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(productCategory.getId().toString())))
             .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
-            .andExpect(jsonPath("$.[*].price").value(hasItem(sameNumber(DEFAULT_PRICE))))
             .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION)))
             .andExpect(jsonPath("$.[*].imageUri").value(hasItem(DEFAULT_IMAGE_URI)));
     }

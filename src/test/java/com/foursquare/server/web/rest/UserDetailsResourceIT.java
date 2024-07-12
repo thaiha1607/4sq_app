@@ -51,8 +51,8 @@ import org.springframework.transaction.annotation.Transactional;
 @WithMockUser
 class UserDetailsResourceIT {
 
-    private static final String DEFAULT_PHONE = "+16098929020021";
-    private static final String UPDATED_PHONE = "+39173231";
+    private static final String DEFAULT_PHONE = "+06098929020021";
+    private static final String UPDATED_PHONE = "+29173231";
 
     private static final String ENTITY_API_URL = "/api/user-details";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";

@@ -2,7 +2,6 @@ package com.foursquare.server.service.dto;
 
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
@@ -16,10 +15,6 @@ public class ProductCategoryDTO implements Serializable {
     private UUID id;
 
     private String name;
-
-    @NotNull
-    @DecimalMin(value = "0")
-    private BigDecimal price;
 
     private String description;
 
@@ -53,14 +48,6 @@ public class ProductCategoryDTO implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
     }
 
     public String getDescription() {
@@ -154,7 +141,6 @@ public class ProductCategoryDTO implements Serializable {
         return "ProductCategoryDTO{" +
             "id='" + getId() + "'" +
             ", name='" + getName() + "'" +
-            ", price=" + getPrice() +
             ", description='" + getDescription() + "'" +
             ", imageUri='" + getImageUri() + "'" +
             ", createdBy='" + getCreatedBy() + "'" +

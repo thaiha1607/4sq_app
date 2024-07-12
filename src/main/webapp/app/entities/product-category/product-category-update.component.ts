@@ -69,10 +69,6 @@ export default defineComponent({
     const validations = useValidation();
     const validationRules = {
       name: {},
-      price: {
-        required: validations.required('This field is required.'),
-        min: validations.minValue('This field should be at least 0.', 0),
-      },
       description: {},
       imageUri: {},
       createdBy: {},

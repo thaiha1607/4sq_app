@@ -17,6 +17,12 @@
             <span>{{ product.description }}</span>
           </dd>
           <dt>
+            <span>Price</span>
+          </dt>
+          <dd>
+            <span>{{ product.price }}</span>
+          </dd>
+          <dt>
             <span>Provider</span>
           </dt>
           <dd>

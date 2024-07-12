@@ -30,7 +30,7 @@ describe('ProductImage e2e test', () => {
     cy.authenticatedRequest({
       method: 'POST',
       url: '/api/products',
-      body: {"name":"even","description":"above bonfire","provider":"meanwhile wiggly ugh"},
+      body: {"name":"gleefully oof hm","description":"in while","price":9937.87,"provider":"who aw"},
     }).then(({ body }) => {
       product = body;
     });

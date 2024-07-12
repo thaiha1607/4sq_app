@@ -37,6 +37,7 @@ describe('Service Tests', () => {
         '9fec3727-3421-4967-b213-ba36557ca194',
         'AAAAAAA',
         'AAAAAAA',
+        0,
         'AAAAAAA',
         'AAAAAAA',
         currentDate,
@@ -110,6 +111,7 @@ describe('Service Tests', () => {
           {
             name: 'BBBBBB',
             description: 'BBBBBB',
+            price: 1,
             provider: 'BBBBBB',
             createdBy: 'BBBBBB',
             createdDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
@@ -149,8 +151,9 @@ describe('Service Tests', () => {
           {
             name: 'BBBBBB',
             description: 'BBBBBB',
-            provider: 'BBBBBB',
-            createdBy: 'BBBBBB',
+            price: 1,
+            createdDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
+            lastModifiedBy: 'BBBBBB',
             lastModifiedDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
           },
           new Product(),
@@ -187,6 +190,7 @@ describe('Service Tests', () => {
           {
             name: 'BBBBBB',
             description: 'BBBBBB',
+            price: 1,
             provider: 'BBBBBB',
             createdBy: 'BBBBBB',
             createdDate: dayjs(currentDate).format(DATE_TIME_FORMAT),

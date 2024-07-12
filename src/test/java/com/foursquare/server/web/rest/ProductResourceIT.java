@@ -2,6 +2,7 @@ package com.foursquare.server.web.rest;
 
 import static com.foursquare.server.domain.ProductAsserts.*;
 import static com.foursquare.server.web.rest.TestUtil.createUpdateProxyForBean;
+import static com.foursquare.server.web.rest.TestUtil.sameNumber;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.hasItem;
@@ -18,6 +19,7 @@ import com.foursquare.server.service.ProductService;
 import com.foursquare.server.service.dto.ProductDTO;
 import com.foursquare.server.service.mapper.ProductMapper;
 import jakarta.persistence.EntityManager;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -55,6 +57,9 @@ class ProductResourceIT {
 
     private static final String DEFAULT_DESCRIPTION = "AAAAAAAAAA";
     private static final String UPDATED_DESCRIPTION = "BBBBBBBBBB";
+
+    private static final BigDecimal DEFAULT_PRICE = new BigDecimal(0);
+    private static final BigDecimal UPDATED_PRICE = new BigDecimal(1);
 
     private static final String DEFAULT_PROVIDER = "AAAAAAAAAA";
     private static final String UPDATED_PROVIDER = "BBBBBBBBBB";
@@ -98,7 +103,7 @@ class ProductResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Product createEntity(EntityManager em) {
-        Product product = new Product().name(DEFAULT_NAME).description(DEFAULT_DESCRIPTION).provider(DEFAULT_PROVIDER);
+        Product product = new Product().name(DEFAULT_NAME).description(DEFAULT_DESCRIPTION).price(DEFAULT_PRICE).provider(DEFAULT_PROVIDER);
         return product;
     }
 
@@ -109,7 +114,7 @@ class ProductResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Product createUpdatedEntity(EntityManager em) {
-        Product product = new Product().name(UPDATED_NAME).description(UPDATED_DESCRIPTION).provider(UPDATED_PROVIDER);
+        Product product = new Product().name(UPDATED_NAME).description(UPDATED_DESCRIPTION).price(UPDATED_PRICE).provider(UPDATED_PROVIDER);
         return product;
     }
 
@@ -203,6 +208,27 @@ class ProductResourceIT {
 
     @Test
     @Transactional
+    void checkPriceIsRequired() throws Exception {
+        long databaseSizeBeforeTest = getRepositoryCount();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(productSearchRepository.findAll());
+        // set the field null
+        product.setPrice(null);
+
+        // Create the Product, which fails.
+        ProductDTO productDTO = productMapper.toDto(product);
+
+        restProductMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(productDTO)))
+            .andExpect(status().isBadRequest());
+
+        assertSameRepositoryCount(databaseSizeBeforeTest);
+
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(productSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
+    }
+
+    @Test
+    @Transactional
     void getAllProducts() throws Exception {
         // Initialize the database
         insertedProduct = productRepository.saveAndFlush(product);
@@ -215,6 +241,7 @@ class ProductResourceIT {
             .andExpect(jsonPath("$.[*].id").value(hasItem(product.getId().toString())))
             .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
             .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION)))
+            .andExpect(jsonPath("$.[*].price").value(hasItem(sameNumber(DEFAULT_PRICE))))
             .andExpect(jsonPath("$.[*].provider").value(hasItem(DEFAULT_PROVIDER)));
     }
 
@@ -249,6 +276,7 @@ class ProductResourceIT {
             .andExpect(jsonPath("$.id").value(product.getId().toString()))
             .andExpect(jsonPath("$.name").value(DEFAULT_NAME))
             .andExpect(jsonPath("$.description").value(DEFAULT_DESCRIPTION))
+            .andExpect(jsonPath("$.price").value(sameNumber(DEFAULT_PRICE)))
             .andExpect(jsonPath("$.provider").value(DEFAULT_PROVIDER));
     }
 
@@ -273,7 +301,7 @@ class ProductResourceIT {
         Product updatedProduct = productRepository.findById(product.getId()).orElseThrow();
         // Disconnect from session so that the updates on updatedProduct are not directly saved in db
         em.detach(updatedProduct);
-        updatedProduct.name(UPDATED_NAME).description(UPDATED_DESCRIPTION).provider(UPDATED_PROVIDER);
+        updatedProduct.name(UPDATED_NAME).description(UPDATED_DESCRIPTION).price(UPDATED_PRICE).provider(UPDATED_PROVIDER);
         ProductDTO productDTO = productMapper.toDto(updatedProduct);
 
         restProductMockMvc
@@ -377,7 +405,7 @@ class ProductResourceIT {
         Product partialUpdatedProduct = new Product();
         partialUpdatedProduct.setId(product.getId());
 
-        partialUpdatedProduct.name(UPDATED_NAME);
+        partialUpdatedProduct.name(UPDATED_NAME).provider(UPDATED_PROVIDER);
 
         restProductMockMvc
             .perform(
@@ -405,7 +433,7 @@ class ProductResourceIT {
         Product partialUpdatedProduct = new Product();
         partialUpdatedProduct.setId(product.getId());
 
-        partialUpdatedProduct.name(UPDATED_NAME).description(UPDATED_DESCRIPTION).provider(UPDATED_PROVIDER);
+        partialUpdatedProduct.name(UPDATED_NAME).description(UPDATED_DESCRIPTION).price(UPDATED_PRICE).provider(UPDATED_PROVIDER);
 
         restProductMockMvc
             .perform(
@@ -530,6 +558,7 @@ class ProductResourceIT {
             .andExpect(jsonPath("$.[*].id").value(hasItem(product.getId().toString())))
             .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
             .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION)))
+            .andExpect(jsonPath("$.[*].price").value(hasItem(sameNumber(DEFAULT_PRICE))))
             .andExpect(jsonPath("$.[*].provider").value(hasItem(DEFAULT_PROVIDER)));
     }
 

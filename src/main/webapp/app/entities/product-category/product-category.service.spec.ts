@@ -36,7 +36,6 @@ describe('Service Tests', () => {
       elemDefault = new ProductCategory(
         '9fec3727-3421-4967-b213-ba36557ca194',
         'AAAAAAA',
-        0,
         'AAAAAAA',
         'AAAAAAA',
         'AAAAAAA',
@@ -110,7 +109,6 @@ describe('Service Tests', () => {
         const returnedFromService = Object.assign(
           {
             name: 'BBBBBB',
-            price: 1,
             description: 'BBBBBB',
             imageUri: 'BBBBBB',
             createdBy: 'BBBBBB',
@@ -149,10 +147,9 @@ describe('Service Tests', () => {
       it('should partial update a ProductCategory', async () => {
         const patchObject = Object.assign(
           {
-            name: 'BBBBBB',
             description: 'BBBBBB',
-            imageUri: 'BBBBBB',
             createdBy: 'BBBBBB',
+            createdDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
             lastModifiedBy: 'BBBBBB',
           },
           new ProductCategory(),
@@ -188,7 +185,6 @@ describe('Service Tests', () => {
         const returnedFromService = Object.assign(
           {
             name: 'BBBBBB',
-            price: 1,
             description: 'BBBBBB',
             imageUri: 'BBBBBB',
             createdBy: 'BBBBBB',

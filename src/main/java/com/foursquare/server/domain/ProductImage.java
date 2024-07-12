@@ -46,7 +46,7 @@ public class ProductImage extends AbstractAuditingEntity<UUID> implements Serial
 
     @ManyToOne(optional = false)
     @NotNull
-    @JsonIgnoreProperties(value = { "productCategories", "productImages", "tags" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "productCategories", "productImages", "comments", "tags" }, allowSetters = true)
     private Product product;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here

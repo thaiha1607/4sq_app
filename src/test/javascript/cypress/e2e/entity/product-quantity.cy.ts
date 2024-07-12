@@ -39,7 +39,7 @@ describe('ProductQuantity e2e test', () => {
     cy.authenticatedRequest({
       method: 'POST',
       url: '/api/product-categories',
-      body: {"name":"concert boohoo whereas","price":4279.91,"description":"physical","imageUri":"boohoo fooey advocacy"},
+      body: {"name":"nor a","description":"get entire junior","imageUri":"so"},
     }).then(({ body }) => {
       productCategory = body;
     });

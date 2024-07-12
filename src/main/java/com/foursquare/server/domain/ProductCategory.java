@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 import org.hibernate.annotations.Cache;
@@ -33,11 +32,6 @@ public class ProductCategory extends AbstractAuditingEntity<UUID> implements Ser
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String name;
 
-    @NotNull
-    @DecimalMin(value = "0")
-    @Column(name = "price", precision = 21, scale = 2, nullable = false)
-    private BigDecimal price;
-
     @Column(name = "description")
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String description;
@@ -59,7 +53,7 @@ public class ProductCategory extends AbstractAuditingEntity<UUID> implements Ser
 
     @ManyToOne(optional = false)
     @NotNull
-    @JsonIgnoreProperties(value = { "productCategories", "productImages", "tags" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "productCategories", "productImages", "comments", "tags" }, allowSetters = true)
     private Product product;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
@@ -88,19 +82,6 @@ public class ProductCategory extends AbstractAuditingEntity<UUID> implements Ser
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public BigDecimal getPrice() {
-        return this.price;
-    }
-
-    public ProductCategory price(BigDecimal price) {
-        this.setPrice(price);
-        return this;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
     }
 
     public String getDescription() {
@@ -221,7 +202,6 @@ public class ProductCategory extends AbstractAuditingEntity<UUID> implements Ser
         return "ProductCategory{" +
             "id=" + getId() +
             ", name='" + getName() + "'" +
-            ", price=" + getPrice() +
             ", description='" + getDescription() + "'" +
             ", imageUri='" + getImageUri() + "'" +
             ", createdBy='" + getCreatedBy() + "'" +

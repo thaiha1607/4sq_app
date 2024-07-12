@@ -1,5 +1,6 @@
 package com.foursquare.server.domain;
 
+import static com.foursquare.server.domain.AssertUtils.bigDecimalCompareTo;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ProductAsserts {
@@ -51,6 +52,7 @@ public class ProductAsserts {
             .as("Verify Product relevant properties")
             .satisfies(e -> assertThat(e.getName()).as("check name").isEqualTo(actual.getName()))
             .satisfies(e -> assertThat(e.getDescription()).as("check description").isEqualTo(actual.getDescription()))
+            .satisfies(e -> assertThat(e.getPrice()).as("check price").usingComparator(bigDecimalCompareTo).isEqualTo(actual.getPrice()))
             .satisfies(e -> assertThat(e.getProvider()).as("check provider").isEqualTo(actual.getProvider()));
     }
 
