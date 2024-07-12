@@ -8,6 +8,7 @@ import com.foursquare.server.service.mapper.CommentMapper;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
@@ -122,7 +123,7 @@ public class CommentService {
      * @return the entity.
      */
     @Transactional(readOnly = true)
-    public Optional<CommentDTO> findOne(Long id) {
+    public Optional<CommentDTO> findOne(UUID id) {
         log.debug("Request to get Comment : {}", id);
         return commentRepository.findOneWithEagerRelationships(id).map(commentMapper::toDto);
     }
@@ -132,7 +133,7 @@ public class CommentService {
      *
      * @param id the id of the entity.
      */
-    public void delete(Long id) {
+    public void delete(UUID id) {
         log.debug("Request to delete Comment : {}", id);
         commentRepository.deleteById(id);
         commentSearchRepository.deleteFromIndexById(id);

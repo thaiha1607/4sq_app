@@ -18,7 +18,7 @@ vitest.mock('vue-router', () => ({
   useRouter: () => ({ go: routerGoMock }),
 }));
 
-const commentSample = { id: 123 };
+const commentSample = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
 
 describe('Component Tests', () => {
   let alertService: AlertService;
@@ -59,7 +59,7 @@ describe('Component Tests', () => {
         commentServiceStub.find.resolves(commentSample);
         route = {
           params: {
-            commentId: '' + 123,
+            commentId: '' + '9fec3727-3421-4967-b213-ba36557ca194',
           },
         };
         const wrapper = shallowMount(CommentDetails, { global: mountOptions });

@@ -12,6 +12,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -74,7 +75,7 @@ public class CommentResource {
      */
     @PutMapping("/{id}")
     public ResponseEntity<CommentDTO> updateComment(
-        @PathVariable(value = "id", required = false) final Long id,
+        @PathVariable(value = "id", required = false) final UUID id,
         @Valid @RequestBody CommentDTO commentDTO
     ) throws URISyntaxException {
         log.debug("REST request to update Comment : {}, {}", id, commentDTO);
@@ -108,7 +109,7 @@ public class CommentResource {
      */
     @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
     public ResponseEntity<CommentDTO> partialUpdateComment(
-        @PathVariable(value = "id", required = false) final Long id,
+        @PathVariable(value = "id", required = false) final UUID id,
         @NotNull @RequestBody CommentDTO commentDTO
     ) throws URISyntaxException {
         log.debug("REST request to partial update Comment partially : {}, {}", id, commentDTO);
@@ -150,7 +151,7 @@ public class CommentResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the commentDTO, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<CommentDTO> getComment(@PathVariable("id") Long id) {
+    public ResponseEntity<CommentDTO> getComment(@PathVariable("id") UUID id) {
         log.debug("REST request to get Comment : {}", id);
         Optional<CommentDTO> commentDTO = commentService.findOne(id);
         return ResponseUtil.wrapOrNotFound(commentDTO);
@@ -163,7 +164,7 @@ public class CommentResource {
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteComment(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> deleteComment(@PathVariable("id") UUID id) {
         log.debug("REST request to delete Comment : {}", id);
         commentService.delete(id);
         return ResponseEntity.noContent()

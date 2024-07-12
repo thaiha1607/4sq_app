@@ -19,7 +19,7 @@ export default class CommentService {
     });
   }
 
-  public find(id: number): Promise<IComment> {
+  public find(id: string): Promise<IComment> {
     return new Promise<IComment>((resolve, reject) => {
       axios
         .get(`${baseApiUrl}/${id}`)
@@ -45,7 +45,7 @@ export default class CommentService {
     });
   }
 
-  public delete(id: number): Promise<any> {
+  public delete(id: string): Promise<any> {
     return new Promise<any>((resolve, reject) => {
       axios
         .delete(`${baseApiUrl}/${id}`)

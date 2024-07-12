@@ -2,7 +2,7 @@ import { type IUser } from '@/shared/model/user.model';
 import { type IProduct } from '@/shared/model/product.model';
 
 export interface IComment {
-  id?: number;
+  id?: string;
   rating?: number | null;
   content?: string | null;
   createdBy?: string;
@@ -15,7 +15,7 @@ export interface IComment {
 
 export class Comment implements IComment {
   constructor(
-    public id?: number,
+    public id?: string,
     public rating?: number | null,
     public content?: string | null,
     public createdBy?: string,

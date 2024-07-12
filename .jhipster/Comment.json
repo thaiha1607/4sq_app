@@ -11,6 +11,10 @@
   "enableAudit": true,
   "fields": [
     {
+      "fieldName": "id",
+      "fieldType": "UUID"
+    },
+    {
       "fieldName": "rating",
       "fieldType": "Integer",
       "fieldValidateRules": ["min", "max"],

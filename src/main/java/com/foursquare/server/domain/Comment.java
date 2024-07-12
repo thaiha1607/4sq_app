@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.UUID;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.springframework.data.domain.Persistable;
@@ -18,15 +19,14 @@ import org.springframework.data.domain.Persistable;
 @JsonIgnoreProperties(value = { "new" })
 @org.springframework.data.elasticsearch.annotations.Document(indexName = "comment")
 @SuppressWarnings("common-java:DuplicatedBlocks")
-public class Comment extends AbstractAuditingEntity<Long> implements Serializable, Persistable<Long> {
+public class Comment extends AbstractAuditingEntity<UUID> implements Serializable, Persistable<UUID> {
 
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
-    @SequenceGenerator(name = "sequenceGenerator")
+    @GeneratedValue
     @Column(name = "id")
-    private Long id;
+    private UUID id;
 
     @Min(value = 1)
     @Max(value = 5)
@@ -56,16 +56,16 @@ public class Comment extends AbstractAuditingEntity<Long> implements Serializabl
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
-    public Long getId() {
+    public UUID getId() {
         return this.id;
     }
 
-    public Comment id(Long id) {
+    public Comment id(UUID id) {
         this.setId(id);
         return this;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

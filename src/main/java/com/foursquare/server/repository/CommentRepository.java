@@ -3,6 +3,7 @@ package com.foursquare.server.repository;
 import com.foursquare.server.domain.Comment;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.javers.spring.annotation.JaversSpringDataAuditable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,11 +16,11 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 @JaversSpringDataAuditable
-public interface CommentRepository extends JpaRepository<Comment, Long> {
+public interface CommentRepository extends JpaRepository<Comment, UUID> {
     @Query("select comment from Comment comment where comment.user.login = ?#{authentication.name}")
     List<Comment> findByUserIsCurrentUser();
 
-    default Optional<Comment> findOneWithEagerRelationships(Long id) {
+    default Optional<Comment> findOneWithEagerRelationships(UUID id) {
         return this.findOneWithToOneRelationships(id);
     }
 
@@ -41,5 +42,5 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     List<Comment> findAllWithToOneRelationships();
 
     @Query("select comment from Comment comment left join fetch comment.user where comment.id =:id")
-    Optional<Comment> findOneWithToOneRelationships(@Param("id") Long id);
+    Optional<Comment> findOneWithToOneRelationships(@Param("id") UUID id);
 }

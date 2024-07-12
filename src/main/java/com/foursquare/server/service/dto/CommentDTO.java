@@ -4,6 +4,7 @@ import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * A DTO for the {@link com.foursquare.server.domain.Comment} entity.
@@ -11,7 +12,7 @@ import java.util.Objects;
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class CommentDTO implements Serializable {
 
-    private Long id;
+    private UUID id;
 
     @Min(value = 1)
     @Max(value = 5)
@@ -33,11 +34,11 @@ public class CommentDTO implements Serializable {
     @NotNull
     private ProductDTO product;
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -130,7 +131,7 @@ public class CommentDTO implements Serializable {
     @Override
     public String toString() {
         return "CommentDTO{" +
-            "id=" + getId() +
+            "id='" + getId() + "'" +
             ", rating=" + getRating() +
             ", content='" + getContent() + "'" +
             ", createdBy='" + getCreatedBy() + "'" +

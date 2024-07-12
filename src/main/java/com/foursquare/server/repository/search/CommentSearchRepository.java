@@ -3,6 +3,7 @@ package com.foursquare.server.repository.search;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryStringQuery;
 import com.foursquare.server.domain.Comment;
 import com.foursquare.server.repository.CommentRepository;
+import java.util.UUID;
 import java.util.stream.Stream;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
@@ -14,7 +15,7 @@ import org.springframework.scheduling.annotation.Async;
 /**
  * Spring Data Elasticsearch repository for the {@link Comment} entity.
  */
-public interface CommentSearchRepository extends ElasticsearchRepository<Comment, Long>, CommentSearchRepositoryInternal {}
+public interface CommentSearchRepository extends ElasticsearchRepository<Comment, UUID>, CommentSearchRepositoryInternal {}
 
 interface CommentSearchRepositoryInternal {
     Stream<Comment> search(String query);
@@ -25,7 +26,7 @@ interface CommentSearchRepositoryInternal {
     void index(Comment entity);
 
     @Async
-    void deleteFromIndexById(Long id);
+    void deleteFromIndexById(UUID id);
 }
 
 class CommentSearchRepositoryInternalImpl implements CommentSearchRepositoryInternal {
@@ -55,7 +56,7 @@ class CommentSearchRepositoryInternalImpl implements CommentSearchRepositoryInte
     }
 
     @Override
-    public void deleteFromIndexById(Long id) {
+    public void deleteFromIndexById(UUID id) {
         elasticsearchTemplate.delete(String.valueOf(id), Comment.class);
     }
 }

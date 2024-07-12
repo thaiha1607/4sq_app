@@ -51,7 +51,7 @@ export default defineComponent({
       retrieveComments();
     };
 
-    const removeId: Ref<number> = ref(null);
+    const removeId: Ref<string> = ref(null);
     const removeEntity = ref<any>(null);
     const prepareRemove = (instance: IComment) => {
       removeId.value = instance.id;

@@ -33,7 +33,7 @@ describe('Service Tests', () => {
     beforeEach(() => {
       service = new CommentService();
       currentDate = new Date();
-      elemDefault = new Comment(123, 0, 'AAAAAAA', 'AAAAAAA', currentDate, 'AAAAAAA', currentDate);
+      elemDefault = new Comment('9fec3727-3421-4967-b213-ba36557ca194', 0, 'AAAAAAA', 'AAAAAAA', currentDate, 'AAAAAAA', currentDate);
     });
 
     describe('Service methods', () => {
@@ -47,7 +47,7 @@ describe('Service Tests', () => {
         );
         axiosStub.get.resolves({ data: returnedFromService });
 
-        return service.find(123).then(res => {
+        return service.find('9fec3727-3421-4967-b213-ba36557ca194').then(res => {
           expect(res).toMatchObject(elemDefault);
         });
       });
@@ -55,7 +55,7 @@ describe('Service Tests', () => {
       it('should not find an element', async () => {
         axiosStub.get.rejects(error);
         return service
-          .find(123)
+          .find('9fec3727-3421-4967-b213-ba36557ca194')
           .then()
           .catch(err => {
             expect(err).toMatchObject(error);
@@ -65,7 +65,7 @@ describe('Service Tests', () => {
       it('should create a Comment', async () => {
         const returnedFromService = Object.assign(
           {
-            id: 123,
+            id: '9fec3727-3421-4967-b213-ba36557ca194',
             createdDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
             lastModifiedDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
           },
@@ -208,7 +208,7 @@ describe('Service Tests', () => {
 
       it('should delete a Comment', async () => {
         axiosStub.delete.resolves({ ok: true });
-        return service.delete(123).then(res => {
+        return service.delete('9fec3727-3421-4967-b213-ba36557ca194').then(res => {
           expect(res.ok).toBeTruthy();
         });
       });
@@ -217,7 +217,7 @@ describe('Service Tests', () => {
         axiosStub.delete.rejects(error);
 
         return service
-          .delete(123)
+          .delete('9fec3727-3421-4967-b213-ba36557ca194')
           .then()
           .catch(err => {
             expect(err).toMatchObject(error);

@@ -22,9 +22,8 @@ import com.foursquare.server.service.mapper.CommentMapper;
 import jakarta.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 import org.assertj.core.util.IterableUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -62,9 +61,6 @@ class CommentResourceIT {
     private static final String ENTITY_API_URL = "/api/comments";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
     private static final String ENTITY_SEARCH_API_URL = "/api/comments/_search";
-
-    private static Random random = new Random();
-    private static AtomicLong longCount = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
 
     @Autowired
     private ObjectMapper om;
@@ -179,7 +175,7 @@ class CommentResourceIT {
     @Transactional
     void createCommentWithExistingId() throws Exception {
         // Create the Comment with an existing ID
-        comment.setId(1L);
+        insertedComment = commentRepository.saveAndFlush(comment);
         CommentDTO commentDTO = commentMapper.toDto(comment);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
@@ -207,7 +203,7 @@ class CommentResourceIT {
             .perform(get(ENTITY_API_URL + "?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(comment.getId().intValue())))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(comment.getId().toString())))
             .andExpect(jsonPath("$.[*].rating").value(hasItem(DEFAULT_RATING)))
             .andExpect(jsonPath("$.[*].content").value(hasItem(DEFAULT_CONTENT)));
     }
@@ -240,7 +236,7 @@ class CommentResourceIT {
             .perform(get(ENTITY_API_URL_ID, comment.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.id").value(comment.getId().intValue()))
+            .andExpect(jsonPath("$.id").value(comment.getId().toString()))
             .andExpect(jsonPath("$.rating").value(DEFAULT_RATING))
             .andExpect(jsonPath("$.content").value(DEFAULT_CONTENT));
     }
@@ -249,7 +245,7 @@ class CommentResourceIT {
     @Transactional
     void getNonExistingComment() throws Exception {
         // Get the comment
-        restCommentMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());
+        restCommentMockMvc.perform(get(ENTITY_API_URL_ID, UUID.randomUUID().toString())).andExpect(status().isNotFound());
     }
 
     @Test
@@ -296,7 +292,7 @@ class CommentResourceIT {
     void putNonExistingComment() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(commentSearchRepository.findAll());
-        comment.setId(longCount.incrementAndGet());
+        comment.setId(UUID.randomUUID());
 
         // Create the Comment
         CommentDTO commentDTO = commentMapper.toDto(comment);
@@ -319,7 +315,7 @@ class CommentResourceIT {
     void putWithIdMismatchComment() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(commentSearchRepository.findAll());
-        comment.setId(longCount.incrementAndGet());
+        comment.setId(UUID.randomUUID());
 
         // Create the Comment
         CommentDTO commentDTO = commentMapper.toDto(comment);
@@ -327,9 +323,7 @@ class CommentResourceIT {
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restCommentMockMvc
             .perform(
-                put(ENTITY_API_URL_ID, longCount.incrementAndGet())
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(om.writeValueAsBytes(commentDTO))
+                put(ENTITY_API_URL_ID, UUID.randomUUID()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(commentDTO))
             )
             .andExpect(status().isBadRequest());
 
@@ -344,7 +338,7 @@ class CommentResourceIT {
     void putWithMissingIdPathParamComment() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(commentSearchRepository.findAll());
-        comment.setId(longCount.incrementAndGet());
+        comment.setId(UUID.randomUUID());
 
         // Create the Comment
         CommentDTO commentDTO = commentMapper.toDto(comment);
@@ -421,7 +415,7 @@ class CommentResourceIT {
     void patchNonExistingComment() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(commentSearchRepository.findAll());
-        comment.setId(longCount.incrementAndGet());
+        comment.setId(UUID.randomUUID());
 
         // Create the Comment
         CommentDTO commentDTO = commentMapper.toDto(comment);
@@ -446,7 +440,7 @@ class CommentResourceIT {
     void patchWithIdMismatchComment() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(commentSearchRepository.findAll());
-        comment.setId(longCount.incrementAndGet());
+        comment.setId(UUID.randomUUID());
 
         // Create the Comment
         CommentDTO commentDTO = commentMapper.toDto(comment);
@@ -454,7 +448,7 @@ class CommentResourceIT {
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restCommentMockMvc
             .perform(
-                patch(ENTITY_API_URL_ID, longCount.incrementAndGet())
+                patch(ENTITY_API_URL_ID, UUID.randomUUID())
                     .contentType("application/merge-patch+json")
                     .content(om.writeValueAsBytes(commentDTO))
             )
@@ -471,7 +465,7 @@ class CommentResourceIT {
     void patchWithMissingIdPathParamComment() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(commentSearchRepository.findAll());
-        comment.setId(longCount.incrementAndGet());
+        comment.setId(UUID.randomUUID());
 
         // Create the Comment
         CommentDTO commentDTO = commentMapper.toDto(comment);
@@ -501,7 +495,7 @@ class CommentResourceIT {
 
         // Delete the comment
         restCommentMockMvc
-            .perform(delete(ENTITY_API_URL_ID, comment.getId()).accept(MediaType.APPLICATION_JSON))
+            .perform(delete(ENTITY_API_URL_ID, comment.getId().toString()).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item
@@ -522,7 +516,7 @@ class CommentResourceIT {
             .perform(get(ENTITY_SEARCH_API_URL + "?query=id:" + comment.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(comment.getId().intValue())))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(comment.getId().toString())))
             .andExpect(jsonPath("$.[*].rating").value(hasItem(DEFAULT_RATING)))
             .andExpect(jsonPath("$.[*].content").value(hasItem(DEFAULT_CONTENT)));
     }
