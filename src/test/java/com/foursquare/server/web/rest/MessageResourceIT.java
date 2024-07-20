@@ -190,6 +190,27 @@ class MessageResourceIT {
 
     @Test
     @Transactional
+    void checkContentIsRequired() throws Exception {
+        long databaseSizeBeforeTest = getRepositoryCount();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(messageSearchRepository.findAll());
+        // set the field null
+        message.setContent(null);
+
+        // Create the Message, which fails.
+        MessageDTO messageDTO = messageMapper.toDto(message);
+
+        restMessageMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(messageDTO)))
+            .andExpect(status().isBadRequest());
+
+        assertSameRepositoryCount(databaseSizeBeforeTest);
+
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(messageSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
+    }
+
+    @Test
+    @Transactional
     void getAllMessages() throws Exception {
         // Initialize the database
         insertedMessage = messageRepository.saveAndFlush(message);

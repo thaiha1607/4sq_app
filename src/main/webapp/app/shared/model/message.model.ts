@@ -4,7 +4,7 @@ import { type MessageType } from '@/shared/model/enumerations/message-type.model
 export interface IMessage {
   id?: string;
   type?: keyof typeof MessageType;
-  content?: string | null;
+  content?: string;
   isSeen?: boolean | null;
   createdBy?: string;
   createdDate?: Date;
@@ -17,7 +17,7 @@ export class Message implements IMessage {
   constructor(
     public id?: string,
     public type?: keyof typeof MessageType,
-    public content?: string | null,
+    public content?: string,
     public isSeen?: boolean | null,
     public createdBy?: string,
     public createdDate?: Date,

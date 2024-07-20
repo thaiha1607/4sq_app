@@ -233,14 +233,11 @@ describe('ProductCategory e2e test', () => {
     });
 
     it.skip('should create an instance of ProductCategory', () => {
-      cy.get(`[data-cy="name"]`).type('time scarce bleed');
-      cy.get(`[data-cy="name"]`).should('have.value', 'time scarce bleed');
+      cy.get(`[data-cy="name"]`).type('offensively aw verbalise');
+      cy.get(`[data-cy="name"]`).should('have.value', 'offensively aw verbalise');
 
-      cy.get(`[data-cy="description"]`).type('gosling insulate reasonable');
-      cy.get(`[data-cy="description"]`).should('have.value', 'gosling insulate reasonable');
-
-      cy.get(`[data-cy="imageUri"]`).type('wisely unlike maternity');
-      cy.get(`[data-cy="imageUri"]`).should('have.value', 'wisely unlike maternity');
+      cy.get(`[data-cy="imageUri"]`).type('mewl same');
+      cy.get(`[data-cy="imageUri"]`).should('have.value', 'mewl same');
 
       cy.get(`[data-cy="colour"]`).select(1);
       cy.get(`[data-cy="product"]`).select(1);

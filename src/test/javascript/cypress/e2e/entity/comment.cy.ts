@@ -15,7 +15,7 @@ describe('Comment e2e test', () => {
   const commentPageUrlPattern = new RegExp('/comment(\\?.*)?$');
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
-  // const commentSample = {};
+  // const commentSample = {"rating":2};
 
   let comment;
   // let user;

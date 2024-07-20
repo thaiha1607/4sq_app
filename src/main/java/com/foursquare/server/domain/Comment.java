@@ -28,9 +28,10 @@ public class Comment extends AbstractAuditingEntity<UUID> implements Serializabl
     @Column(name = "id")
     private UUID id;
 
+    @NotNull
     @Min(value = 1)
     @Max(value = 5)
-    @Column(name = "rating")
+    @Column(name = "rating", nullable = false)
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer rating;
 

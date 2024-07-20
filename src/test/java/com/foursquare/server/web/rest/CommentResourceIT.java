@@ -194,6 +194,27 @@ class CommentResourceIT {
 
     @Test
     @Transactional
+    void checkRatingIsRequired() throws Exception {
+        long databaseSizeBeforeTest = getRepositoryCount();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(commentSearchRepository.findAll());
+        // set the field null
+        comment.setRating(null);
+
+        // Create the Comment, which fails.
+        CommentDTO commentDTO = commentMapper.toDto(comment);
+
+        restCommentMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(commentDTO)))
+            .andExpect(status().isBadRequest());
+
+        assertSameRepositoryCount(databaseSizeBeforeTest);
+
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(commentSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
+    }
+
+    @Test
+    @Transactional
     void getAllComments() throws Exception {
         // Initialize the database
         insertedComment = commentRepository.saveAndFlush(comment);

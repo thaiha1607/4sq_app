@@ -51,7 +51,6 @@
           <tr>
             <th scope="row"><span>ID</span></th>
             <th scope="row"><span>Name</span></th>
-            <th scope="row"><span>Description</span></th>
             <th scope="row"><span>Image Uri</span></th>
             <th scope="row"><span>Created By</span></th>
             <th scope="row"><span>Created Date</span></th>
@@ -70,7 +69,6 @@
               }}</router-link>
             </td>
             <td>{{ productCategory.name }}</td>
-            <td>{{ productCategory.description }}</td>
             <td>{{ productCategory.imageUri }}</td>
             <td>{{ productCategory.createdBy }}</td>
             <td>{{ formatDateShort(productCategory.createdDate) || '' }}</td>

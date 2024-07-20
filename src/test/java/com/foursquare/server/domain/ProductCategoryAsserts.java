@@ -50,7 +50,6 @@ public class ProductCategoryAsserts {
         assertThat(expected)
             .as("Verify ProductCategory relevant properties")
             .satisfies(e -> assertThat(e.getName()).as("check name").isEqualTo(actual.getName()))
-            .satisfies(e -> assertThat(e.getDescription()).as("check description").isEqualTo(actual.getDescription()))
             .satisfies(e -> assertThat(e.getImageUri()).as("check imageUri").isEqualTo(actual.getImageUri()));
     }
 

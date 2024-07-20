@@ -30,7 +30,7 @@ describe('Product e2e test', () => {
     cy.authenticatedRequest({
       method: 'POST',
       url: '/api/product-categories',
-      body: {"name":"phew feast","description":"what swiftly by","imageUri":"justly of while"},
+      body: {"name":"maternity eggnog finally","imageUri":"uncommon"},
     }).then(({ body }) => {
       productCategory = body;
     });

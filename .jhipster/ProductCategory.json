@@ -19,10 +19,6 @@
       "fieldType": "String"
     },
     {
-      "fieldName": "description",
-      "fieldType": "String"
-    },
-    {
       "fieldName": "imageUri",
       "fieldType": "String"
     },

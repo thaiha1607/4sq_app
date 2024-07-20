@@ -18,6 +18,7 @@ public class MessageDTO implements Serializable {
     @NotNull
     private MessageType type;
 
+    @NotNull
     private String content;
 
     private Boolean isSeen;

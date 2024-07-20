@@ -18,6 +18,7 @@
               data-cy="rating"
               :class="{ valid: !v$.rating.$invalid, invalid: v$.rating.$invalid }"
               v-model.number="v$.rating.$model"
+              required
             />
             <div v-if="v$.rating.$anyDirty && v$.rating.$invalid">
               <small class="form-text text-danger" v-for="error of v$.rating.$errors" :key="error.$uid">{{ error.$message }}</small>

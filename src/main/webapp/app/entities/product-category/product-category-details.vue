@@ -11,12 +11,6 @@
             <span>{{ productCategory.name }}</span>
           </dd>
           <dt>
-            <span>Description</span>
-          </dt>
-          <dd>
-            <span>{{ productCategory.description }}</span>
-          </dd>
-          <dt>
             <span>Image Uri</span>
           </dt>
           <dd>

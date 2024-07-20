@@ -26,11 +26,17 @@
       "fieldType": "Integer",
       "fieldValidateRules": ["min", "max"],
       "fieldValidateRulesMax": "100",
-      "fieldValidateRulesMin": "0"
+      "fieldValidateRulesMin": "0",
+      "options": {
+        "defaultValue": true
+      }
     },
     {
       "fieldName": "isInternal",
-      "fieldType": "Boolean"
+      "fieldType": "Boolean",
+      "options": {
+        "defaultValue": true
+      }
     },
     {
       "fieldName": "note",

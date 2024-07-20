@@ -32,10 +32,6 @@ public class ProductCategory extends AbstractAuditingEntity<UUID> implements Ser
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String name;
 
-    @Column(name = "description")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
-    private String description;
-
     @Column(name = "image_uri")
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String imageUri;
@@ -82,19 +78,6 @@ public class ProductCategory extends AbstractAuditingEntity<UUID> implements Ser
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getDescription() {
-        return this.description;
-    }
-
-    public ProductCategory description(String description) {
-        this.setDescription(description);
-        return this;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public String getImageUri() {
@@ -202,7 +185,6 @@ public class ProductCategory extends AbstractAuditingEntity<UUID> implements Ser
         return "ProductCategory{" +
             "id=" + getId() +
             ", name='" + getName() + "'" +
-            ", description='" + getDescription() + "'" +
             ", imageUri='" + getImageUri() + "'" +
             ", createdBy='" + getCreatedBy() + "'" +
             ", createdDate='" + getCreatedDate() + "'" +

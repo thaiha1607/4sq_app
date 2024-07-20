@@ -23,18 +23,6 @@
             />
           </div>
           <div class="form-group">
-            <label class="form-control-label" for="product-category-description">Description</label>
-            <input
-              type="text"
-              class="form-control"
-              name="description"
-              id="product-category-description"
-              data-cy="description"
-              :class="{ valid: !v$.description.$invalid, invalid: v$.description.$invalid }"
-              v-model="v$.description.$model"
-            />
-          </div>
-          <div class="form-group">
             <label class="form-control-label" for="product-category-imageUri">Image Uri</label>
             <input
               type="text"

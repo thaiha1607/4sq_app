@@ -38,7 +38,6 @@ describe('Service Tests', () => {
         'AAAAAAA',
         'AAAAAAA',
         'AAAAAAA',
-        'AAAAAAA',
         currentDate,
         'AAAAAAA',
         currentDate,
@@ -109,7 +108,6 @@ describe('Service Tests', () => {
         const returnedFromService = Object.assign(
           {
             name: 'BBBBBB',
-            description: 'BBBBBB',
             imageUri: 'BBBBBB',
             createdBy: 'BBBBBB',
             createdDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
@@ -147,10 +145,10 @@ describe('Service Tests', () => {
       it('should partial update a ProductCategory', async () => {
         const patchObject = Object.assign(
           {
-            description: 'BBBBBB',
+            name: 'BBBBBB',
             createdBy: 'BBBBBB',
-            createdDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
             lastModifiedBy: 'BBBBBB',
+            lastModifiedDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
           },
           new ProductCategory(),
         );
@@ -185,7 +183,6 @@ describe('Service Tests', () => {
         const returnedFromService = Object.assign(
           {
             name: 'BBBBBB',
-            description: 'BBBBBB',
             imageUri: 'BBBBBB',
             createdBy: 'BBBBBB',
             createdDate: dayjs(currentDate).format(DATE_TIME_FORMAT),

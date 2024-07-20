@@ -22,11 +22,15 @@
     },
     {
       "fieldName": "content",
-      "fieldType": "String"
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
     },
     {
       "fieldName": "isSeen",
-      "fieldType": "Boolean"
+      "fieldType": "Boolean",
+      "options": {
+        "defaultValue": true
+      }
     },
     {
       "auditField": true,

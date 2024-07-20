@@ -17,10 +17,10 @@
             <column name="type" type="varchar(255)">
                 <constraints nullable="false" />
             </column>
-            <column name="priority" type="integer">
+            <column name="priority" type="integer" defaultValueNumeric="true">
                 <constraints nullable="true" />
             </column>
-            <column name="is_internal" type="boolean">
+            <column name="is_internal" type="boolean" defaultValueBoolean="true">
                 <constraints nullable="true" />
             </column>
             <column name="note" type="varchar(255)">

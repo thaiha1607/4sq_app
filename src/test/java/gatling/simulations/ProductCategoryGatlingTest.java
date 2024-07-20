@@ -71,7 +71,6 @@ public class ProductCategoryGatlingTest extends Simulation {
                             StringBody(
                                 "{" +
                                 "\"name\": \"SAMPLE_TEXT\"" +
-                                ", \"description\": \"SAMPLE_TEXT\"" +
                                 ", \"imageUri\": \"SAMPLE_TEXT\"" +
                                 ", \"createdBy\": \"SAMPLE_TEXT\"" +
                                 ", \"createdDate\": \"2020-01-01T00:00:00.000Z\"" +

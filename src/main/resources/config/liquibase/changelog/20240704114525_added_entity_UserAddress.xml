@@ -20,7 +20,7 @@
             <column name="friendly_name" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
-            <column name="is_default" type="boolean">
+            <column name="is_default" type="boolean" defaultValueBoolean="true">
                 <constraints nullable="true" />
             </column>
             <column name="created_by" type="varchar(50)">

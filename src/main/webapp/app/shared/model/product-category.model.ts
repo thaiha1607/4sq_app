@@ -4,7 +4,6 @@ import { type IProduct } from '@/shared/model/product.model';
 export interface IProductCategory {
   id?: string;
   name?: string | null;
-  description?: string | null;
   imageUri?: string | null;
   createdBy?: string;
   createdDate?: Date;
@@ -18,7 +17,6 @@ export class ProductCategory implements IProductCategory {
   constructor(
     public id?: string,
     public name?: string | null,
-    public description?: string | null,
     public imageUri?: string | null,
     public createdBy?: string,
     public createdDate?: Date,

@@ -14,6 +14,7 @@ public class CommentDTO implements Serializable {
 
     private UUID id;
 
+    @NotNull
     @Min(value = 1)
     @Max(value = 5)
     private Integer rating;

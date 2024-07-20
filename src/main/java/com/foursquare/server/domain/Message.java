@@ -35,7 +35,8 @@ public class Message extends AbstractAuditingEntity<UUID> implements Serializabl
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Keyword)
     private MessageType type;
 
-    @Column(name = "content")
+    @NotNull
+    @Column(name = "content", nullable = false)
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String content;
 

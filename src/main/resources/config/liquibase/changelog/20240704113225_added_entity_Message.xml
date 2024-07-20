@@ -18,9 +18,9 @@
                 <constraints nullable="false" />
             </column>
             <column name="content" type="varchar(255)">
-                <constraints nullable="true" />
+                <constraints nullable="false" />
             </column>
-            <column name="is_seen" type="boolean">
+            <column name="is_seen" type="boolean" defaultValueBoolean="true">
                 <constraints nullable="true" />
             </column>
             <column name="created_by" type="varchar(50)">

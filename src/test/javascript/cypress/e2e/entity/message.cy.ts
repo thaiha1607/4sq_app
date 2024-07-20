@@ -15,7 +15,7 @@ describe('Message e2e test', () => {
   const messagePageUrlPattern = new RegExp('/message(\\?.*)?$');
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
-  // const messageSample = {"type":"TEXT"};
+  // const messageSample = {"type":"TEXT","content":"demoralise restfully an"};
 
   let message;
   // let participant;

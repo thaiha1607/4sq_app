@@ -3,7 +3,7 @@ import { type IProduct } from '@/shared/model/product.model';
 
 export interface IComment {
   id?: string;
-  rating?: number | null;
+  rating?: number;
   content?: string | null;
   createdBy?: string;
   createdDate?: Date;
@@ -16,7 +16,7 @@ export interface IComment {
 export class Comment implements IComment {
   constructor(
     public id?: string,
-    public rating?: number | null,
+    public rating?: number,
     public content?: string | null,
     public createdBy?: string,
     public createdDate?: Date,

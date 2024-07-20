@@ -76,7 +76,7 @@ entity Conversation {
 @search(no)
 entity Participant {
     id UUID
-    isAdmin Boolean
+    @defaultValue(false) isAdmin Boolean
 }
 @filter
 @dto(mapstruct)
@@ -131,8 +131,8 @@ enum PaymentMethod {
 entity Message {
     id UUID
     type MessageType required
-    content String
-    isSeen Boolean
+    content String required
+    @defaultValue(false) isSeen Boolean
 }
 enum MessageType {
     TEXT,
@@ -168,8 +168,8 @@ entity OrderStatus {
 entity Order {
     id UUID
     type OrderType required
-    priority Integer min(0) max(100)
-    isInternal Boolean
+    @defaultValue(0) priority Integer min(0) max(100)
+    @defaultValue(false) isInternal Boolean
     note String
 }
 enum OrderType {
@@ -203,7 +203,6 @@ entity ProductCategory {
     // We also won't include the discount start date, end date, and conditions.
     // Discount in percentage. Max 100%. Applied only to the product.
     // discount BigDecimal min(0) max(100)
-    description String
     imageUri String
 }
 @filter
@@ -305,7 +304,7 @@ entity UserAddress {
     id UUID
     type AddressType required
     friendlyName String
-    isDefault Boolean
+    @defaultValue(false) isDefault Boolean
 }
 enum AddressType {
     HOME,
@@ -348,7 +347,7 @@ enum WorkingUnitType {
 @search(elasticsearch)
 entity Comment {
     id UUID
-    rating Integer min(1) max(5)
+    rating Integer min(1) max(5) required
     content String
 }
 /**

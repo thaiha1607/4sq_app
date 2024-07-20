@@ -62,7 +62,9 @@ export default defineComponent({
       type: {
         required: validations.required('This field is required.'),
       },
-      content: {},
+      content: {
+        required: validations.required('This field is required.'),
+      },
       isSeen: {},
       createdBy: {},
       createdDate: {},

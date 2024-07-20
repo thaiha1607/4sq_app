@@ -31,7 +31,7 @@ describe('OrderItem e2e test', () => {
     cy.authenticatedRequest({
       method: 'POST',
       url: '/api/product-categories',
-      body: {"name":"absolute","description":"meanwhile","imageUri":"yippee"},
+      body: {"name":"modulo","imageUri":"freelance ascend"},
     }).then(({ body }) => {
       productCategory = body;
     });

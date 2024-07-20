@@ -35,7 +35,11 @@
               data-cy="content"
               :class="{ valid: !v$.content.$invalid, invalid: v$.content.$invalid }"
               v-model="v$.content.$model"
+              required
             />
+            <div v-if="v$.content.$anyDirty && v$.content.$invalid">
+              <small class="form-text text-danger" v-for="error of v$.content.$errors" :key="error.$uid">{{ error.$message }}</small>
+            </div>
           </div>
           <div class="form-group">
             <label class="form-control-label" for="message-isSeen">Is Seen</label>

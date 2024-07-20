@@ -16,7 +16,10 @@
     },
     {
       "fieldName": "isAdmin",
-      "fieldType": "Boolean"
+      "fieldType": "Boolean",
+      "options": {
+        "defaultValue": true
+      }
     },
     {
       "auditField": true,
