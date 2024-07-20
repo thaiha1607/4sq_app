@@ -20,7 +20,7 @@
             <column name="content" type="varchar(255)">
                 <constraints nullable="false" />
             </column>
-            <column name="is_seen" type="boolean" defaultValueBoolean="true">
+            <column name="is_seen" type="boolean" defaultValueBoolean="false">
                 <constraints nullable="true" />
             </column>
             <column name="created_by" type="varchar(50)">
