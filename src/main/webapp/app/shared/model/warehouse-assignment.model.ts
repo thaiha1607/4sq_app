@@ -11,7 +11,7 @@ export interface IWarehouseAssignment {
   createdDate?: Date;
   lastModifiedBy?: string;
   lastModifiedDate?: Date;
-  user?: IUser;
+  user?: IUser | null;
   sourceWorkingUnit?: IWorkingUnit;
   targetWorkingUnit?: IWorkingUnit | null;
   order?: IOrder;
@@ -26,7 +26,7 @@ export class WarehouseAssignment implements IWarehouseAssignment {
     public createdDate?: Date,
     public lastModifiedBy?: string,
     public lastModifiedDate?: Date,
-    public user?: IUser,
+    public user?: IUser | null,
     public sourceWorkingUnit?: IWorkingUnit,
     public targetWorkingUnit?: IWorkingUnit | null,
     public order?: IOrder,

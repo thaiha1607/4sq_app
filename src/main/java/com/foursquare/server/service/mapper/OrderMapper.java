@@ -17,7 +17,6 @@ import org.mapstruct.*;
  */
 @Mapper(componentModel = "spring")
 public interface OrderMapper extends EntityMapper<OrderDTO, Order> {
-    @Mapping(target = "creator", source = "creator", qualifiedByName = "userLogin")
     @Mapping(target = "customer", source = "customer", qualifiedByName = "userLogin")
     @Mapping(target = "status", source = "status", qualifiedByName = "orderStatusDescription")
     @Mapping(target = "address", source = "address", qualifiedByName = "addressId")

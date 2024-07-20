@@ -31,7 +31,6 @@ public class MessageDTO implements Serializable {
 
     private Instant lastModifiedDate;
 
-    @NotNull
     private ParticipantDTO participant;
 
     public UUID getId() {

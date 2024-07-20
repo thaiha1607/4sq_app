@@ -145,9 +145,9 @@ describe('Service Tests', () => {
       it('should partial update a WarehouseAssignment', async () => {
         const patchObject = Object.assign(
           {
-            status: 'BBBBBB',
+            note: 'BBBBBB',
+            createdBy: 'BBBBBB',
             createdDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
-            lastModifiedBy: 'BBBBBB',
           },
           new WarehouseAssignment(),
         );

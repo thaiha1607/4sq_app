@@ -60,6 +60,9 @@
   "name": "ProductImage",
   "relationships": [
     {
+      "options": {
+        "onDelete": "CASCADE"
+      },
       "otherEntityName": "product",
       "otherEntityRelationshipName": "productImage",
       "relationshipName": "product",

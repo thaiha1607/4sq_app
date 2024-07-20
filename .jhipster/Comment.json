@@ -63,6 +63,9 @@
   "name": "Comment",
   "relationships": [
     {
+      "options": {
+        "onDelete": "CASCADE"
+      },
       "otherEntityField": "login",
       "otherEntityName": "user",
       "relationshipName": "user",
@@ -72,6 +75,9 @@
       "relationshipWithBuiltInEntity": true
     },
     {
+      "options": {
+        "onDelete": "CASCADE"
+      },
       "otherEntityName": "product",
       "otherEntityRelationshipName": "comment",
       "relationshipName": "product",

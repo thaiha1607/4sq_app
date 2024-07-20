@@ -15,10 +15,9 @@ describe('ShipmentAssignment e2e test', () => {
   const shipmentAssignmentPageUrlPattern = new RegExp('/shipment-assignment(\\?.*)?$');
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
-  // const shipmentAssignmentSample = {"status":"CANCELLED"};
+  // const shipmentAssignmentSample = {"status":"ASSIGNED"};
 
   let shipmentAssignment;
-  // let user;
   // let shipment;
 
   beforeEach(() => {
@@ -27,14 +26,6 @@ describe('ShipmentAssignment e2e test', () => {
 
   /* Disabled due to incompatibility
   beforeEach(() => {
-    // create an instance at the required relationship entity:
-    cy.authenticatedRequest({
-      method: 'POST',
-      url: '/api/users',
-      body: {"login":"5_@3YS\\9Wpel\\!xfXZh","firstName":"Lauriane","lastName":"Stanton","email":"Margaretta.Hauck31@hotmail.com","imageUrl":"certainly excepting"},
-    }).then(({ body }) => {
-      user = body;
-    });
     // create an instance at the required relationship entity:
     cy.authenticatedRequest({
       method: 'POST',
@@ -57,7 +48,7 @@ describe('ShipmentAssignment e2e test', () => {
     // Simulate relationships api for better performance and reproducibility.
     cy.intercept('GET', '/api/users', {
       statusCode: 200,
-      body: [user],
+      body: [],
     });
 
     cy.intercept('GET', '/api/shipments', {
@@ -81,14 +72,6 @@ describe('ShipmentAssignment e2e test', () => {
 
   /* Disabled due to incompatibility
   afterEach(() => {
-    if (user) {
-      cy.authenticatedRequest({
-        method: 'DELETE',
-        url: `/api/users/${user.id}`,
-      }).then(() => {
-        user = undefined;
-      });
-    }
     if (shipment) {
       cy.authenticatedRequest({
         method: 'DELETE',
@@ -142,7 +125,6 @@ describe('ShipmentAssignment e2e test', () => {
           url: '/api/shipment-assignments',
           body: {
             ...shipmentAssignmentSample,
-            user: user,
             shipment: shipment,
           },
         }).then(({ body }) => {
@@ -233,12 +215,11 @@ describe('ShipmentAssignment e2e test', () => {
     });
 
     it.skip('should create an instance of ShipmentAssignment', () => {
-      cy.get(`[data-cy="status"]`).select('COMPLETED');
+      cy.get(`[data-cy="status"]`).select('FAILED');
 
-      cy.get(`[data-cy="note"]`).type('which');
-      cy.get(`[data-cy="note"]`).should('have.value', 'which');
+      cy.get(`[data-cy="note"]`).type('forenenst tepee');
+      cy.get(`[data-cy="note"]`).should('have.value', 'forenenst tepee');
 
-      cy.get(`[data-cy="user"]`).select(1);
       cy.get(`[data-cy="shipment"]`).select(1);
 
       cy.get(entityCreateSaveButtonSelector).click();

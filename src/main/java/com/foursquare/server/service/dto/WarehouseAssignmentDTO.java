@@ -28,7 +28,6 @@ public class WarehouseAssignmentDTO implements Serializable {
 
     private Instant lastModifiedDate;
 
-    @NotNull
     private UserDTO user;
 
     @NotNull

@@ -17,9 +17,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 @JaversSpringDataAuditable
 public interface OrderRepository extends JpaRepository<Order, UUID> {
-    @Query("select jhiOrder from Order jhiOrder where jhiOrder.creator.login = ?#{authentication.name}")
-    List<Order> findByCreatorIsCurrentUser();
-
     @Query("select jhiOrder from Order jhiOrder where jhiOrder.customer.login = ?#{authentication.name}")
     List<Order> findByCustomerIsCurrentUser();
 
@@ -36,18 +33,14 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
     }
 
     @Query(
-        value = "select jhiOrder from Order jhiOrder left join fetch jhiOrder.creator left join fetch jhiOrder.customer left join fetch jhiOrder.status",
+        value = "select jhiOrder from Order jhiOrder left join fetch jhiOrder.customer left join fetch jhiOrder.status",
         countQuery = "select count(jhiOrder) from Order jhiOrder"
     )
     Page<Order> findAllWithToOneRelationships(Pageable pageable);
 
-    @Query(
-        "select jhiOrder from Order jhiOrder left join fetch jhiOrder.creator left join fetch jhiOrder.customer left join fetch jhiOrder.status"
-    )
+    @Query("select jhiOrder from Order jhiOrder left join fetch jhiOrder.customer left join fetch jhiOrder.status")
     List<Order> findAllWithToOneRelationships();
 
-    @Query(
-        "select jhiOrder from Order jhiOrder left join fetch jhiOrder.creator left join fetch jhiOrder.customer left join fetch jhiOrder.status where jhiOrder.id =:id"
-    )
+    @Query("select jhiOrder from Order jhiOrder left join fetch jhiOrder.customer left join fetch jhiOrder.status where jhiOrder.id =:id")
     Optional<Order> findOneWithToOneRelationships(@Param("id") UUID id);
 }

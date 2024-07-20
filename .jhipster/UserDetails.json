@@ -67,6 +67,9 @@
       "relationshipWithBuiltInEntity": true
     },
     {
+      "options": {
+        "onDelete": "SET NULL"
+      },
       "otherEntityField": "name",
       "otherEntityName": "workingUnit",
       "relationshipName": "workingUnit",

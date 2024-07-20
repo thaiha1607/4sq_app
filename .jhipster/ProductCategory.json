@@ -68,6 +68,9 @@
       "relationshipValidateRules": "required"
     },
     {
+      "options": {
+        "onDelete": "CASCADE"
+      },
       "otherEntityField": "name",
       "otherEntityName": "product",
       "otherEntityRelationshipName": "productCategory",

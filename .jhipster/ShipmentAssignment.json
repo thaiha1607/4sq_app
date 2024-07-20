@@ -62,12 +62,14 @@
   "name": "ShipmentAssignment",
   "relationships": [
     {
+      "options": {
+        "onDelete": "SET NULL"
+      },
       "otherEntityField": "login",
       "otherEntityName": "user",
       "relationshipName": "user",
       "relationshipSide": "left",
       "relationshipType": "many-to-one",
-      "relationshipValidateRules": "required",
       "relationshipWithBuiltInEntity": true
     },
     {

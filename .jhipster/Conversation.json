@@ -62,8 +62,7 @@
       "otherEntityRelationshipName": "conversation",
       "relationshipName": "participant",
       "relationshipSide": "right",
-      "relationshipType": "one-to-many",
-      "relationshipValidateRules": "required"
+      "relationshipType": "one-to-many"
     }
   ]
 }

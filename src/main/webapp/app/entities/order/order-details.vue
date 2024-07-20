@@ -53,12 +53,6 @@
             <span v-if="order.lastModifiedDate">{{ formatDateLong(order.lastModifiedDate) }}</span>
           </dd>
           <dt>
-            <span>Creator</span>
-          </dt>
-          <dd>
-            {{ order.creator ? order.creator.login : '' }}
-          </dd>
-          <dt>
             <span>Customer</span>
           </dt>
           <dd>

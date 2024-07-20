@@ -97,15 +97,8 @@
           </div>
           <div class="form-group">
             <label class="form-control-label" for="warehouse-assignment-user">User</label>
-            <select
-              class="form-control"
-              id="warehouse-assignment-user"
-              data-cy="user"
-              name="user"
-              v-model="warehouseAssignment.user"
-              required
-            >
-              <option v-if="!warehouseAssignment.user" v-bind:value="null" selected></option>
+            <select class="form-control" id="warehouse-assignment-user" data-cy="user" name="user" v-model="warehouseAssignment.user">
+              <option v-bind:value="null"></option>
               <option
                 v-bind:value="
                   warehouseAssignment.user && userOption.id === warehouseAssignment.user.id ? warehouseAssignment.user : userOption
@@ -116,9 +109,6 @@
                 {{ userOption.login }}
               </option>
             </select>
-          </div>
-          <div v-if="v$.user.$anyDirty && v$.user.$invalid">
-            <small class="form-text text-danger" v-for="error of v$.user.$errors" :key="error.$uid">{{ error.$message }}</small>
           </div>
           <div class="form-group">
             <label class="form-control-label" for="warehouse-assignment-sourceWorkingUnit">Source Working Unit</label>

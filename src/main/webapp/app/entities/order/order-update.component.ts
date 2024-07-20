@@ -99,10 +99,9 @@ export default defineComponent({
       createdDate: {},
       lastModifiedBy: {},
       lastModifiedDate: {},
-      creator: {
+      customer: {
         required: validations.required('This field is required.'),
       },
-      customer: {},
       status: {
         required: validations.required('This field is required.'),
       },

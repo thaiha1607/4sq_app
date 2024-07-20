@@ -15,6 +15,7 @@
                                  constraintName="fk_user_address__user_id"
                                  referencedColumnNames="id"
                                  referencedTableName="jhi_user"
+                                 onDelete="CASCADE"
                                  />
 
         <addForeignKeyConstraint baseColumnNames="address_id"

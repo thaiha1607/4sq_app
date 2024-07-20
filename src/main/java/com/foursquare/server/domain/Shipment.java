@@ -71,7 +71,7 @@ public class Shipment extends AbstractAuditingEntity<UUID> implements Serializab
     @ManyToOne(optional = false)
     @NotNull
     @JsonIgnoreProperties(
-        value = { "invoices", "orderItems", "childOrders", "shipments", "creator", "customer", "status", "address", "parentOrder" },
+        value = { "invoices", "orderItems", "childOrders", "shipments", "customer", "status", "address", "parentOrder" },
         allowSetters = true
     )
     private Order order;

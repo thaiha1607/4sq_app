@@ -31,7 +31,7 @@ describe('Comment e2e test', () => {
     cy.authenticatedRequest({
       method: 'POST',
       url: '/api/users',
-      body: {"login":"iKg.!@Sh1le\\&-LprqU\\GOx","firstName":"Leilani","lastName":"Kassulke-Rodriguez","email":"Hallie39@yahoo.com","imageUrl":"lunge"},
+      body: {"login":"KLDi-","firstName":"Jaleel","lastName":"Kohler","email":"Stacy.Bailey@yahoo.com","imageUrl":"dressing"},
     }).then(({ body }) => {
       user = body;
     });

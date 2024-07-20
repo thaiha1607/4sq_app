@@ -12,7 +12,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foursquare.server.IntegrationTest;
 import com.foursquare.server.domain.ShipmentAssignment;
-import com.foursquare.server.domain.User;
 import com.foursquare.server.domain.enumeration.AssignmentStatus;
 import com.foursquare.server.repository.ShipmentAssignmentRepository;
 import com.foursquare.server.repository.UserRepository;
@@ -102,11 +101,6 @@ class ShipmentAssignmentResourceIT {
      */
     public static ShipmentAssignment createEntity(EntityManager em) {
         ShipmentAssignment shipmentAssignment = new ShipmentAssignment().status(DEFAULT_STATUS).note(DEFAULT_NOTE);
-        // Add required entity
-        User user = UserResourceIT.createEntity(em);
-        em.persist(user);
-        em.flush();
-        shipmentAssignment.setUser(user);
         return shipmentAssignment;
     }
 
@@ -118,11 +112,6 @@ class ShipmentAssignmentResourceIT {
      */
     public static ShipmentAssignment createUpdatedEntity(EntityManager em) {
         ShipmentAssignment shipmentAssignment = new ShipmentAssignment().status(UPDATED_STATUS).note(UPDATED_NOTE);
-        // Add required entity
-        User user = UserResourceIT.createEntity(em);
-        em.persist(user);
-        em.flush();
-        shipmentAssignment.setUser(user);
         return shipmentAssignment;
     }
 

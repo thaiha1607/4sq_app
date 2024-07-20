@@ -23,6 +23,7 @@
                                  constraintName="fk_user_details__working_unit_id"
                                  referencedColumnNames="id"
                                  referencedTableName="working_unit"
+                                 onDelete="SET NULL"
                                  />
     </changeSet>
 </databaseChangeLog>

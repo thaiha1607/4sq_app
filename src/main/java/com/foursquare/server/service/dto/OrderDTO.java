@@ -35,8 +35,6 @@ public class OrderDTO implements Serializable {
     private Instant lastModifiedDate;
 
     @NotNull
-    private UserDTO creator;
-
     private UserDTO customer;
 
     @NotNull
@@ -118,14 +116,6 @@ public class OrderDTO implements Serializable {
         this.lastModifiedDate = lastModifiedDate;
     }
 
-    public UserDTO getCreator() {
-        return creator;
-    }
-
-    public void setCreator(UserDTO creator) {
-        this.creator = creator;
-    }
-
     public UserDTO getCustomer() {
         return customer;
     }
@@ -192,7 +182,6 @@ public class OrderDTO implements Serializable {
             ", createdDate='" + getCreatedDate() + "'" +
             ", lastModifiedBy='" + getLastModifiedBy() + "'" +
             ", lastModifiedDate='" + getLastModifiedDate() + "'" +
-            ", creator=" + getCreator() +
             ", customer=" + getCustomer() +
             ", status=" + getStatus() +
             ", address=" + getAddress() +

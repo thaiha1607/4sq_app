@@ -10,7 +10,7 @@ export interface IMessage {
   createdDate?: Date;
   lastModifiedBy?: string;
   lastModifiedDate?: Date;
-  participant?: IParticipant;
+  participant?: IParticipant | null;
 }
 
 export class Message implements IMessage {
@@ -23,7 +23,7 @@ export class Message implements IMessage {
     public createdDate?: Date,
     public lastModifiedBy?: string,
     public lastModifiedDate?: Date,
-    public participant?: IParticipant,
+    public participant?: IParticipant | null,
   ) {
     this.isSeen = this.isSeen ?? false;
   }

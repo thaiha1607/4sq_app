@@ -10,7 +10,7 @@ export interface IShipmentAssignment {
   createdDate?: Date;
   lastModifiedBy?: string;
   lastModifiedDate?: Date;
-  user?: IUser;
+  user?: IUser | null;
   shipment?: IShipment;
 }
 
@@ -23,7 +23,7 @@ export class ShipmentAssignment implements IShipmentAssignment {
     public createdDate?: Date,
     public lastModifiedBy?: string,
     public lastModifiedDate?: Date,
-    public user?: IUser,
+    public user?: IUser | null,
     public shipment?: IShipment,
   ) {}
 }

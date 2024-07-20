@@ -46,8 +46,7 @@ public class ShipmentAssignment extends AbstractAuditingEntity<UUID> implements 
     @Transient
     private boolean isPersisted;
 
-    @ManyToOne(optional = false)
-    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
     @ManyToOne(optional = false)

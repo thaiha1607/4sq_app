@@ -113,7 +113,7 @@ class OrderResourceIT {
         User user = UserResourceIT.createEntity(em);
         em.persist(user);
         em.flush();
-        order.setCreator(user);
+        order.setCustomer(user);
         // Add required entity
         OrderStatus orderStatus;
         if (TestUtil.findAll(em, OrderStatus.class).isEmpty()) {
@@ -139,7 +139,7 @@ class OrderResourceIT {
         User user = UserResourceIT.createEntity(em);
         em.persist(user);
         em.flush();
-        order.setCreator(user);
+        order.setCustomer(user);
         // Add required entity
         OrderStatus orderStatus;
         if (TestUtil.findAll(em, OrderStatus.class).isEmpty()) {

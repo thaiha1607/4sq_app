@@ -70,12 +70,14 @@
   "name": "Message",
   "relationships": [
     {
+      "options": {
+        "onDelete": "SET NULL"
+      },
       "otherEntityName": "participant",
       "otherEntityRelationshipName": "message",
       "relationshipName": "participant",
       "relationshipSide": "left",
-      "relationshipType": "many-to-one",
-      "relationshipValidateRules": "required"
+      "relationshipType": "many-to-one"
     }
   ]
 }

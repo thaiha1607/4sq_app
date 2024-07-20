@@ -51,8 +51,7 @@ public class Message extends AbstractAuditingEntity<UUID> implements Serializabl
     @Transient
     private boolean isPersisted;
 
-    @ManyToOne(optional = false)
-    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value = { "user", "conversation", "messages" }, allowSetters = true)
     private Participant participant;
 

@@ -109,15 +109,8 @@
           </div>
           <div class="form-group">
             <label class="form-control-label" for="message-participant">Participant</label>
-            <select
-              class="form-control"
-              id="message-participant"
-              data-cy="participant"
-              name="participant"
-              v-model="message.participant"
-              required
-            >
-              <option v-if="!message.participant" v-bind:value="null" selected></option>
+            <select class="form-control" id="message-participant" data-cy="participant" name="participant" v-model="message.participant">
+              <option v-bind:value="null"></option>
               <option
                 v-bind:value="
                   message.participant && participantOption.id === message.participant.id ? message.participant : participantOption
@@ -128,9 +121,6 @@
                 {{ participantOption.id }}
               </option>
             </select>
-          </div>
-          <div v-if="v$.participant.$anyDirty && v$.participant.$invalid">
-            <small class="form-text text-danger" v-for="error of v$.participant.$errors" :key="error.$uid">{{ error.$message }}</small>
           </div>
         </div>
         <div>

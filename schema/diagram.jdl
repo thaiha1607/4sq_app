@@ -363,31 +363,30 @@ relationship OneToMany {
     Order{invoice} to Invoice{order required}
     Order{orderItem required} to OrderItem{order required}
     Order{childOrder} to Order{parentOrder}
-    Product{productCategory(name) required} to ProductCategory{product(name) required}
-    Product{productImage} to ProductImage{product required}
+    @OnDelete("CASCADE") Product{productCategory(name) required} to ProductCategory{product(name) required}
+    @OnDelete("CASCADE") Product{productImage} to ProductImage{product required}
     Shipment{assignment} to ShipmentAssignment{shipment required}
     Shipment{item required} to ShipmentItem{shipment required}
     Order{shipment} to Shipment{order required}
     Invoice{shipment} to Shipment{invoice required}
-    Product{comment} to Comment{product required}
+    @OnDelete("CASCADE") Product{comment} to Comment{product required}
 }
 /**
  * Many to one relationship.
  */
 relationship ManyToOne {
-    Participant{user(login) required} to User with builtInEntity
-    Participant{conversation(title) required} to Conversation{participant required}
-    Message{participant required} to Participant{message}
+    Participant{user(login) required} to @OnDelete("CASCADE") User with builtInEntity
+    Participant{conversation(title) required} to @OnDelete("CASCADE") Conversation{participant}
+    Message{participant} to @OnDelete("SET NULL") Participant{message}
     OrderItem{productCategory(name) required} to ProductCategory
-    Order{creator(login) required} to User with builtInEntity
-    Order{customer(login)} to User with builtInEntity
-    ShipmentAssignment{user(login) required} to User with builtInEntity
-    UserAddress{user(login) required} to User with builtInEntity
+    Order{customer(login) required} to User with builtInEntity
+    ShipmentAssignment{user(login)} to @OnDelete("SET NULL") User with builtInEntity
+    UserAddress{user(login) required} to @OnDelete("CASCADE") User with builtInEntity
     UserAddress{address required} to Address
-    WarehouseAssignment{user(login) required} to User with builtInEntity
+    WarehouseAssignment{user(login)} to @OnDelete("SET NULL") User with builtInEntity
     WarehouseAssignment{sourceWorkingUnit(name) required} to WorkingUnit
-    WarehouseAssignment{targetWorkingUnit(name)} to WorkingUnit
-    UserDetails{workingUnit(name)} to WorkingUnit
+    WarehouseAssignment{targetWorkingUnit(name)} to @OnDelete("SET NULL") WorkingUnit
+    UserDetails{workingUnit(name)} to @OnDelete("SET NULL") WorkingUnit
     Invoice{status(description) required} to InvoiceStatus
     Order{status(description) required} to OrderStatus
     Order{address} to Address
@@ -398,7 +397,7 @@ relationship ManyToOne {
     Shipment{status(description) required} to ShipmentStatus
     WarehouseAssignment{order required} to Order
     WorkingUnit{address} to Address
-    Comment{user(login) required} to User with builtInEntity
+    Comment{user(login) required} to @OnDelete("CASCADE") User with builtInEntity
 }
 /**
  * Many to many relationship.

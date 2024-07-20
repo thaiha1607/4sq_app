@@ -59,6 +59,9 @@
   "name": "Participant",
   "relationships": [
     {
+      "options": {
+        "onDelete": "CASCADE"
+      },
       "otherEntityField": "login",
       "otherEntityName": "user",
       "relationshipName": "user",
@@ -68,6 +71,9 @@
       "relationshipWithBuiltInEntity": true
     },
     {
+      "options": {
+        "onDelete": "CASCADE"
+      },
       "otherEntityField": "title",
       "otherEntityName": "conversation",
       "otherEntityRelationshipName": "participant",

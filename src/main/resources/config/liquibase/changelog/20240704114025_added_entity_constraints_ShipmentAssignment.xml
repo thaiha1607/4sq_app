@@ -15,6 +15,7 @@
                                  constraintName="fk_shipment_assignment__user_id"
                                  referencedColumnNames="id"
                                  referencedTableName="jhi_user"
+                                 onDelete="SET NULL"
                                  />
 
         <addForeignKeyConstraint baseColumnNames="shipment_id"

@@ -24,7 +24,6 @@ import java.util.concurrent.TimeUnit;
 import org.assertj.core.util.IterableUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -38,7 +37,6 @@ import org.springframework.transaction.annotation.Transactional;
  * Integration tests for the {@link MessageResource} REST controller.
  */
 @IntegrationTest
-@Disabled("Cyclic required relationships detected")
 @AutoConfigureMockMvc
 @WithMockUser
 class MessageResourceIT {

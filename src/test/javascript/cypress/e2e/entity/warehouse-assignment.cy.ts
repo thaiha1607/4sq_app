@@ -15,10 +15,9 @@ describe('WarehouseAssignment e2e test', () => {
   const warehouseAssignmentPageUrlPattern = new RegExp('/warehouse-assignment(\\?.*)?$');
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
-  // const warehouseAssignmentSample = {"status":"FAILED"};
+  // const warehouseAssignmentSample = {"status":"ASSIGNED"};
 
   let warehouseAssignment;
-  // let user;
   // let workingUnit;
   // let order;
 
@@ -28,14 +27,6 @@ describe('WarehouseAssignment e2e test', () => {
 
   /* Disabled due to incompatibility
   beforeEach(() => {
-    // create an instance at the required relationship entity:
-    cy.authenticatedRequest({
-      method: 'POST',
-      url: '/api/users',
-      body: {"login":"kfTBC","firstName":"Tomas","lastName":"Prohaska","email":"Neal10@yahoo.com","imageUrl":"yum"},
-    }).then(({ body }) => {
-      user = body;
-    });
     // create an instance at the required relationship entity:
     cy.authenticatedRequest({
       method: 'POST',
@@ -66,7 +57,7 @@ describe('WarehouseAssignment e2e test', () => {
     // Simulate relationships api for better performance and reproducibility.
     cy.intercept('GET', '/api/users', {
       statusCode: 200,
-      body: [user],
+      body: [],
     });
 
     cy.intercept('GET', '/api/working-units', {
@@ -95,14 +86,6 @@ describe('WarehouseAssignment e2e test', () => {
 
   /* Disabled due to incompatibility
   afterEach(() => {
-    if (user) {
-      cy.authenticatedRequest({
-        method: 'DELETE',
-        url: `/api/users/${user.id}`,
-      }).then(() => {
-        user = undefined;
-      });
-    }
     if (workingUnit) {
       cy.authenticatedRequest({
         method: 'DELETE',
@@ -164,7 +147,6 @@ describe('WarehouseAssignment e2e test', () => {
           url: '/api/warehouse-assignments',
           body: {
             ...warehouseAssignmentSample,
-            user: user,
             sourceWorkingUnit: workingUnit,
             order: order,
           },
@@ -256,12 +238,11 @@ describe('WarehouseAssignment e2e test', () => {
     });
 
     it.skip('should create an instance of WarehouseAssignment', () => {
-      cy.get(`[data-cy="status"]`).select('ASSIGNED');
+      cy.get(`[data-cy="status"]`).select('PENDING');
 
-      cy.get(`[data-cy="note"]`).type('aboard');
-      cy.get(`[data-cy="note"]`).should('have.value', 'aboard');
+      cy.get(`[data-cy="note"]`).type('consequently');
+      cy.get(`[data-cy="note"]`).should('have.value', 'consequently');
 
-      cy.get(`[data-cy="user"]`).select(1);
       cy.get(`[data-cy="sourceWorkingUnit"]`).select(1);
       cy.get(`[data-cy="order"]`).select(1);
 

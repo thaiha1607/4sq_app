@@ -62,12 +62,14 @@
   "name": "WarehouseAssignment",
   "relationships": [
     {
+      "options": {
+        "onDelete": "SET NULL"
+      },
       "otherEntityField": "login",
       "otherEntityName": "user",
       "relationshipName": "user",
       "relationshipSide": "left",
       "relationshipType": "many-to-one",
-      "relationshipValidateRules": "required",
       "relationshipWithBuiltInEntity": true
     },
     {
@@ -79,6 +81,9 @@
       "relationshipValidateRules": "required"
     },
     {
+      "options": {
+        "onDelete": "SET NULL"
+      },
       "otherEntityField": "name",
       "otherEntityName": "workingUnit",
       "relationshipName": "targetWorkingUnit",

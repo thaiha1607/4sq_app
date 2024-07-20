@@ -75,9 +75,7 @@ export default defineComponent({
       createdDate: {},
       lastModifiedBy: {},
       lastModifiedDate: {},
-      user: {
-        required: validations.required('This field is required.'),
-      },
+      user: {},
       shipment: {
         required: validations.required('This field is required.'),
       },

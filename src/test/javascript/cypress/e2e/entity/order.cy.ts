@@ -185,7 +185,7 @@ describe('Order e2e test', () => {
           body: {
             ...orderSample,
             orderItem: orderItem,
-            creator: user,
+            customer: user,
             status: orderStatus,
           },
         }).then(({ body }) => {
@@ -289,7 +289,7 @@ describe('Order e2e test', () => {
       cy.get(`[data-cy="note"]`).should('have.value', 'tremendously regarding drat');
 
       cy.get(`[data-cy="orderItem"]`).select([0]);
-      cy.get(`[data-cy="creator"]`).select(1);
+      cy.get(`[data-cy="customer"]`).select(1);
       cy.get(`[data-cy="status"]`).select(1);
 
       cy.get(entityCreateSaveButtonSelector).click();

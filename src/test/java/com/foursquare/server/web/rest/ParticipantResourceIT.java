@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foursquare.server.IntegrationTest;
+import com.foursquare.server.domain.Conversation;
 import com.foursquare.server.domain.Participant;
 import com.foursquare.server.domain.User;
 import com.foursquare.server.repository.ParticipantRepository;
@@ -27,7 +28,6 @@ import java.util.concurrent.TimeUnit;
 import org.assertj.core.util.IterableUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -46,7 +46,6 @@ import org.springframework.transaction.annotation.Transactional;
  * Integration tests for the {@link ParticipantResource} REST controller.
  */
 @IntegrationTest
-@Disabled("Cyclic required relationships detected")
 @ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc
 @WithMockUser
@@ -103,6 +102,16 @@ class ParticipantResourceIT {
         em.persist(user);
         em.flush();
         participant.setUser(user);
+        // Add required entity
+        Conversation conversation;
+        if (TestUtil.findAll(em, Conversation.class).isEmpty()) {
+            conversation = ConversationResourceIT.createEntity(em);
+            em.persist(conversation);
+            em.flush();
+        } else {
+            conversation = TestUtil.findAll(em, Conversation.class).get(0);
+        }
+        participant.setConversation(conversation);
         return participant;
     }
 
@@ -119,6 +128,16 @@ class ParticipantResourceIT {
         em.persist(user);
         em.flush();
         participant.setUser(user);
+        // Add required entity
+        Conversation conversation;
+        if (TestUtil.findAll(em, Conversation.class).isEmpty()) {
+            conversation = ConversationResourceIT.createUpdatedEntity(em);
+            em.persist(conversation);
+            em.flush();
+        } else {
+            conversation = TestUtil.findAll(em, Conversation.class).get(0);
+        }
+        participant.setConversation(conversation);
         return participant;
     }
 

@@ -111,18 +111,10 @@
     {
       "otherEntityField": "login",
       "otherEntityName": "user",
-      "relationshipName": "creator",
-      "relationshipSide": "left",
-      "relationshipType": "many-to-one",
-      "relationshipValidateRules": "required",
-      "relationshipWithBuiltInEntity": true
-    },
-    {
-      "otherEntityField": "login",
-      "otherEntityName": "user",
       "relationshipName": "customer",
       "relationshipSide": "left",
       "relationshipType": "many-to-one",
+      "relationshipValidateRules": "required",
       "relationshipWithBuiltInEntity": true
     },
     {

@@ -146,8 +146,7 @@ describe('Service Tests', () => {
         const patchObject = Object.assign(
           {
             status: 'BBBBBB',
-            note: 'BBBBBB',
-            createdDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
+            createdBy: 'BBBBBB',
           },
           new ShipmentAssignment(),
         );

@@ -119,25 +119,9 @@
             </div>
           </div>
           <div class="form-group">
-            <label class="form-control-label" for="order-creator">Creator</label>
-            <select class="form-control" id="order-creator" data-cy="creator" name="creator" v-model="order.creator" required>
-              <option v-if="!order.creator" v-bind:value="null" selected></option>
-              <option
-                v-bind:value="order.creator && userOption.id === order.creator.id ? order.creator : userOption"
-                v-for="userOption in users"
-                :key="userOption.id"
-              >
-                {{ userOption.login }}
-              </option>
-            </select>
-          </div>
-          <div v-if="v$.creator.$anyDirty && v$.creator.$invalid">
-            <small class="form-text text-danger" v-for="error of v$.creator.$errors" :key="error.$uid">{{ error.$message }}</small>
-          </div>
-          <div class="form-group">
             <label class="form-control-label" for="order-customer">Customer</label>
-            <select class="form-control" id="order-customer" data-cy="customer" name="customer" v-model="order.customer">
-              <option v-bind:value="null"></option>
+            <select class="form-control" id="order-customer" data-cy="customer" name="customer" v-model="order.customer" required>
+              <option v-if="!order.customer" v-bind:value="null" selected></option>
               <option
                 v-bind:value="order.customer && userOption.id === order.customer.id ? order.customer : userOption"
                 v-for="userOption in users"
@@ -146,6 +130,9 @@
                 {{ userOption.login }}
               </option>
             </select>
+          </div>
+          <div v-if="v$.customer.$anyDirty && v$.customer.$invalid">
+            <small class="form-text text-danger" v-for="error of v$.customer.$errors" :key="error.$uid">{{ error.$message }}</small>
           </div>
           <div class="form-group">
             <label class="form-control-label" for="order-status">Status</label>

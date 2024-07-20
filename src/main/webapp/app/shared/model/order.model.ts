@@ -13,8 +13,7 @@ export interface IOrder {
   createdDate?: Date;
   lastModifiedBy?: string;
   lastModifiedDate?: Date;
-  creator?: IUser;
-  customer?: IUser | null;
+  customer?: IUser;
   status?: IOrderStatus;
   address?: IAddress | null;
   parentOrder?: IOrder | null;
@@ -31,8 +30,7 @@ export class Order implements IOrder {
     public createdDate?: Date,
     public lastModifiedBy?: string,
     public lastModifiedDate?: Date,
-    public creator?: IUser,
-    public customer?: IUser | null,
+    public customer?: IUser,
     public status?: IOrderStatus,
     public address?: IAddress | null,
     public parentOrder?: IOrder | null,

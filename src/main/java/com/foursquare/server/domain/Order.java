@@ -74,7 +74,7 @@ public class Order extends AbstractAuditingEntity<UUID> implements Serializable,
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @org.springframework.data.annotation.Transient
     @JsonIgnoreProperties(
-        value = { "invoices", "orderItems", "childOrders", "shipments", "creator", "customer", "status", "address", "parentOrder" },
+        value = { "invoices", "orderItems", "childOrders", "shipments", "customer", "status", "address", "parentOrder" },
         allowSetters = true
     )
     private Set<Order> childOrders = new HashSet<>();
@@ -87,9 +87,6 @@ public class Order extends AbstractAuditingEntity<UUID> implements Serializable,
 
     @ManyToOne(optional = false)
     @NotNull
-    private User creator;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     private User customer;
 
     @ManyToOne(optional = false)
@@ -101,7 +98,7 @@ public class Order extends AbstractAuditingEntity<UUID> implements Serializable,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties(
-        value = { "invoices", "orderItems", "childOrders", "shipments", "creator", "customer", "status", "address", "parentOrder" },
+        value = { "invoices", "orderItems", "childOrders", "shipments", "customer", "status", "address", "parentOrder" },
         allowSetters = true
     )
     private Order parentOrder;
@@ -335,19 +332,6 @@ public class Order extends AbstractAuditingEntity<UUID> implements Serializable,
     public Order removeShipment(Shipment shipment) {
         this.shipments.remove(shipment);
         shipment.setOrder(null);
-        return this;
-    }
-
-    public User getCreator() {
-        return this.creator;
-    }
-
-    public void setCreator(User user) {
-        this.creator = user;
-    }
-
-    public Order creator(User user) {
-        this.setCreator(user);
         return this;
     }
 

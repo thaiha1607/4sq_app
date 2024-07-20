@@ -70,9 +70,7 @@ export default defineComponent({
       createdDate: {},
       lastModifiedBy: {},
       lastModifiedDate: {},
-      participant: {
-        required: validations.required('This field is required.'),
-      },
+      participant: {},
     };
     const v$ = useVuelidate(validationRules, message as any);
     v$.value.$validate();

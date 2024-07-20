@@ -15,6 +15,7 @@
                                  constraintName="fk_warehouse_assignment__user_id"
                                  referencedColumnNames="id"
                                  referencedTableName="jhi_user"
+                                 onDelete="SET NULL"
                                  />
 
         <addForeignKeyConstraint baseColumnNames="source_working_unit_id"
@@ -29,6 +30,7 @@
                                  constraintName="fk_warehouse_assignment__target_working_unit_id"
                                  referencedColumnNames="id"
                                  referencedTableName="working_unit"
+                                 onDelete="SET NULL"
                                  />
 
         <addForeignKeyConstraint baseColumnNames="order_id"

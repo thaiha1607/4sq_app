@@ -46,8 +46,7 @@ public class WarehouseAssignment extends AbstractAuditingEntity<UUID> implements
     @Transient
     private boolean isPersisted;
 
-    @ManyToOne(optional = false)
-    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
     @ManyToOne(optional = false)
@@ -62,7 +61,7 @@ public class WarehouseAssignment extends AbstractAuditingEntity<UUID> implements
     @ManyToOne(optional = false)
     @NotNull
     @JsonIgnoreProperties(
-        value = { "invoices", "orderItems", "childOrders", "shipments", "creator", "customer", "status", "address", "parentOrder" },
+        value = { "invoices", "orderItems", "childOrders", "shipments", "customer", "status", "address", "parentOrder" },
         allowSetters = true
     )
     private Order order;

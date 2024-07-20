@@ -15,6 +15,7 @@
                                  constraintName="fk_participant__user_id"
                                  referencedColumnNames="id"
                                  referencedTableName="jhi_user"
+                                 onDelete="CASCADE"
                                  />
 
         <addForeignKeyConstraint baseColumnNames="conversation_id"
@@ -22,6 +23,7 @@
                                  constraintName="fk_participant__conversation_id"
                                  referencedColumnNames="id"
                                  referencedTableName="conversation"
+                                 onDelete="CASCADE"
                                  />
     </changeSet>
 </databaseChangeLog>

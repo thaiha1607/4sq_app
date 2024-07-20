@@ -11,7 +11,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foursquare.server.IntegrationTest;
-import com.foursquare.server.domain.User;
 import com.foursquare.server.domain.WarehouseAssignment;
 import com.foursquare.server.domain.WorkingUnit;
 import com.foursquare.server.domain.enumeration.AssignmentStatus;
@@ -104,11 +103,6 @@ class WarehouseAssignmentResourceIT {
     public static WarehouseAssignment createEntity(EntityManager em) {
         WarehouseAssignment warehouseAssignment = new WarehouseAssignment().status(DEFAULT_STATUS).note(DEFAULT_NOTE);
         // Add required entity
-        User user = UserResourceIT.createEntity(em);
-        em.persist(user);
-        em.flush();
-        warehouseAssignment.setUser(user);
-        // Add required entity
         WorkingUnit workingUnit;
         if (TestUtil.findAll(em, WorkingUnit.class).isEmpty()) {
             workingUnit = WorkingUnitResourceIT.createEntity(em);
@@ -129,11 +123,6 @@ class WarehouseAssignmentResourceIT {
      */
     public static WarehouseAssignment createUpdatedEntity(EntityManager em) {
         WarehouseAssignment warehouseAssignment = new WarehouseAssignment().status(UPDATED_STATUS).note(UPDATED_NOTE);
-        // Add required entity
-        User user = UserResourceIT.createEntity(em);
-        em.persist(user);
-        em.flush();
-        warehouseAssignment.setUser(user);
         // Add required entity
         WorkingUnit workingUnit;
         if (TestUtil.findAll(em, WorkingUnit.class).isEmpty()) {

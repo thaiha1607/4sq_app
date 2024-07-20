@@ -15,44 +15,19 @@ describe('Message e2e test', () => {
   const messagePageUrlPattern = new RegExp('/message(\\?.*)?$');
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
-  // const messageSample = {"type":"TEXT","content":"demoralise restfully an"};
+  const messageSample = { type: 'TEXT', content: 'demoralise restfully an' };
 
   let message;
-  // let participant;
 
   beforeEach(() => {
     cy.login(username, password);
   });
-
-  /* Disabled due to incompatibility
-  beforeEach(() => {
-    // create an instance at the required relationship entity:
-    cy.authenticatedRequest({
-      method: 'POST',
-      url: '/api/participants',
-      body: {"isAdmin":true},
-    }).then(({ body }) => {
-      participant = body;
-    });
-  });
-   */
 
   beforeEach(() => {
     cy.intercept('GET', '/api/messages+(?*|)').as('entitiesRequest');
     cy.intercept('POST', '/api/messages').as('postEntityRequest');
     cy.intercept('DELETE', '/api/messages/*').as('deleteEntityRequest');
   });
-
-  /* Disabled due to incompatibility
-  beforeEach(() => {
-    // Simulate relationships api for better performance and reproducibility.
-    cy.intercept('GET', '/api/participants', {
-      statusCode: 200,
-      body: [participant],
-    });
-
-  });
-   */
 
   afterEach(() => {
     if (message) {
@@ -64,19 +39,6 @@ describe('Message e2e test', () => {
       });
     }
   });
-
-  /* Disabled due to incompatibility
-  afterEach(() => {
-    if (participant) {
-      cy.authenticatedRequest({
-        method: 'DELETE',
-        url: `/api/participants/${participant.id}`,
-      }).then(() => {
-        participant = undefined;
-      });
-    }
-  });
-   */
 
   it('Messages menu should load Messages page', () => {
     cy.visit('/');
@@ -113,15 +75,11 @@ describe('Message e2e test', () => {
     });
 
     describe('with existing value', () => {
-      /* Disabled due to incompatibility
       beforeEach(() => {
         cy.authenticatedRequest({
           method: 'POST',
           url: '/api/messages',
-          body: {
-            ...messageSample,
-            participant: participant,
-          },
+          body: messageSample,
         }).then(({ body }) => {
           message = body;
 
@@ -134,24 +92,13 @@ describe('Message e2e test', () => {
             {
               statusCode: 200,
               body: [message],
-            }
+            },
           ).as('entitiesRequestInternal');
         });
 
         cy.visit(messagePageUrl);
 
         cy.wait('@entitiesRequestInternal');
-      });
-       */
-
-      beforeEach(function () {
-        cy.visit(messagePageUrl);
-
-        cy.wait('@entitiesRequest').then(({ response }) => {
-          if (response?.body.length === 0) {
-            this.skip();
-          }
-        });
       });
 
       it('detail button click should load details Message page', () => {
@@ -185,7 +132,7 @@ describe('Message e2e test', () => {
         cy.url().should('match', messagePageUrlPattern);
       });
 
-      it.skip('last delete button click should delete instance of Message', () => {
+      it('last delete button click should delete instance of Message', () => {
         cy.get(entityDeleteButtonSelector).last().click();
         cy.getEntityDeleteDialogHeading('message').should('exist');
         cy.get(entityConfirmDeleteButtonSelector).click();
@@ -209,7 +156,7 @@ describe('Message e2e test', () => {
       cy.getEntityCreateUpdateHeading('Message');
     });
 
-    it.skip('should create an instance of Message', () => {
+    it('should create an instance of Message', () => {
       cy.get(`[data-cy="type"]`).select('OTHER');
 
       cy.get(`[data-cy="content"]`).type('goodie shallow excuse');
@@ -218,8 +165,6 @@ describe('Message e2e test', () => {
       cy.get(`[data-cy="isSeen"]`).should('not.be.checked');
       cy.get(`[data-cy="isSeen"]`).click();
       cy.get(`[data-cy="isSeen"]`).should('be.checked');
-
-      cy.get(`[data-cy="participant"]`).select(1);
 
       cy.get(entityCreateSaveButtonSelector).click();
 

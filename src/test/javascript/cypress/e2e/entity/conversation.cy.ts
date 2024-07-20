@@ -15,44 +15,19 @@ describe('Conversation e2e test', () => {
   const conversationPageUrlPattern = new RegExp('/conversation(\\?.*)?$');
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
-  // const conversationSample = {"title":"save unimpressively astride"};
+  const conversationSample = { title: 'save unimpressively astride' };
 
   let conversation;
-  // let participant;
 
   beforeEach(() => {
     cy.login(username, password);
   });
-
-  /* Disabled due to incompatibility
-  beforeEach(() => {
-    // create an instance at the required relationship entity:
-    cy.authenticatedRequest({
-      method: 'POST',
-      url: '/api/participants',
-      body: {"isAdmin":false},
-    }).then(({ body }) => {
-      participant = body;
-    });
-  });
-   */
 
   beforeEach(() => {
     cy.intercept('GET', '/api/conversations+(?*|)').as('entitiesRequest');
     cy.intercept('POST', '/api/conversations').as('postEntityRequest');
     cy.intercept('DELETE', '/api/conversations/*').as('deleteEntityRequest');
   });
-
-  /* Disabled due to incompatibility
-  beforeEach(() => {
-    // Simulate relationships api for better performance and reproducibility.
-    cy.intercept('GET', '/api/participants', {
-      statusCode: 200,
-      body: [participant],
-    });
-
-  });
-   */
 
   afterEach(() => {
     if (conversation) {
@@ -64,19 +39,6 @@ describe('Conversation e2e test', () => {
       });
     }
   });
-
-  /* Disabled due to incompatibility
-  afterEach(() => {
-    if (participant) {
-      cy.authenticatedRequest({
-        method: 'DELETE',
-        url: `/api/participants/${participant.id}`,
-      }).then(() => {
-        participant = undefined;
-      });
-    }
-  });
-   */
 
   it('Conversations menu should load Conversations page', () => {
     cy.visit('/');
@@ -113,15 +75,11 @@ describe('Conversation e2e test', () => {
     });
 
     describe('with existing value', () => {
-      /* Disabled due to incompatibility
       beforeEach(() => {
         cy.authenticatedRequest({
           method: 'POST',
           url: '/api/conversations',
-          body: {
-            ...conversationSample,
-            participant: participant,
-          },
+          body: conversationSample,
         }).then(({ body }) => {
           conversation = body;
 
@@ -134,24 +92,13 @@ describe('Conversation e2e test', () => {
             {
               statusCode: 200,
               body: [conversation],
-            }
+            },
           ).as('entitiesRequestInternal');
         });
 
         cy.visit(conversationPageUrl);
 
         cy.wait('@entitiesRequestInternal');
-      });
-       */
-
-      beforeEach(function () {
-        cy.visit(conversationPageUrl);
-
-        cy.wait('@entitiesRequest').then(({ response }) => {
-          if (response?.body.length === 0) {
-            this.skip();
-          }
-        });
       });
 
       it('detail button click should load details Conversation page', () => {
@@ -185,7 +132,7 @@ describe('Conversation e2e test', () => {
         cy.url().should('match', conversationPageUrlPattern);
       });
 
-      it.skip('last delete button click should delete instance of Conversation', () => {
+      it('last delete button click should delete instance of Conversation', () => {
         cy.get(entityDeleteButtonSelector).last().click();
         cy.getEntityDeleteDialogHeading('conversation').should('exist');
         cy.get(entityConfirmDeleteButtonSelector).click();
@@ -209,11 +156,9 @@ describe('Conversation e2e test', () => {
       cy.getEntityCreateUpdateHeading('Conversation');
     });
 
-    it.skip('should create an instance of Conversation', () => {
+    it('should create an instance of Conversation', () => {
       cy.get(`[data-cy="title"]`).type('simplification');
       cy.get(`[data-cy="title"]`).should('have.value', 'simplification');
-
-      cy.get(`[data-cy="participant"]`).select([0]);
 
       cy.get(entityCreateSaveButtonSelector).click();
 

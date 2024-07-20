@@ -1,11 +1,11 @@
-id;status;note;created_by;created_date;last_modified_by;last_modified_date;user_id;shipment_id
-c8ff56c4-105d-4d17-8a51-8afa61466dd2;COMPLETED;provided;disastrous round;2024-07-03T18:20:47;duh paltry;2024-07-04T09:53:21;1;d0eddb11-0108-45db-9170-414fbc0ea32c
-918031c7-44c3-44f7-b26b-2541f3cacbb1;ASSIGNED;supreme sweet;banking worrisome tedious;2024-07-04T02:04:27;broken about lest;2024-07-04T04:36:27;2;dcbb4fb4-46ba-467e-a9f8-299eae579cf8
-1689abcf-3dba-4d43-9420-bf2cc5c9d3e6;OTHER;and dangle;only;2024-07-03T23:37:49;sometimes marinate villainous;2024-07-03T22:52:19;1;03aea226-2d25-496c-adf0-7fc53b3a733f
-154f438c-771f-4511-b5d5-d91ef1b0c1b0;FAILED;once level partially;afterwards;2024-07-03T21:39:14;bludge indeed amazon;2024-07-03T12:57:14;2;5cc0f1ee-3e54-418b-a5f5-60e9fe9c8bd1
-f6f468a5-cd29-4dc5-8dc0-ef4232ed9133;FAILED;psst;animated tremendously plus;2024-07-04T08:43:31;confidentiality;2024-07-04T04:55:01;1;7014f7e9-cd58-4120-b3ae-3cd22ebd2f48
-d0029c1d-a148-4670-8a35-a2cc943da77a;COMPLETED;bassoon;prey liquid;2024-07-04T09:27:14;up lest price;2024-07-04T08:04:07;2;ddf687e7-50fb-4b04-baf9-69a06fb9ea91
-97380965-dd4e-4bde-89c3-ae67bbd07182;ASSIGNED;phooey blitz;oh;2024-07-03T23:43:42;vastly cummerbund;2024-07-03T20:40:55;2;3fa29151-d0f8-4154-976e-bf0b053c6dc1
-6c473445-b48e-4b5f-883f-af2f151ae653;IN_PROGRESS;expression reoccur sturdy;including frightfully;2024-07-03T14:02:23;flippant psst suddenly;2024-07-03T14:51:22;2;006f2049-d89c-43a1-bcf9-7269f9fd6397
-df0efe94-4fa9-4542-bba7-de2972fb5029;IN_PROGRESS;blah fibroblast;webmail wet;2024-07-03T12:52:10;save mercerise;2024-07-03T16:12:13;2;714ebdbc-27cb-485b-8bd6-9d323acebaf6
-5fd269f7-fb9b-4513-ac0b-e6d3001399e1;ASSIGNED;since that overtax;psst;2024-07-03T18:10:16;briskly if;2024-07-03T15:06:04;1;16bc4aec-be4f-454e-8852-a2df66aa4f31
+id;status;note;created_by;created_date;last_modified_by;last_modified_date;shipment_id
+c8ff56c4-105d-4d17-8a51-8afa61466dd2;COMPLETED;provided;disastrous round;2024-07-03T18:20:47;duh paltry;2024-07-04T09:53:21;d0eddb11-0108-45db-9170-414fbc0ea32c
+918031c7-44c3-44f7-b26b-2541f3cacbb1;ASSIGNED;supreme sweet;banking worrisome tedious;2024-07-04T02:04:27;broken about lest;2024-07-04T04:36:27;dcbb4fb4-46ba-467e-a9f8-299eae579cf8
+1689abcf-3dba-4d43-9420-bf2cc5c9d3e6;OTHER;and dangle;only;2024-07-03T23:37:49;sometimes marinate villainous;2024-07-03T22:52:19;03aea226-2d25-496c-adf0-7fc53b3a733f
+154f438c-771f-4511-b5d5-d91ef1b0c1b0;FAILED;once level partially;afterwards;2024-07-03T21:39:14;bludge indeed amazon;2024-07-03T12:57:14;5cc0f1ee-3e54-418b-a5f5-60e9fe9c8bd1
+f6f468a5-cd29-4dc5-8dc0-ef4232ed9133;FAILED;psst;animated tremendously plus;2024-07-04T08:43:31;confidentiality;2024-07-04T04:55:01;7014f7e9-cd58-4120-b3ae-3cd22ebd2f48
+d0029c1d-a148-4670-8a35-a2cc943da77a;COMPLETED;bassoon;prey liquid;2024-07-04T09:27:14;up lest price;2024-07-04T08:04:07;ddf687e7-50fb-4b04-baf9-69a06fb9ea91
+97380965-dd4e-4bde-89c3-ae67bbd07182;ASSIGNED;phooey blitz;oh;2024-07-03T23:43:42;vastly cummerbund;2024-07-03T20:40:55;3fa29151-d0f8-4154-976e-bf0b053c6dc1
+6c473445-b48e-4b5f-883f-af2f151ae653;IN_PROGRESS;expression reoccur sturdy;including frightfully;2024-07-03T14:02:23;flippant psst suddenly;2024-07-03T14:51:22;006f2049-d89c-43a1-bcf9-7269f9fd6397
+df0efe94-4fa9-4542-bba7-de2972fb5029;IN_PROGRESS;blah fibroblast;webmail wet;2024-07-03T12:52:10;save mercerise;2024-07-03T16:12:13;714ebdbc-27cb-485b-8bd6-9d323acebaf6
+5fd269f7-fb9b-4513-ac0b-e6d3001399e1;ASSIGNED;since that overtax;psst;2024-07-03T18:10:16;briskly if;2024-07-03T15:06:04;16bc4aec-be4f-454e-8852-a2df66aa4f31

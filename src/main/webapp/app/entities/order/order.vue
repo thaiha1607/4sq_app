@@ -58,7 +58,6 @@
             <th scope="row"><span>Created Date</span></th>
             <th scope="row"><span>Last Modified By</span></th>
             <th scope="row"><span>Last Modified Date</span></th>
-            <th scope="row"><span>Creator</span></th>
             <th scope="row"><span>Customer</span></th>
             <th scope="row"><span>Status</span></th>
             <th scope="row"><span>Address</span></th>
@@ -79,9 +78,6 @@
             <td>{{ formatDateShort(order.createdDate) || '' }}</td>
             <td>{{ order.lastModifiedBy }}</td>
             <td>{{ formatDateShort(order.lastModifiedDate) || '' }}</td>
-            <td>
-              {{ order.creator ? order.creator.login : '' }}
-            </td>
             <td>
               {{ order.customer ? order.customer.login : '' }}
             </td>
