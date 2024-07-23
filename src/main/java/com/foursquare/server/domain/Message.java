@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -40,10 +42,6 @@ public class Message extends AbstractAuditingEntity<UUID> implements Serializabl
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String content;
 
-    @Column(name = "is_seen")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Boolean)
-    private Boolean isSeen;
-
     // Inherited createdBy definition
     // Inherited createdDate definition
     // Inherited lastModifiedBy definition
@@ -52,8 +50,18 @@ public class Message extends AbstractAuditingEntity<UUID> implements Serializabl
     private boolean isPersisted;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value = { "user", "conversation", "messages" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "user", "conversation", "messages", "seenMessages" }, allowSetters = true)
     private Participant participant;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "rel_message__seen_participant",
+        joinColumns = @JoinColumn(name = "message_id"),
+        inverseJoinColumns = @JoinColumn(name = "seen_participant_id")
+    )
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @JsonIgnoreProperties(value = { "user", "conversation", "messages", "seenMessages" }, allowSetters = true)
+    private Set<Participant> seenParticipants = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -94,19 +102,6 @@ public class Message extends AbstractAuditingEntity<UUID> implements Serializabl
 
     public void setContent(String content) {
         this.content = content;
-    }
-
-    public Boolean getIsSeen() {
-        return this.isSeen;
-    }
-
-    public Message isSeen(Boolean isSeen) {
-        this.setIsSeen(isSeen);
-        return this;
-    }
-
-    public void setIsSeen(Boolean isSeen) {
-        this.isSeen = isSeen;
     }
 
     // Inherited createdBy methods
@@ -163,6 +158,29 @@ public class Message extends AbstractAuditingEntity<UUID> implements Serializabl
         return this;
     }
 
+    public Set<Participant> getSeenParticipants() {
+        return this.seenParticipants;
+    }
+
+    public void setSeenParticipants(Set<Participant> participants) {
+        this.seenParticipants = participants;
+    }
+
+    public Message seenParticipants(Set<Participant> participants) {
+        this.setSeenParticipants(participants);
+        return this;
+    }
+
+    public Message addSeenParticipant(Participant participant) {
+        this.seenParticipants.add(participant);
+        return this;
+    }
+
+    public Message removeSeenParticipant(Participant participant) {
+        this.seenParticipants.remove(participant);
+        return this;
+    }
+
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
@@ -189,7 +207,6 @@ public class Message extends AbstractAuditingEntity<UUID> implements Serializabl
             "id=" + getId() +
             ", type='" + getType() + "'" +
             ", content='" + getContent() + "'" +
-            ", isSeen='" + getIsSeen() + "'" +
             ", createdBy='" + getCreatedBy() + "'" +
             ", createdDate='" + getCreatedDate() + "'" +
             ", lastModifiedBy='" + getLastModifiedBy() + "'" +

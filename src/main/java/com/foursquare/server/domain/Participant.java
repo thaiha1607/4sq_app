@@ -53,8 +53,14 @@ public class Participant extends AbstractAuditingEntity<UUID> implements Seriali
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "participant")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @org.springframework.data.annotation.Transient
-    @JsonIgnoreProperties(value = { "participant" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "participant", "seenParticipants" }, allowSetters = true)
     private Set<Message> messages = new HashSet<>();
+
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "seenParticipants")
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @org.springframework.data.annotation.Transient
+    @JsonIgnoreProperties(value = { "participant", "seenParticipants" }, allowSetters = true)
+    private Set<Message> seenMessages = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -179,6 +185,37 @@ public class Participant extends AbstractAuditingEntity<UUID> implements Seriali
     public Participant removeMessage(Message message) {
         this.messages.remove(message);
         message.setParticipant(null);
+        return this;
+    }
+
+    public Set<Message> getSeenMessages() {
+        return this.seenMessages;
+    }
+
+    public void setSeenMessages(Set<Message> messages) {
+        if (this.seenMessages != null) {
+            this.seenMessages.forEach(i -> i.removeSeenParticipant(this));
+        }
+        if (messages != null) {
+            messages.forEach(i -> i.addSeenParticipant(this));
+        }
+        this.seenMessages = messages;
+    }
+
+    public Participant seenMessages(Set<Message> messages) {
+        this.setSeenMessages(messages);
+        return this;
+    }
+
+    public Participant addSeenMessage(Message message) {
+        this.seenMessages.add(message);
+        message.getSeenParticipants().add(this);
+        return this;
+    }
+
+    public Participant removeSeenMessage(Message message) {
+        this.seenMessages.remove(message);
+        message.getSeenParticipants().remove(this);
         return this;
     }
 

@@ -70,7 +70,6 @@ public class MessageGatlingTest extends Simulation {
                                 "{" +
                                 "\"type\": \"TEXT\"" +
                                 ", \"content\": \"SAMPLE_TEXT\"" +
-                                ", \"isSeen\": null" +
                                 ", \"createdBy\": \"SAMPLE_TEXT\"" +
                                 ", \"createdDate\": \"2020-01-01T00:00:00.000Z\"" +
                                 ", \"lastModifiedBy\": \"SAMPLE_TEXT\"" +

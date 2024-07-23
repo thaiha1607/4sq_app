@@ -90,10 +90,12 @@ public class CacheConfiguration {
             createCache(cm, com.foursquare.server.domain.Conversation.class.getName() + ".participants", jcacheConfiguration);
             createCache(cm, com.foursquare.server.domain.Participant.class.getName(), jcacheConfiguration);
             createCache(cm, com.foursquare.server.domain.Participant.class.getName() + ".messages", jcacheConfiguration);
+            createCache(cm, com.foursquare.server.domain.Participant.class.getName() + ".seenMessages", jcacheConfiguration);
             createCache(cm, com.foursquare.server.domain.InvoiceStatus.class.getName(), jcacheConfiguration);
             createCache(cm, com.foursquare.server.domain.Invoice.class.getName(), jcacheConfiguration);
             createCache(cm, com.foursquare.server.domain.Invoice.class.getName() + ".shipments", jcacheConfiguration);
             createCache(cm, com.foursquare.server.domain.Message.class.getName(), jcacheConfiguration);
+            createCache(cm, com.foursquare.server.domain.Message.class.getName() + ".seenParticipants", jcacheConfiguration);
             createCache(cm, com.foursquare.server.domain.OrderItem.class.getName(), jcacheConfiguration);
             createCache(cm, com.foursquare.server.domain.OrderStatus.class.getName(), jcacheConfiguration);
             createCache(cm, com.foursquare.server.domain.Order.class.getName(), jcacheConfiguration);

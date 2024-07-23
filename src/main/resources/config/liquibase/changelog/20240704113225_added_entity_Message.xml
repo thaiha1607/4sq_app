@@ -20,9 +20,6 @@
             <column name="content" type="varchar(255)">
                 <constraints nullable="false" />
             </column>
-            <column name="is_seen" type="boolean" defaultValueBoolean="false">
-                <constraints nullable="true" />
-            </column>
             <column name="created_by" type="varchar(50)">
                 <constraints nullable="false" />
             </column>
@@ -44,6 +41,20 @@
         <dropDefaultValue tableName="message" columnName="last_modified_date" columnDataType="${datetimeType}"/>
     </changeSet>
 
+    <changeSet id="20240704113225-1-relations" author="jhipster">
+
+        <createTable tableName="rel_message__seen_participant">
+            <column name="seen_participant_id" type="${uuidType}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="message_id" type="${uuidType}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey columnNames="message_id, seen_participant_id" tableName="rel_message__seen_participant"/>
+    </changeSet>
+
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->
 
     <!--
@@ -63,7 +74,6 @@
             <column name="id" type="${uuidType}"/>
             <column name="type" type="string"/>
             <column name="content" type="string"/>
-            <column name="is_seen" type="boolean"/>
             <column name="created_by" type="string"/>
             <column name="created_date" type="date"/>
             <column name="last_modified_by" type="string"/>

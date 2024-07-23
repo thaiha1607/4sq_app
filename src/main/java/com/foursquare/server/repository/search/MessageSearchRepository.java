@@ -52,7 +52,7 @@ class MessageSearchRepositoryInternalImpl implements MessageSearchRepositoryInte
 
     @Override
     public void index(Message entity) {
-        repository.findById(entity.getId()).ifPresent(elasticsearchTemplate::save);
+        repository.findOneWithEagerRelationships(entity.getId()).ifPresent(elasticsearchTemplate::save);
     }
 
     @Override

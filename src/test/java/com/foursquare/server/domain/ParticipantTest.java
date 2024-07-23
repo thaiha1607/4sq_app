@@ -59,4 +59,26 @@ class ParticipantTest {
         assertThat(participant.getMessages()).doesNotContain(messageBack);
         assertThat(messageBack.getParticipant()).isNull();
     }
+
+    @Test
+    void seenMessageTest() {
+        Participant participant = getParticipantRandomSampleGenerator();
+        Message messageBack = getMessageRandomSampleGenerator();
+
+        participant.addSeenMessage(messageBack);
+        assertThat(participant.getSeenMessages()).containsOnly(messageBack);
+        assertThat(messageBack.getSeenParticipants()).containsOnly(participant);
+
+        participant.removeSeenMessage(messageBack);
+        assertThat(participant.getSeenMessages()).doesNotContain(messageBack);
+        assertThat(messageBack.getSeenParticipants()).doesNotContain(participant);
+
+        participant.seenMessages(new HashSet<>(Set.of(messageBack)));
+        assertThat(participant.getSeenMessages()).containsOnly(messageBack);
+        assertThat(messageBack.getSeenParticipants()).containsOnly(participant);
+
+        participant.setSeenMessages(new HashSet<>());
+        assertThat(participant.getSeenMessages()).doesNotContain(messageBack);
+        assertThat(messageBack.getSeenParticipants()).doesNotContain(participant);
+    }
 }

@@ -42,18 +42,6 @@
             </div>
           </div>
           <div class="form-group">
-            <label class="form-control-label" for="message-isSeen">Is Seen</label>
-            <input
-              type="checkbox"
-              class="form-check"
-              name="isSeen"
-              id="message-isSeen"
-              data-cy="isSeen"
-              :class="{ valid: !v$.isSeen.$invalid, invalid: v$.isSeen.$invalid }"
-              v-model="v$.isSeen.$model"
-            />
-          </div>
-          <div class="form-group">
             <label class="form-control-label" for="message-createdBy">Created By</label>
             <input
               type="text"
@@ -115,6 +103,26 @@
                 v-bind:value="
                   message.participant && participantOption.id === message.participant.id ? message.participant : participantOption
                 "
+                v-for="participantOption in participants"
+                :key="participantOption.id"
+              >
+                {{ participantOption.id }}
+              </option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="message-seenParticipant">Seen Participant</label>
+            <select
+              class="form-control"
+              id="message-seenParticipants"
+              data-cy="seenParticipant"
+              multiple
+              name="seenParticipant"
+              v-if="message.seenParticipants !== undefined"
+              v-model="message.seenParticipants"
+            >
+              <option
+                v-bind:value="getSelected(message.seenParticipants, participantOption, 'id')"
                 v-for="participantOption in participants"
                 :key="participantOption.id"
               >

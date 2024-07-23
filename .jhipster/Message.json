@@ -26,13 +26,6 @@
       "fieldValidateRules": ["required"]
     },
     {
-      "fieldName": "isSeen",
-      "fieldType": "Boolean",
-      "options": {
-        "defaultValue": true
-      }
-    },
-    {
       "auditField": true,
       "autoGenerate": true,
       "columnType": "varchar(50)",
@@ -78,6 +71,13 @@
       "relationshipName": "participant",
       "relationshipSide": "left",
       "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "participant",
+      "otherEntityRelationshipName": "seenMessage",
+      "relationshipName": "seenParticipant",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-many"
     }
   ]
 }

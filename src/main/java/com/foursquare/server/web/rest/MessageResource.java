@@ -135,10 +135,11 @@ public class MessageResource {
     /**
      * {@code GET  /messages} : get all the messages.
      *
+     * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of messages in body.
      */
     @GetMapping("")
-    public List<MessageDTO> getAllMessages() {
+    public List<MessageDTO> getAllMessages(@RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload) {
         log.debug("REST request to get all Messages");
         return messageService.findAll();
     }

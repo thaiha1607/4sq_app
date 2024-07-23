@@ -12,6 +12,7 @@ import AlertService from '@/shared/alert/alert.service';
 
 import UserService from '@/entities/user/user.service';
 import ConversationService from '@/entities/conversation/conversation.service';
+import MessageService from '@/entities/message/message.service';
 
 type ParticipantUpdateComponentType = InstanceType<typeof ParticipantUpdate>;
 
@@ -62,6 +63,10 @@ describe('Component Tests', () => {
             } as any),
           conversationService: () =>
             sinon.createStubInstance<ConversationService>(ConversationService, {
+              retrieve: sinon.stub().resolves({}),
+            } as any),
+          messageService: () =>
+            sinon.createStubInstance<MessageService>(MessageService, {
               retrieve: sinon.stub().resolves({}),
             } as any),
         },

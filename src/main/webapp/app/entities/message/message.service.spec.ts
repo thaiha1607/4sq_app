@@ -33,16 +33,7 @@ describe('Service Tests', () => {
     beforeEach(() => {
       service = new MessageService();
       currentDate = new Date();
-      elemDefault = new Message(
-        '9fec3727-3421-4967-b213-ba36557ca194',
-        'TEXT',
-        'AAAAAAA',
-        false,
-        'AAAAAAA',
-        currentDate,
-        'AAAAAAA',
-        currentDate,
-      );
+      elemDefault = new Message('9fec3727-3421-4967-b213-ba36557ca194', 'TEXT', 'AAAAAAA', 'AAAAAAA', currentDate, 'AAAAAAA', currentDate);
     });
 
     describe('Service methods', () => {
@@ -110,7 +101,6 @@ describe('Service Tests', () => {
           {
             type: 'BBBBBB',
             content: 'BBBBBB',
-            isSeen: true,
             createdBy: 'BBBBBB',
             createdDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
             lastModifiedBy: 'BBBBBB',
@@ -148,8 +138,9 @@ describe('Service Tests', () => {
         const patchObject = Object.assign(
           {
             type: 'BBBBBB',
-            isSeen: true,
+            content: 'BBBBBB',
             createdDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
+            lastModifiedDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
           },
           new Message(),
         );
@@ -185,7 +176,6 @@ describe('Service Tests', () => {
           {
             type: 'BBBBBB',
             content: 'BBBBBB',
-            isSeen: true,
             createdBy: 'BBBBBB',
             createdDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
             lastModifiedBy: 'BBBBBB',

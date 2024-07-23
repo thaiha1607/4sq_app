@@ -13,6 +13,8 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -106,6 +108,15 @@ public class MessageService {
     }
 
     /**
+     * Get all the messages with eager load of many-to-many relationships.
+     *
+     * @return the list of entities.
+     */
+    public Page<MessageDTO> findAllWithEagerRelationships(Pageable pageable) {
+        return messageRepository.findAllWithEagerRelationships(pageable).map(messageMapper::toDto);
+    }
+
+    /**
      * Get one message by id.
      *
      * @param id the id of the entity.
@@ -114,7 +125,7 @@ public class MessageService {
     @Transactional(readOnly = true)
     public Optional<MessageDTO> findOne(UUID id) {
         log.debug("Request to get Message : {}", id);
-        return messageRepository.findById(id).map(messageMapper::toDto);
+        return messageRepository.findOneWithEagerRelationships(id).map(messageMapper::toDto);
     }
 
     /**

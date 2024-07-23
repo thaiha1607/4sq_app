@@ -17,5 +17,19 @@
                                  referencedTableName="participant"
                                  onDelete="SET NULL"
                                  />
+
+        <addForeignKeyConstraint baseColumnNames="message_id"
+                                 baseTableName="rel_message__seen_participant"
+                                 constraintName="fk_rel_message__seen_participant__message_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="message"
+                                 />
+
+        <addForeignKeyConstraint baseColumnNames="seen_participant_id"
+                                 baseTableName="rel_message__seen_participant"
+                                 constraintName="fk_rel_message__seen_participant__seen_participant_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="participant"
+                                 />
     </changeSet>
 </databaseChangeLog>

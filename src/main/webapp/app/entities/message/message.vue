@@ -52,12 +52,12 @@
             <th scope="row"><span>ID</span></th>
             <th scope="row"><span>Type</span></th>
             <th scope="row"><span>Content</span></th>
-            <th scope="row"><span>Is Seen</span></th>
             <th scope="row"><span>Created By</span></th>
             <th scope="row"><span>Created Date</span></th>
             <th scope="row"><span>Last Modified By</span></th>
             <th scope="row"><span>Last Modified Date</span></th>
             <th scope="row"><span>Participant</span></th>
+            <th scope="row"><span>Seen Participant</span></th>
             <th scope="row"></th>
           </tr>
         </thead>
@@ -68,7 +68,6 @@
             </td>
             <td>{{ message.type }}</td>
             <td>{{ message.content }}</td>
-            <td>{{ message.isSeen }}</td>
             <td>{{ message.createdBy }}</td>
             <td>{{ formatDateShort(message.createdDate) || '' }}</td>
             <td>{{ message.lastModifiedBy }}</td>
@@ -79,6 +78,14 @@
                   message.participant.id
                 }}</router-link>
               </div>
+            </td>
+            <td>
+              <span v-for="(seenParticipant, i) in message.seenParticipants" :key="seenParticipant.id"
+                >{{ i > 0 ? ', ' : '' }}
+                <router-link class="form-control-static" :to="{ name: 'ParticipantView', params: { participantId: seenParticipant.id } }">{{
+                  seenParticipant.id
+                }}</router-link>
+              </span>
             </td>
             <td class="text-right">
               <div class="btn-group">

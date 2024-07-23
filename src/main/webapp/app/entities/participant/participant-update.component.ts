@@ -9,6 +9,8 @@ import { useAlertService } from '@/shared/alert/alert.service';
 import UserService from '@/entities/user/user.service';
 import ConversationService from '@/entities/conversation/conversation.service';
 import { type IConversation } from '@/shared/model/conversation.model';
+import MessageService from '@/entities/message/message.service';
+import { type IMessage } from '@/shared/model/message.model';
 import { type IParticipant, Participant } from '@/shared/model/participant.model';
 
 export default defineComponent({
@@ -25,6 +27,10 @@ export default defineComponent({
     const conversationService = inject('conversationService', () => new ConversationService());
 
     const conversations: Ref<IConversation[]> = ref([]);
+
+    const messageService = inject('messageService', () => new MessageService());
+
+    const messages: Ref<IMessage[]> = ref([]);
     const isSaving = ref(false);
     const currentLanguage = inject('currentLanguage', () => computed(() => navigator.language ?? 'en'), true);
 
@@ -59,6 +65,11 @@ export default defineComponent({
         .then(res => {
           conversations.value = res.data;
         });
+      messageService()
+        .retrieve()
+        .then(res => {
+          messages.value = res.data;
+        });
     };
 
     initRelationships();
@@ -76,6 +87,7 @@ export default defineComponent({
       conversation: {
         required: validations.required('This field is required.'),
       },
+      seenMessages: {},
     };
     const v$ = useVuelidate(validationRules, participant as any);
     v$.value.$validate();
@@ -89,11 +101,14 @@ export default defineComponent({
       currentLanguage,
       users,
       conversations,
+      messages,
       v$,
       ...useDateFormat({ entityRef: participant }),
     };
   },
-  created(): void {},
+  created(): void {
+    this.participant.seenMessages = [];
+  },
   methods: {
     save(): void {
       this.isSaving = true;
@@ -122,6 +137,13 @@ export default defineComponent({
             this.alertService.showHttpError(error.response);
           });
       }
+    },
+
+    getSelected(selectedVals, option, pkField = 'id'): any {
+      if (selectedVals) {
+        return selectedVals.find(value => option[pkField] === value[pkField]) ?? option;
+      }
+      return option;
     },
   },
 });

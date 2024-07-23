@@ -15,9 +15,11 @@ import com.foursquare.server.domain.Message;
 import com.foursquare.server.domain.enumeration.MessageType;
 import com.foursquare.server.repository.MessageRepository;
 import com.foursquare.server.repository.search.MessageSearchRepository;
+import com.foursquare.server.service.MessageService;
 import com.foursquare.server.service.dto.MessageDTO;
 import com.foursquare.server.service.mapper.MessageMapper;
 import jakarta.persistence.EntityManager;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -25,8 +27,13 @@ import org.assertj.core.util.IterableUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.util.Streamable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -37,6 +44,7 @@ import org.springframework.transaction.annotation.Transactional;
  * Integration tests for the {@link MessageResource} REST controller.
  */
 @IntegrationTest
+@ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc
 @WithMockUser
 class MessageResourceIT {
@@ -46,9 +54,6 @@ class MessageResourceIT {
 
     private static final String DEFAULT_CONTENT = "AAAAAAAAAA";
     private static final String UPDATED_CONTENT = "BBBBBBBBBB";
-
-    private static final Boolean DEFAULT_IS_SEEN = false;
-    private static final Boolean UPDATED_IS_SEEN = true;
 
     private static final String ENTITY_API_URL = "/api/messages";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
@@ -60,8 +65,14 @@ class MessageResourceIT {
     @Autowired
     private MessageRepository messageRepository;
 
+    @Mock
+    private MessageRepository messageRepositoryMock;
+
     @Autowired
     private MessageMapper messageMapper;
+
+    @Mock
+    private MessageService messageServiceMock;
 
     @Autowired
     private MessageSearchRepository messageSearchRepository;
@@ -83,7 +94,7 @@ class MessageResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Message createEntity(EntityManager em) {
-        Message message = new Message().type(DEFAULT_TYPE).content(DEFAULT_CONTENT).isSeen(DEFAULT_IS_SEEN);
+        Message message = new Message().type(DEFAULT_TYPE).content(DEFAULT_CONTENT);
         return message;
     }
 
@@ -94,7 +105,7 @@ class MessageResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Message createUpdatedEntity(EntityManager em) {
-        Message message = new Message().type(UPDATED_TYPE).content(UPDATED_CONTENT).isSeen(UPDATED_IS_SEEN);
+        Message message = new Message().type(UPDATED_TYPE).content(UPDATED_CONTENT);
         return message;
     }
 
@@ -220,8 +231,24 @@ class MessageResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(message.getId().toString())))
             .andExpect(jsonPath("$.[*].type").value(hasItem(DEFAULT_TYPE.toString())))
-            .andExpect(jsonPath("$.[*].content").value(hasItem(DEFAULT_CONTENT)))
-            .andExpect(jsonPath("$.[*].isSeen").value(hasItem(DEFAULT_IS_SEEN.booleanValue())));
+            .andExpect(jsonPath("$.[*].content").value(hasItem(DEFAULT_CONTENT)));
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    void getAllMessagesWithEagerRelationshipsIsEnabled() throws Exception {
+        when(messageServiceMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
+
+        restMessageMockMvc.perform(get(ENTITY_API_URL + "?eagerload=true")).andExpect(status().isOk());
+
+        verify(messageServiceMock, times(1)).findAllWithEagerRelationships(any());
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    void getAllMessagesWithEagerRelationshipsIsNotEnabled() throws Exception {
+        when(messageServiceMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
+
+        restMessageMockMvc.perform(get(ENTITY_API_URL + "?eagerload=false")).andExpect(status().isOk());
+        verify(messageRepositoryMock, times(1)).findAll(any(Pageable.class));
     }
 
     @Test
@@ -237,8 +264,7 @@ class MessageResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(message.getId().toString()))
             .andExpect(jsonPath("$.type").value(DEFAULT_TYPE.toString()))
-            .andExpect(jsonPath("$.content").value(DEFAULT_CONTENT))
-            .andExpect(jsonPath("$.isSeen").value(DEFAULT_IS_SEEN.booleanValue()));
+            .andExpect(jsonPath("$.content").value(DEFAULT_CONTENT));
     }
 
     @Test
@@ -262,7 +288,7 @@ class MessageResourceIT {
         Message updatedMessage = messageRepository.findById(message.getId()).orElseThrow();
         // Disconnect from session so that the updates on updatedMessage are not directly saved in db
         em.detach(updatedMessage);
-        updatedMessage.type(UPDATED_TYPE).content(UPDATED_CONTENT).isSeen(UPDATED_IS_SEEN);
+        updatedMessage.type(UPDATED_TYPE).content(UPDATED_CONTENT);
         MessageDTO messageDTO = messageMapper.toDto(updatedMessage);
 
         restMessageMockMvc
@@ -366,8 +392,6 @@ class MessageResourceIT {
         Message partialUpdatedMessage = new Message();
         partialUpdatedMessage.setId(message.getId());
 
-        partialUpdatedMessage.isSeen(UPDATED_IS_SEEN);
-
         restMessageMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, partialUpdatedMessage.getId())
@@ -394,7 +418,7 @@ class MessageResourceIT {
         Message partialUpdatedMessage = new Message();
         partialUpdatedMessage.setId(message.getId());
 
-        partialUpdatedMessage.type(UPDATED_TYPE).content(UPDATED_CONTENT).isSeen(UPDATED_IS_SEEN);
+        partialUpdatedMessage.type(UPDATED_TYPE).content(UPDATED_CONTENT);
 
         restMessageMockMvc
             .perform(
@@ -518,8 +542,7 @@ class MessageResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(message.getId().toString())))
             .andExpect(jsonPath("$.[*].type").value(hasItem(DEFAULT_TYPE.toString())))
-            .andExpect(jsonPath("$.[*].content").value(hasItem(DEFAULT_CONTENT)))
-            .andExpect(jsonPath("$.[*].isSeen").value(hasItem(DEFAULT_IS_SEEN.booleanValue())));
+            .andExpect(jsonPath("$.[*].content").value(hasItem(DEFAULT_CONTENT)));
     }
 
     protected long getRepositoryCount() {

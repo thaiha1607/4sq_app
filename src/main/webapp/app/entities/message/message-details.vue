@@ -17,12 +17,6 @@
             <span>{{ message.content }}</span>
           </dd>
           <dt>
-            <span>Is Seen</span>
-          </dt>
-          <dd>
-            <span>{{ message.isSeen }}</span>
-          </dd>
-          <dt>
             <span>Created By</span>
           </dt>
           <dd>
@@ -55,6 +49,17 @@
                 message.participant.id
               }}</router-link>
             </div>
+          </dd>
+          <dt>
+            <span>Seen Participant</span>
+          </dt>
+          <dd>
+            <span v-for="(seenParticipant, i) in message.seenParticipants" :key="seenParticipant.id"
+              >{{ i > 0 ? ', ' : '' }}
+              <router-link :to="{ name: 'ParticipantView', params: { participantId: seenParticipant.id } }">{{
+                seenParticipant.id
+              }}</router-link>
+            </span>
           </dd>
         </dl>
         <button type="submit" v-on:click.prevent="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">

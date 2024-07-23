@@ -65,12 +65,12 @@ export default defineComponent({
       content: {
         required: validations.required('This field is required.'),
       },
-      isSeen: {},
       createdBy: {},
       createdDate: {},
       lastModifiedBy: {},
       lastModifiedDate: {},
       participant: {},
+      seenParticipants: {},
     };
     const v$ = useVuelidate(validationRules, message as any);
     v$.value.$validate();
@@ -88,7 +88,9 @@ export default defineComponent({
       ...useDateFormat({ entityRef: message }),
     };
   },
-  created(): void {},
+  created(): void {
+    this.message.seenParticipants = [];
+  },
   methods: {
     save(): void {
       this.isSaving = true;
@@ -117,6 +119,13 @@ export default defineComponent({
             this.alertService.showHttpError(error.response);
           });
       }
+    },
+
+    getSelected(selectedVals, option, pkField = 'id'): any {
+      if (selectedVals) {
+        return selectedVals.find(value => option[pkField] === value[pkField]) ?? option;
+      }
+      return option;
     },
   },
 });

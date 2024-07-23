@@ -5,12 +5,12 @@ export interface IMessage {
   id?: string;
   type?: keyof typeof MessageType;
   content?: string;
-  isSeen?: boolean | null;
   createdBy?: string;
   createdDate?: Date;
   lastModifiedBy?: string;
   lastModifiedDate?: Date;
   participant?: IParticipant | null;
+  seenParticipants?: IParticipant[] | null;
 }
 
 export class Message implements IMessage {
@@ -18,13 +18,11 @@ export class Message implements IMessage {
     public id?: string,
     public type?: keyof typeof MessageType,
     public content?: string,
-    public isSeen?: boolean | null,
     public createdBy?: string,
     public createdDate?: Date,
     public lastModifiedBy?: string,
     public lastModifiedDate?: Date,
     public participant?: IParticipant | null,
-  ) {
-    this.isSeen = this.isSeen ?? false;
-  }
+    public seenParticipants?: IParticipant[] | null,
+  ) {}
 }

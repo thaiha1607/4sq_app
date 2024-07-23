@@ -132,7 +132,6 @@ entity Message {
     id UUID
     type MessageType required
     content String required
-    @defaultValue(false) isSeen Boolean
 }
 enum MessageType {
     TEXT,
@@ -404,4 +403,5 @@ relationship ManyToOne {
  */
 relationship ManyToMany {
     Product{tag(name)} to Tag{product}
+    Message{seenParticipant} to Participant{seenMessage}
 }

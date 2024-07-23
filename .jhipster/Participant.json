@@ -88,6 +88,13 @@
       "relationshipName": "message",
       "relationshipSide": "right",
       "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "message",
+      "otherEntityRelationshipName": "seenParticipant",
+      "relationshipName": "seenMessage",
+      "relationshipSide": "right",
+      "relationshipType": "many-to-many"
     }
   ]
 }

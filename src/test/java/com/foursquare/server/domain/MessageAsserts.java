@@ -50,8 +50,7 @@ public class MessageAsserts {
         assertThat(expected)
             .as("Verify Message relevant properties")
             .satisfies(e -> assertThat(e.getType()).as("check type").isEqualTo(actual.getType()))
-            .satisfies(e -> assertThat(e.getContent()).as("check content").isEqualTo(actual.getContent()))
-            .satisfies(e -> assertThat(e.getIsSeen()).as("check isSeen").isEqualTo(actual.getIsSeen()));
+            .satisfies(e -> assertThat(e.getContent()).as("check content").isEqualTo(actual.getContent()));
     }
 
     /**
@@ -63,6 +62,7 @@ public class MessageAsserts {
     public static void assertMessageUpdatableRelationshipsEquals(Message expected, Message actual) {
         assertThat(expected)
             .as("Verify Message relationships")
-            .satisfies(e -> assertThat(e.getParticipant()).as("check participant").isEqualTo(actual.getParticipant()));
+            .satisfies(e -> assertThat(e.getParticipant()).as("check participant").isEqualTo(actual.getParticipant()))
+            .satisfies(e -> assertThat(e.getSeenParticipants()).as("check seenParticipants").isEqualTo(actual.getSeenParticipants()));
     }
 }

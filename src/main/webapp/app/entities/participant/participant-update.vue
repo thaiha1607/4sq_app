@@ -117,6 +117,26 @@
           <div v-if="v$.conversation.$anyDirty && v$.conversation.$invalid">
             <small class="form-text text-danger" v-for="error of v$.conversation.$errors" :key="error.$uid">{{ error.$message }}</small>
           </div>
+          <div class="form-group">
+            <label for="participant-seenMessage">Seen Message</label>
+            <select
+              class="form-control"
+              id="participant-seenMessages"
+              data-cy="seenMessage"
+              multiple
+              name="seenMessage"
+              v-if="participant.seenMessages !== undefined"
+              v-model="participant.seenMessages"
+            >
+              <option
+                v-bind:value="getSelected(participant.seenMessages, messageOption, 'id')"
+                v-for="messageOption in messages"
+                :key="messageOption.id"
+              >
+                {{ messageOption.id }}
+              </option>
+            </select>
+          </div>
         </div>
         <div>
           <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" v-on:click="previousState()">

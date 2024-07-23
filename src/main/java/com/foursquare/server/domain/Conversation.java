@@ -46,7 +46,7 @@ public class Conversation extends AbstractAuditingEntity<UUID> implements Serial
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "conversation")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @org.springframework.data.annotation.Transient
-    @JsonIgnoreProperties(value = { "user", "conversation", "messages" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "user", "conversation", "messages", "seenMessages" }, allowSetters = true)
     private Set<Participant> participants = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here

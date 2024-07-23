@@ -15,7 +15,7 @@ describe('Message e2e test', () => {
   const messagePageUrlPattern = new RegExp('/message(\\?.*)?$');
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
-  const messageSample = { type: 'TEXT', content: 'demoralise restfully an' };
+  const messageSample = { type: 'IMAGE', content: 'shimmering spider' };
 
   let message;
 
@@ -159,12 +159,8 @@ describe('Message e2e test', () => {
     it('should create an instance of Message', () => {
       cy.get(`[data-cy="type"]`).select('OTHER');
 
-      cy.get(`[data-cy="content"]`).type('goodie shallow excuse');
-      cy.get(`[data-cy="content"]`).should('have.value', 'goodie shallow excuse');
-
-      cy.get(`[data-cy="isSeen"]`).should('not.be.checked');
-      cy.get(`[data-cy="isSeen"]`).click();
-      cy.get(`[data-cy="isSeen"]`).should('be.checked');
+      cy.get(`[data-cy="content"]`).type('unnaturally past');
+      cy.get(`[data-cy="content"]`).should('have.value', 'unnaturally past');
 
       cy.get(entityCreateSaveButtonSelector).click();
 

@@ -57,6 +57,7 @@
             <th scope="row"><span>Last Modified Date</span></th>
             <th scope="row"><span>User</span></th>
             <th scope="row"><span>Conversation</span></th>
+            <th scope="row"><span>Seen Message</span></th>
             <th scope="row"></th>
           </tr>
         </thead>
@@ -79,6 +80,14 @@
                   participant.conversation.title
                 }}</router-link>
               </div>
+            </td>
+            <td>
+              <span v-for="(seenMessage, i) in participant.seenMessages" :key="seenMessage.id"
+                >{{ i > 0 ? ', ' : '' }}
+                <router-link class="form-control-static" :to="{ name: 'MessageView', params: { messageId: seenMessage.id } }">{{
+                  seenMessage.id
+                }}</router-link>
+              </span>
             </td>
             <td class="text-right">
               <div class="btn-group">

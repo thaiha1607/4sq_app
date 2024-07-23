@@ -1,5 +1,6 @@
 import { type IUser } from '@/shared/model/user.model';
 import { type IConversation } from '@/shared/model/conversation.model';
+import { type IMessage } from '@/shared/model/message.model';
 
 export interface IParticipant {
   id?: string;
@@ -10,6 +11,7 @@ export interface IParticipant {
   lastModifiedDate?: Date;
   user?: IUser;
   conversation?: IConversation;
+  seenMessages?: IMessage[] | null;
 }
 
 export class Participant implements IParticipant {
@@ -22,6 +24,7 @@ export class Participant implements IParticipant {
     public lastModifiedDate?: Date,
     public user?: IUser,
     public conversation?: IConversation,
+    public seenMessages?: IMessage[] | null,
   ) {
     this.isAdmin = this.isAdmin ?? false;
   }

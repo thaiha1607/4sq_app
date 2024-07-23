@@ -3,7 +3,9 @@ package com.foursquare.server.service.dto;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -29,6 +31,8 @@ public class ParticipantDTO implements Serializable {
 
     @NotNull
     private ConversationDTO conversation;
+
+    private Set<MessageDTO> seenMessages = new HashSet<>();
 
     public UUID getId() {
         return id;
@@ -94,6 +98,14 @@ public class ParticipantDTO implements Serializable {
         this.conversation = conversation;
     }
 
+    public Set<MessageDTO> getSeenMessages() {
+        return seenMessages;
+    }
+
+    public void setSeenMessages(Set<MessageDTO> seenMessages) {
+        this.seenMessages = seenMessages;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -127,6 +139,7 @@ public class ParticipantDTO implements Serializable {
             ", lastModifiedDate='" + getLastModifiedDate() + "'" +
             ", user=" + getUser() +
             ", conversation=" + getConversation() +
+            ", seenMessages=" + getSeenMessages() +
             "}";
     }
 }

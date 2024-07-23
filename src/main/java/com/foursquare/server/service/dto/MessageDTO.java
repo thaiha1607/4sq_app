@@ -4,7 +4,9 @@ import com.foursquare.server.domain.enumeration.MessageType;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -21,8 +23,6 @@ public class MessageDTO implements Serializable {
     @NotNull
     private String content;
 
-    private Boolean isSeen;
-
     private String createdBy;
 
     private Instant createdDate;
@@ -32,6 +32,8 @@ public class MessageDTO implements Serializable {
     private Instant lastModifiedDate;
 
     private ParticipantDTO participant;
+
+    private Set<ParticipantDTO> seenParticipants = new HashSet<>();
 
     public UUID getId() {
         return id;
@@ -55,14 +57,6 @@ public class MessageDTO implements Serializable {
 
     public void setContent(String content) {
         this.content = content;
-    }
-
-    public Boolean getIsSeen() {
-        return isSeen;
-    }
-
-    public void setIsSeen(Boolean isSeen) {
-        this.isSeen = isSeen;
     }
 
     public String getCreatedBy() {
@@ -105,6 +99,14 @@ public class MessageDTO implements Serializable {
         this.participant = participant;
     }
 
+    public Set<ParticipantDTO> getSeenParticipants() {
+        return seenParticipants;
+    }
+
+    public void setSeenParticipants(Set<ParticipantDTO> seenParticipants) {
+        this.seenParticipants = seenParticipants;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -133,12 +135,12 @@ public class MessageDTO implements Serializable {
             "id='" + getId() + "'" +
             ", type='" + getType() + "'" +
             ", content='" + getContent() + "'" +
-            ", isSeen='" + getIsSeen() + "'" +
             ", createdBy='" + getCreatedBy() + "'" +
             ", createdDate='" + getCreatedDate() + "'" +
             ", lastModifiedBy='" + getLastModifiedBy() + "'" +
             ", lastModifiedDate='" + getLastModifiedDate() + "'" +
             ", participant=" + getParticipant() +
+            ", seenParticipants=" + getSeenParticipants() +
             "}";
     }
 }
