@@ -53,8 +53,8 @@
             <th scope="row"><span>Type</span></th>
             <th scope="row"><span>Priority</span></th>
             <th scope="row"><span>Is Internal</span></th>
-            <th scope="row"><span>Customer Note</span></th>
-            <th scope="row"><span>Internal Note</span></th>
+            <th scope="row"><span>Note</span></th>
+            <th scope="row"><span>Other Info</span></th>
             <th scope="row"><span>Created By</span></th>
             <th scope="row"><span>Created Date</span></th>
             <th scope="row"><span>Last Modified By</span></th>
@@ -74,8 +74,8 @@
             <td>{{ order.type }}</td>
             <td>{{ order.priority }}</td>
             <td>{{ order.isInternal }}</td>
-            <td>{{ order.customerNote }}</td>
-            <td>{{ order.internalNote }}</td>
+            <td>{{ order.note }}</td>
+            <td>{{ order.otherInfo }}</td>
             <td>{{ order.createdBy }}</td>
             <td>{{ formatDateShort(order.createdDate) || '' }}</td>
             <td>{{ order.lastModifiedBy }}</td>

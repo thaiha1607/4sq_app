@@ -1,4 +1,4 @@
-id;type;priority;is_internal;customer_note;internal_note;created_by;created_date;last_modified_by;last_modified_date;customer_id;status_status_code
+id;type;priority;is_internal;note;other_info;created_by;created_date;last_modified_by;last_modified_date;customer_id;status_status_code
 ca49b61c-6d77-472d-8cc6-690bfff04cb1;SALE;2;false;as nicely ordinary;phew what miaow;trusty serene;2024-07-03T20:39:17;hm torpedo meh;2024-07-03T21:58:12;1;1
 434fc7e0-3ada-48bf-a261-85a77bb38f38;OTHER;32;true;hm what since;riposte;mmm brr joshingly;2024-07-03T18:08:58;yum leader ick;2024-07-04T10:15:42;2;2
 18005c3d-45f6-4cdc-b3fe-cc4f95ae3c5c;OTHER;5;false;yet trample victoriously;geez stop past;mostly;2024-07-04T01:39:42;finally recklessly;2024-07-03T15:08:47;2;3

@@ -169,8 +169,8 @@ entity Order {
     type OrderType required
     @defaultValue(0) priority Integer min(0) max(100)
     @defaultValue(false) isInternal Boolean
-    customerNote String
-    internalNote String
+    note String
+    otherInfo String
 }
 enum OrderType {
     SALE,

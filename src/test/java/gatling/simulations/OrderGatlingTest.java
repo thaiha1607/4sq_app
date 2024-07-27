@@ -71,8 +71,8 @@ public class OrderGatlingTest extends Simulation {
                                 "\"type\": \"SALE\"" +
                                 ", \"priority\": 0" +
                                 ", \"isInternal\": null" +
-                                ", \"customerNote\": \"SAMPLE_TEXT\"" +
-                                ", \"internalNote\": \"SAMPLE_TEXT\"" +
+                                ", \"note\": \"SAMPLE_TEXT\"" +
+                                ", \"otherInfo\": \"SAMPLE_TEXT\"" +
                                 ", \"createdBy\": \"SAMPLE_TEXT\"" +
                                 ", \"createdDate\": \"2020-01-01T00:00:00.000Z\"" +
                                 ", \"lastModifiedBy\": \"SAMPLE_TEXT\"" +

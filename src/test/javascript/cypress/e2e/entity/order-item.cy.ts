@@ -39,7 +39,7 @@ describe('OrderItem e2e test', () => {
     cy.authenticatedRequest({
       method: 'POST',
       url: '/api/orders',
-      body: {"type":"EXCHANGE","priority":31,"isInternal":false,"customerNote":"promptly","internalNote":"because who sin"},
+      body: {"type":"EXCHANGE","priority":31,"isInternal":false,"note":"promptly","otherInfo":"because who sin"},
     }).then(({ body }) => {
       order = body;
     });

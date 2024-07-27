@@ -285,11 +285,11 @@ describe('Order e2e test', () => {
       cy.get(`[data-cy="isInternal"]`).click();
       cy.get(`[data-cy="isInternal"]`).should('be.checked');
 
-      cy.get(`[data-cy="customerNote"]`).type('colorfully famously');
-      cy.get(`[data-cy="customerNote"]`).should('have.value', 'colorfully famously');
+      cy.get(`[data-cy="note"]`).type('colorfully famously');
+      cy.get(`[data-cy="note"]`).should('have.value', 'colorfully famously');
 
-      cy.get(`[data-cy="internalNote"]`).type('aw mouth');
-      cy.get(`[data-cy="internalNote"]`).should('have.value', 'aw mouth');
+      cy.get(`[data-cy="otherInfo"]`).type('aw mouth');
+      cy.get(`[data-cy="otherInfo"]`).should('have.value', 'aw mouth');
 
       cy.get(`[data-cy="orderItem"]`).select([0]);
       cy.get(`[data-cy="customer"]`).select(1);

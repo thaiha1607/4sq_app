@@ -53,27 +53,27 @@
             />
           </div>
           <div class="form-group">
-            <label class="form-control-label" for="order-customerNote">Customer Note</label>
+            <label class="form-control-label" for="order-note">Note</label>
             <input
               type="text"
               class="form-control"
-              name="customerNote"
-              id="order-customerNote"
-              data-cy="customerNote"
-              :class="{ valid: !v$.customerNote.$invalid, invalid: v$.customerNote.$invalid }"
-              v-model="v$.customerNote.$model"
+              name="note"
+              id="order-note"
+              data-cy="note"
+              :class="{ valid: !v$.note.$invalid, invalid: v$.note.$invalid }"
+              v-model="v$.note.$model"
             />
           </div>
           <div class="form-group">
-            <label class="form-control-label" for="order-internalNote">Internal Note</label>
+            <label class="form-control-label" for="order-otherInfo">Other Info</label>
             <input
               type="text"
               class="form-control"
-              name="internalNote"
-              id="order-internalNote"
-              data-cy="internalNote"
-              :class="{ valid: !v$.internalNote.$invalid, invalid: v$.internalNote.$invalid }"
-              v-model="v$.internalNote.$model"
+              name="otherInfo"
+              id="order-otherInfo"
+              data-cy="otherInfo"
+              :class="{ valid: !v$.otherInfo.$invalid, invalid: v$.otherInfo.$invalid }"
+              v-model="v$.otherInfo.$model"
             />
           </div>
           <div class="form-group">

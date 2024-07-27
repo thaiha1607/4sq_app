@@ -39,7 +39,7 @@ describe('Invoice e2e test', () => {
     cy.authenticatedRequest({
       method: 'POST',
       url: '/api/orders',
-      body: {"type":"SALE","priority":35,"isInternal":false,"customerNote":"funk colossal review","internalNote":"mostly gosh flamboyant"},
+      body: {"type":"SALE","priority":35,"isInternal":false,"note":"funk colossal review","otherInfo":"mostly gosh flamboyant"},
     }).then(({ body }) => {
       order = body;
     });

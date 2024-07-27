@@ -39,7 +39,7 @@ describe('WarehouseAssignment e2e test', () => {
     cy.authenticatedRequest({
       method: 'POST',
       url: '/api/orders',
-      body: {"type":"TRANSFER","priority":73,"isInternal":true,"customerNote":"amongst cheerfully","internalNote":"yuck oof hm"},
+      body: {"type":"TRANSFER","priority":73,"isInternal":true,"note":"amongst cheerfully","otherInfo":"yuck oof hm"},
     }).then(({ body }) => {
       order = body;
     });

@@ -47,13 +47,13 @@ public class Order extends AbstractAuditingEntity<UUID> implements Serializable,
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Boolean)
     private Boolean isInternal;
 
-    @Column(name = "customer_note")
+    @Column(name = "note")
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
-    private String customerNote;
+    private String note;
 
-    @Column(name = "internal_note")
+    @Column(name = "other_info")
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
-    private String internalNote;
+    private String otherInfo;
 
     // Inherited createdBy definition
     // Inherited createdDate definition
@@ -161,30 +161,30 @@ public class Order extends AbstractAuditingEntity<UUID> implements Serializable,
         this.isInternal = isInternal;
     }
 
-    public String getCustomerNote() {
-        return this.customerNote;
+    public String getNote() {
+        return this.note;
     }
 
-    public Order customerNote(String customerNote) {
-        this.setCustomerNote(customerNote);
+    public Order note(String note) {
+        this.setNote(note);
         return this;
     }
 
-    public void setCustomerNote(String customerNote) {
-        this.customerNote = customerNote;
+    public void setNote(String note) {
+        this.note = note;
     }
 
-    public String getInternalNote() {
-        return this.internalNote;
+    public String getOtherInfo() {
+        return this.otherInfo;
     }
 
-    public Order internalNote(String internalNote) {
-        this.setInternalNote(internalNote);
+    public Order otherInfo(String otherInfo) {
+        this.setOtherInfo(otherInfo);
         return this;
     }
 
-    public void setInternalNote(String internalNote) {
-        this.internalNote = internalNote;
+    public void setOtherInfo(String otherInfo) {
+        this.otherInfo = otherInfo;
     }
 
     // Inherited createdBy methods
@@ -431,8 +431,8 @@ public class Order extends AbstractAuditingEntity<UUID> implements Serializable,
             ", type='" + getType() + "'" +
             ", priority=" + getPriority() +
             ", isInternal='" + getIsInternal() + "'" +
-            ", customerNote='" + getCustomerNote() + "'" +
-            ", internalNote='" + getInternalNote() + "'" +
+            ", note='" + getNote() + "'" +
+            ", otherInfo='" + getOtherInfo() + "'" +
             ", createdBy='" + getCreatedBy() + "'" +
             ", createdDate='" + getCreatedDate() + "'" +
             ", lastModifiedBy='" + getLastModifiedBy() + "'" +
