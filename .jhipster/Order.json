@@ -39,7 +39,11 @@
       }
     },
     {
-      "fieldName": "note",
+      "fieldName": "customerNote",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "internalNote",
       "fieldType": "String"
     },
     {

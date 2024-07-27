@@ -52,7 +52,8 @@ public class OrderAsserts {
             .satisfies(e -> assertThat(e.getType()).as("check type").isEqualTo(actual.getType()))
             .satisfies(e -> assertThat(e.getPriority()).as("check priority").isEqualTo(actual.getPriority()))
             .satisfies(e -> assertThat(e.getIsInternal()).as("check isInternal").isEqualTo(actual.getIsInternal()))
-            .satisfies(e -> assertThat(e.getNote()).as("check note").isEqualTo(actual.getNote()));
+            .satisfies(e -> assertThat(e.getCustomerNote()).as("check customerNote").isEqualTo(actual.getCustomerNote()))
+            .satisfies(e -> assertThat(e.getInternalNote()).as("check internalNote").isEqualTo(actual.getInternalNote()));
     }
 
     /**

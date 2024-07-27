@@ -8,7 +8,8 @@ export interface IOrder {
   type?: keyof typeof OrderType;
   priority?: number | null;
   isInternal?: boolean | null;
-  note?: string | null;
+  customerNote?: string | null;
+  internalNote?: string | null;
   createdBy?: string;
   createdDate?: Date;
   lastModifiedBy?: string;
@@ -25,7 +26,8 @@ export class Order implements IOrder {
     public type?: keyof typeof OrderType,
     public priority?: number | null,
     public isInternal?: boolean | null,
-    public note?: string | null,
+    public customerNote?: string | null,
+    public internalNote?: string | null,
     public createdBy?: string,
     public createdDate?: Date,
     public lastModifiedBy?: string,

@@ -1,11 +1,11 @@
-id;type;priority;is_internal;note;created_by;created_date;last_modified_by;last_modified_date;customer_id;status_status_code
-ca49b61c-6d77-472d-8cc6-690bfff04cb1;SALE;2;false;as nicely ordinary;phew what miaow;2024-07-03T21:03:57;euphoric piercing internal;2024-07-04T03:03:54;1;1
-9033b3e2-c0a7-4379-8434-fc7e03ada8bf;RETURN;10;false;obediently during;hm what since;2024-07-04T07:59:19;hmph;2024-07-04T08:04:52;2;2
-403c8bbd-90ec-45ad-b33d-46bcf78b3b43;EXCHANGE;30;true;crowded;strictly phew steep;2024-07-04T04:21:36;indeed whoa psst;2024-07-04T00:21:27;2;3
-1b18e66e-bf2e-4e4f-8d8a-43622060d272;EXCHANGE;41;false;mostly;support creature;2024-07-03T19:49:58;pathogenesis what boohoo;2024-07-04T05:14:53;2;4
-b8e1f2c0-82af-494a-b853-3b2fecc59cfa;EXCHANGE;65;false;versus inflict rightfully;hmph timely;2024-07-03T20:35:39;hm;2024-07-03T21:40:19;1;5
-d3690d91-4f16-4aa9-8f15-0b654aa82f96;OTHER;92;true;media off;presell cricket;2024-07-03T21:42:02;knowledgeably in;2024-07-04T02:19:44;1;6
-3314f772-b9a8-4693-8588-2088b052b6ed;TRANSFER;9;false;although;therapist influx anti;2024-07-04T09:38:18;reassuringly nor;2024-07-03T12:40:24;1;7
-a02fc32f-fc95-4e97-b9f8-f05cce106b70;EXCHANGE;67;true;gosh sting ick;at briskly apud;2024-07-04T08:54:39;often gee unlike;2024-07-04T07:47:04;2;8
-8cef1e58-a725-487b-b7ad-a087d6c6b306;OTHER;86;true;lope hence;mull corn below;2024-07-03T15:41:23;positively isogloss;2024-07-04T03:32:43;1;9
-27b40981-03f6-491b-b236-e167291c6036;OTHER;66;false;if dimly;grandiose;2024-07-03T19:11:41;please counterfeit;2024-07-04T06:33:57;1;10
+id;type;priority;is_internal;customer_note;internal_note;created_by;created_date;last_modified_by;last_modified_date;customer_id;status_status_code
+ca49b61c-6d77-472d-8cc6-690bfff04cb1;SALE;2;false;as nicely ordinary;phew what miaow;trusty serene;2024-07-03T20:39:17;hm torpedo meh;2024-07-03T21:58:12;1;1
+434fc7e0-3ada-48bf-a261-85a77bb38f38;OTHER;32;true;hm what since;riposte;mmm brr joshingly;2024-07-03T18:08:58;yum leader ick;2024-07-04T10:15:42;2;2
+18005c3d-45f6-4cdc-b3fe-cc4f95ae3c5c;OTHER;5;false;yet trample victoriously;geez stop past;mostly;2024-07-04T01:39:42;finally recklessly;2024-07-03T15:08:47;2;3
+075d24ab-36c3-4fb4-a6d4-0524b8e1f2c0;SALE;65;false;pace pay;worse versus inflict;eek hmph;2024-07-03T16:21:19;antique;2024-07-04T01:29:05;1;4
+f47a759d-3690-4d91-a4f1-6aa9f150b654;TRANSFER;55;true;ferret media off;presell cricket;mortally installation;2024-07-03T23:41:15;meh ugh;2024-07-04T05:49:01;1;5
+5882088b-052b-46ed-81c1-80249d590fe6;RETURN;35;false;influx anti section;wisely;geez while;2024-07-03T21:39:59;solidly gah;2024-07-04T11:14:59;1;6
+f6a0bdce-501d-462e-9424-d27e703ff6c0;TRANSFER;87;true;courageously cleverly;often gee unlike;incidentally;2024-07-03T23:08:51;failing wherever;2024-07-04T01:22:18;2;7
+c6b306ee-d6a9-43a7-9d48-2a4fa64d4bd1;SALE;55;false;though bah positively;beyond lest basics;given finally definite;2024-07-03T14:55:04;poncho;2024-07-03T23:03:17;1;8
+36204fe9-ae5a-4990-872d-dab2a216233a;SALE;82;true;that;painfully masonry defenseless;likewise ah sans;2024-07-04T02:49:53;upward;2024-07-03T13:33:39;1;9
+ea568830-04a9-4ec0-a644-f3b2cd93bd8e;OTHER;41;false;circa hammer phew;rigidly whereas;toward brave;2024-07-04T00:12:04;aw linen fondly;2024-07-04T11:30:38;1;10

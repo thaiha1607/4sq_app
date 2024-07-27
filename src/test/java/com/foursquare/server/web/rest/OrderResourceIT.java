@@ -63,8 +63,11 @@ class OrderResourceIT {
     private static final Boolean DEFAULT_IS_INTERNAL = false;
     private static final Boolean UPDATED_IS_INTERNAL = true;
 
-    private static final String DEFAULT_NOTE = "AAAAAAAAAA";
-    private static final String UPDATED_NOTE = "BBBBBBBBBB";
+    private static final String DEFAULT_CUSTOMER_NOTE = "AAAAAAAAAA";
+    private static final String UPDATED_CUSTOMER_NOTE = "BBBBBBBBBB";
+
+    private static final String DEFAULT_INTERNAL_NOTE = "AAAAAAAAAA";
+    private static final String UPDATED_INTERNAL_NOTE = "BBBBBBBBBB";
 
     private static final String ENTITY_API_URL = "/api/orders";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
@@ -108,7 +111,12 @@ class OrderResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Order createEntity(EntityManager em) {
-        Order order = new Order().type(DEFAULT_TYPE).priority(DEFAULT_PRIORITY).isInternal(DEFAULT_IS_INTERNAL).note(DEFAULT_NOTE);
+        Order order = new Order()
+            .type(DEFAULT_TYPE)
+            .priority(DEFAULT_PRIORITY)
+            .isInternal(DEFAULT_IS_INTERNAL)
+            .customerNote(DEFAULT_CUSTOMER_NOTE)
+            .internalNote(DEFAULT_INTERNAL_NOTE);
         // Add required entity
         User user = UserResourceIT.createEntity(em);
         em.persist(user);
@@ -134,7 +142,12 @@ class OrderResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Order createUpdatedEntity(EntityManager em) {
-        Order order = new Order().type(UPDATED_TYPE).priority(UPDATED_PRIORITY).isInternal(UPDATED_IS_INTERNAL).note(UPDATED_NOTE);
+        Order order = new Order()
+            .type(UPDATED_TYPE)
+            .priority(UPDATED_PRIORITY)
+            .isInternal(UPDATED_IS_INTERNAL)
+            .customerNote(UPDATED_CUSTOMER_NOTE)
+            .internalNote(UPDATED_INTERNAL_NOTE);
         // Add required entity
         User user = UserResourceIT.createEntity(em);
         em.persist(user);
@@ -256,7 +269,8 @@ class OrderResourceIT {
             .andExpect(jsonPath("$.[*].type").value(hasItem(DEFAULT_TYPE.toString())))
             .andExpect(jsonPath("$.[*].priority").value(hasItem(DEFAULT_PRIORITY)))
             .andExpect(jsonPath("$.[*].isInternal").value(hasItem(DEFAULT_IS_INTERNAL.booleanValue())))
-            .andExpect(jsonPath("$.[*].note").value(hasItem(DEFAULT_NOTE)));
+            .andExpect(jsonPath("$.[*].customerNote").value(hasItem(DEFAULT_CUSTOMER_NOTE)))
+            .andExpect(jsonPath("$.[*].internalNote").value(hasItem(DEFAULT_INTERNAL_NOTE)));
     }
 
     @SuppressWarnings({ "unchecked" })
@@ -291,7 +305,8 @@ class OrderResourceIT {
             .andExpect(jsonPath("$.type").value(DEFAULT_TYPE.toString()))
             .andExpect(jsonPath("$.priority").value(DEFAULT_PRIORITY))
             .andExpect(jsonPath("$.isInternal").value(DEFAULT_IS_INTERNAL.booleanValue()))
-            .andExpect(jsonPath("$.note").value(DEFAULT_NOTE));
+            .andExpect(jsonPath("$.customerNote").value(DEFAULT_CUSTOMER_NOTE))
+            .andExpect(jsonPath("$.internalNote").value(DEFAULT_INTERNAL_NOTE));
     }
 
     @Test
@@ -315,7 +330,12 @@ class OrderResourceIT {
         Order updatedOrder = orderRepository.findById(order.getId()).orElseThrow();
         // Disconnect from session so that the updates on updatedOrder are not directly saved in db
         em.detach(updatedOrder);
-        updatedOrder.type(UPDATED_TYPE).priority(UPDATED_PRIORITY).isInternal(UPDATED_IS_INTERNAL).note(UPDATED_NOTE);
+        updatedOrder
+            .type(UPDATED_TYPE)
+            .priority(UPDATED_PRIORITY)
+            .isInternal(UPDATED_IS_INTERNAL)
+            .customerNote(UPDATED_CUSTOMER_NOTE)
+            .internalNote(UPDATED_INTERNAL_NOTE);
         OrderDTO orderDTO = orderMapper.toDto(updatedOrder);
 
         restOrderMockMvc
@@ -445,7 +465,12 @@ class OrderResourceIT {
         Order partialUpdatedOrder = new Order();
         partialUpdatedOrder.setId(order.getId());
 
-        partialUpdatedOrder.type(UPDATED_TYPE).priority(UPDATED_PRIORITY).isInternal(UPDATED_IS_INTERNAL).note(UPDATED_NOTE);
+        partialUpdatedOrder
+            .type(UPDATED_TYPE)
+            .priority(UPDATED_PRIORITY)
+            .isInternal(UPDATED_IS_INTERNAL)
+            .customerNote(UPDATED_CUSTOMER_NOTE)
+            .internalNote(UPDATED_INTERNAL_NOTE);
 
         restOrderMockMvc
             .perform(
@@ -571,7 +596,8 @@ class OrderResourceIT {
             .andExpect(jsonPath("$.[*].type").value(hasItem(DEFAULT_TYPE.toString())))
             .andExpect(jsonPath("$.[*].priority").value(hasItem(DEFAULT_PRIORITY)))
             .andExpect(jsonPath("$.[*].isInternal").value(hasItem(DEFAULT_IS_INTERNAL.booleanValue())))
-            .andExpect(jsonPath("$.[*].note").value(hasItem(DEFAULT_NOTE)));
+            .andExpect(jsonPath("$.[*].customerNote").value(hasItem(DEFAULT_CUSTOMER_NOTE)))
+            .andExpect(jsonPath("$.[*].internalNote").value(hasItem(DEFAULT_INTERNAL_NOTE)));
     }
 
     protected long getRepositoryCount() {

@@ -40,6 +40,7 @@ describe('Service Tests', () => {
         false,
         'AAAAAAA',
         'AAAAAAA',
+        'AAAAAAA',
         currentDate,
         'AAAAAAA',
         currentDate,
@@ -112,7 +113,8 @@ describe('Service Tests', () => {
             type: 'BBBBBB',
             priority: 1,
             isInternal: true,
-            note: 'BBBBBB',
+            customerNote: 'BBBBBB',
+            internalNote: 'BBBBBB',
             createdBy: 'BBBBBB',
             createdDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
             lastModifiedBy: 'BBBBBB',
@@ -149,11 +151,12 @@ describe('Service Tests', () => {
       it('should partial update a Order', async () => {
         const patchObject = Object.assign(
           {
-            type: 'BBBBBB',
+            priority: 1,
             isInternal: true,
-            note: 'BBBBBB',
+            customerNote: 'BBBBBB',
             createdBy: 'BBBBBB',
             lastModifiedBy: 'BBBBBB',
+            lastModifiedDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
           },
           new Order(),
         );
@@ -190,7 +193,8 @@ describe('Service Tests', () => {
             type: 'BBBBBB',
             priority: 1,
             isInternal: true,
-            note: 'BBBBBB',
+            customerNote: 'BBBBBB',
+            internalNote: 'BBBBBB',
             createdBy: 'BBBBBB',
             createdDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
             lastModifiedBy: 'BBBBBB',

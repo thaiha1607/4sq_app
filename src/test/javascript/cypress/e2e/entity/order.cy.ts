@@ -15,7 +15,7 @@ describe('Order e2e test', () => {
   const orderPageUrlPattern = new RegExp('/order(\\?.*)?$');
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
-  // const orderSample = {"type":"TRANSFER"};
+  // const orderSample = {"type":"RETURN"};
 
   let order;
   // let orderItem;
@@ -276,17 +276,20 @@ describe('Order e2e test', () => {
     });
 
     it.skip('should create an instance of Order', () => {
-      cy.get(`[data-cy="type"]`).select('TRANSFER');
+      cy.get(`[data-cy="type"]`).select('SALE');
 
-      cy.get(`[data-cy="priority"]`).type('60');
-      cy.get(`[data-cy="priority"]`).should('have.value', '60');
+      cy.get(`[data-cy="priority"]`).type('30');
+      cy.get(`[data-cy="priority"]`).should('have.value', '30');
 
       cy.get(`[data-cy="isInternal"]`).should('not.be.checked');
       cy.get(`[data-cy="isInternal"]`).click();
       cy.get(`[data-cy="isInternal"]`).should('be.checked');
 
-      cy.get(`[data-cy="note"]`).type('tremendously regarding drat');
-      cy.get(`[data-cy="note"]`).should('have.value', 'tremendously regarding drat');
+      cy.get(`[data-cy="customerNote"]`).type('colorfully famously');
+      cy.get(`[data-cy="customerNote"]`).should('have.value', 'colorfully famously');
+
+      cy.get(`[data-cy="internalNote"]`).type('aw mouth');
+      cy.get(`[data-cy="internalNote"]`).should('have.value', 'aw mouth');
 
       cy.get(`[data-cy="orderItem"]`).select([0]);
       cy.get(`[data-cy="customer"]`).select(1);

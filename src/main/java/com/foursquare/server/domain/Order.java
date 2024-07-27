@@ -47,9 +47,13 @@ public class Order extends AbstractAuditingEntity<UUID> implements Serializable,
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Boolean)
     private Boolean isInternal;
 
-    @Column(name = "note")
+    @Column(name = "customer_note")
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
-    private String note;
+    private String customerNote;
+
+    @Column(name = "internal_note")
+    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
+    private String internalNote;
 
     // Inherited createdBy definition
     // Inherited createdDate definition
@@ -157,17 +161,30 @@ public class Order extends AbstractAuditingEntity<UUID> implements Serializable,
         this.isInternal = isInternal;
     }
 
-    public String getNote() {
-        return this.note;
+    public String getCustomerNote() {
+        return this.customerNote;
     }
 
-    public Order note(String note) {
-        this.setNote(note);
+    public Order customerNote(String customerNote) {
+        this.setCustomerNote(customerNote);
         return this;
     }
 
-    public void setNote(String note) {
-        this.note = note;
+    public void setCustomerNote(String customerNote) {
+        this.customerNote = customerNote;
+    }
+
+    public String getInternalNote() {
+        return this.internalNote;
+    }
+
+    public Order internalNote(String internalNote) {
+        this.setInternalNote(internalNote);
+        return this;
+    }
+
+    public void setInternalNote(String internalNote) {
+        this.internalNote = internalNote;
     }
 
     // Inherited createdBy methods
@@ -414,7 +431,8 @@ public class Order extends AbstractAuditingEntity<UUID> implements Serializable,
             ", type='" + getType() + "'" +
             ", priority=" + getPriority() +
             ", isInternal='" + getIsInternal() + "'" +
-            ", note='" + getNote() + "'" +
+            ", customerNote='" + getCustomerNote() + "'" +
+            ", internalNote='" + getInternalNote() + "'" +
             ", createdBy='" + getCreatedBy() + "'" +
             ", createdDate='" + getCreatedDate() + "'" +
             ", lastModifiedBy='" + getLastModifiedBy() + "'" +

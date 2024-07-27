@@ -23,10 +23,16 @@
             <span>{{ order.isInternal }}</span>
           </dd>
           <dt>
-            <span>Note</span>
+            <span>Customer Note</span>
           </dt>
           <dd>
-            <span>{{ order.note }}</span>
+            <span>{{ order.customerNote }}</span>
+          </dd>
+          <dt>
+            <span>Internal Note</span>
+          </dt>
+          <dd>
+            <span>{{ order.internalNote }}</span>
           </dd>
           <dt>
             <span>Created By</span>

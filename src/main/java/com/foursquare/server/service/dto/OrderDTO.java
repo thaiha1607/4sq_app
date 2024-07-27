@@ -24,7 +24,9 @@ public class OrderDTO implements Serializable {
 
     private Boolean isInternal;
 
-    private String note;
+    private String customerNote;
+
+    private String internalNote;
 
     private String createdBy;
 
@@ -76,12 +78,20 @@ public class OrderDTO implements Serializable {
         this.isInternal = isInternal;
     }
 
-    public String getNote() {
-        return note;
+    public String getCustomerNote() {
+        return customerNote;
     }
 
-    public void setNote(String note) {
-        this.note = note;
+    public void setCustomerNote(String customerNote) {
+        this.customerNote = customerNote;
+    }
+
+    public String getInternalNote() {
+        return internalNote;
+    }
+
+    public void setInternalNote(String internalNote) {
+        this.internalNote = internalNote;
     }
 
     public String getCreatedBy() {
@@ -177,7 +187,8 @@ public class OrderDTO implements Serializable {
             ", type='" + getType() + "'" +
             ", priority=" + getPriority() +
             ", isInternal='" + getIsInternal() + "'" +
-            ", note='" + getNote() + "'" +
+            ", customerNote='" + getCustomerNote() + "'" +
+            ", internalNote='" + getInternalNote() + "'" +
             ", createdBy='" + getCreatedBy() + "'" +
             ", createdDate='" + getCreatedDate() + "'" +
             ", lastModifiedBy='" + getLastModifiedBy() + "'" +

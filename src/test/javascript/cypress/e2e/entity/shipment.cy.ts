@@ -49,7 +49,7 @@ describe('Shipment e2e test', () => {
     cy.authenticatedRequest({
       method: 'POST',
       url: '/api/orders',
-      body: {"type":"RETURN","priority":81,"isInternal":true,"note":"dock"},
+      body: {"type":"RETURN","priority":39,"isInternal":false,"customerNote":"ick tube passbook","internalNote":"at"},
     }).then(({ body }) => {
       order = body;
     });
