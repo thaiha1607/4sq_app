@@ -20,9 +20,9 @@ export default defineComponent({
     const previousState = () => router.go(-1);
     const shipmentStatus: Ref<IShipmentStatus> = ref({});
 
-    const retrieveShipmentStatus = async shipmentStatusStatusCode => {
+    const retrieveShipmentStatus = async shipmentStatusId => {
       try {
-        const res = await shipmentStatusService().find(shipmentStatusStatusCode);
+        const res = await shipmentStatusService().find(shipmentStatusId);
         shipmentStatus.value = res;
       } catch (error) {
         alertService.showHttpError(error.response);

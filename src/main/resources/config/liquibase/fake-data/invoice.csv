@@ -1,4 +1,4 @@
-id;total_amount;type;payment_method;note;created_by;created_date;last_modified_by;last_modified_date;status_status_code;order_id
+id;total_amount;type;payment_method;note;created_by;created_date;last_modified_by;last_modified_date;status_id;order_id
 1844538c-133b-4814-b96a-396b595d9ddd;24983.29;PRO_FORMA;CASH;rhubarb instead;generally;2024-07-03T13:49:36;mind;2024-07-04T04:02:14;1;ca49b61c-6d77-472d-8cc6-690bfff04cb1
 8f0f3914-d39e-4b04-98e4-f827534bda0a;19322.52;FINAL;PREPAID_CARD;instead yellowish;bah victoriously jewel;2024-07-04T08:01:21;growling ancient animated;2024-07-04T06:42:04;2;434fc7e0-3ada-48bf-a261-85a77bb38f38
 acaaba8a-34c4-43c1-be47-8636ee46d57e;11679.11;FINAL;OTHER;outlet boastfully stoop;shocked;2024-07-04T11:01:16;beyond but;2024-07-04T10:43:13;3;18005c3d-45f6-4cdc-b3fe-cc4f95ae3c5c

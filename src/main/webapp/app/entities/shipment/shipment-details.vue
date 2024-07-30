@@ -51,8 +51,8 @@
           </dt>
           <dd>
             <div v-if="shipment.status">
-              <router-link :to="{ name: 'ShipmentStatusView', params: { shipmentStatusId: shipment.status.statusCode } }">{{
-                shipment.status.description
+              <router-link :to="{ name: 'ShipmentStatusView', params: { shipmentStatusId: shipment.status.id } }">{{
+                shipment.status.statusCode
               }}</router-link>
             </div>
           </dd>

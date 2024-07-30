@@ -78,8 +78,8 @@
             <td>{{ formatDateShort(invoice.lastModifiedDate) || '' }}</td>
             <td>
               <div v-if="invoice.status">
-                <router-link :to="{ name: 'InvoiceStatusView', params: { invoiceStatusId: invoice.status.statusCode } }">{{
-                  invoice.status.description
+                <router-link :to="{ name: 'InvoiceStatusView', params: { invoiceStatusId: invoice.status.id } }">{{
+                  invoice.status.statusCode
                 }}</router-link>
               </div>
             </td>

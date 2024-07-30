@@ -33,7 +33,7 @@ describe('Service Tests', () => {
     beforeEach(() => {
       service = new InvoiceStatusService();
       currentDate = new Date();
-      elemDefault = new InvoiceStatus(123, 'AAAAAAA', 'AAAAAAA', currentDate, 'AAAAAAA', currentDate);
+      elemDefault = new InvoiceStatus(123, 'AAAAAAA', 'AAAAAAA', 'AAAAAAA', currentDate, 'AAAAAAA', currentDate);
     });
 
     describe('Service methods', () => {
@@ -65,7 +65,7 @@ describe('Service Tests', () => {
       it('should create a InvoiceStatus', async () => {
         const returnedFromService = Object.assign(
           {
-            statusCode: 123,
+            id: 123,
             createdDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
             lastModifiedDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
           },
@@ -99,6 +99,7 @@ describe('Service Tests', () => {
       it('should update a InvoiceStatus', async () => {
         const returnedFromService = Object.assign(
           {
+            statusCode: 'BBBBBB',
             description: 'BBBBBB',
             createdBy: 'BBBBBB',
             createdDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
@@ -136,7 +137,7 @@ describe('Service Tests', () => {
       it('should partial update a InvoiceStatus', async () => {
         const patchObject = Object.assign(
           {
-            description: 'BBBBBB',
+            lastModifiedBy: 'BBBBBB',
           },
           new InvoiceStatus(),
         );
@@ -170,6 +171,7 @@ describe('Service Tests', () => {
       it('should return a list of InvoiceStatus', async () => {
         const returnedFromService = Object.assign(
           {
+            statusCode: 'BBBBBB',
             description: 'BBBBBB',
             createdBy: 'BBBBBB',
             createdDate: dayjs(currentDate).format(DATE_TIME_FORMAT),

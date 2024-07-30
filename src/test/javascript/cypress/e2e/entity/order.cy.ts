@@ -48,7 +48,7 @@ describe('Order e2e test', () => {
     cy.authenticatedRequest({
       method: 'POST',
       url: '/api/order-statuses',
-      body: {"description":"however"},
+      body: {"statusCode":"astride ribbon","description":"er cease at"},
     }).then(({ body }) => {
       orderStatus = body;
     });
@@ -134,7 +134,7 @@ describe('Order e2e test', () => {
     if (orderStatus) {
       cy.authenticatedRequest({
         method: 'DELETE',
-        url: `/api/order-statuses/${orderStatus.statusCode}`,
+        url: `/api/order-statuses/${orderStatus.id}`,
       }).then(() => {
         orderStatus = undefined;
       });

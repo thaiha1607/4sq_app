@@ -41,7 +41,7 @@ describe('Shipment e2e test', () => {
     cy.authenticatedRequest({
       method: 'POST',
       url: '/api/shipment-statuses',
-      body: {"description":"opposite creditor unnaturally"},
+      body: {"statusCode":"affiliate plus upon","description":"alienated although"},
     }).then(({ body }) => {
       shipmentStatus = body;
     });
@@ -125,7 +125,7 @@ describe('Shipment e2e test', () => {
     if (shipmentStatus) {
       cy.authenticatedRequest({
         method: 'DELETE',
-        url: `/api/shipment-statuses/${shipmentStatus.statusCode}`,
+        url: `/api/shipment-statuses/${shipmentStatus.id}`,
       }).then(() => {
         shipmentStatus = undefined;
       });

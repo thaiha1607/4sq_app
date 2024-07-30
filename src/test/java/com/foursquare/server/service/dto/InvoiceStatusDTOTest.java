@@ -11,14 +11,14 @@ class InvoiceStatusDTOTest {
     void dtoEqualsVerifier() throws Exception {
         TestUtil.equalsVerifier(InvoiceStatusDTO.class);
         InvoiceStatusDTO invoiceStatusDTO1 = new InvoiceStatusDTO();
-        invoiceStatusDTO1.setStatusCode(1L);
+        invoiceStatusDTO1.setId(1L);
         InvoiceStatusDTO invoiceStatusDTO2 = new InvoiceStatusDTO();
         assertThat(invoiceStatusDTO1).isNotEqualTo(invoiceStatusDTO2);
-        invoiceStatusDTO2.setStatusCode(invoiceStatusDTO1.getStatusCode());
+        invoiceStatusDTO2.setId(invoiceStatusDTO1.getId());
         assertThat(invoiceStatusDTO1).isEqualTo(invoiceStatusDTO2);
-        invoiceStatusDTO2.setStatusCode(2L);
+        invoiceStatusDTO2.setId(2L);
         assertThat(invoiceStatusDTO1).isNotEqualTo(invoiceStatusDTO2);
-        invoiceStatusDTO1.setStatusCode(null);
+        invoiceStatusDTO1.setId(null);
         assertThat(invoiceStatusDTO1).isNotEqualTo(invoiceStatusDTO2);
     }
 }

@@ -151,11 +151,11 @@
             <select class="form-control" id="order-status" data-cy="status" name="status" v-model="order.status" required>
               <option v-if="!order.status" v-bind:value="null" selected></option>
               <option
-                v-bind:value="order.status && orderStatusOption.statusCode === order.status.statusCode ? order.status : orderStatusOption"
+                v-bind:value="order.status && orderStatusOption.id === order.status.id ? order.status : orderStatusOption"
                 v-for="orderStatusOption in orderStatuses"
-                :key="orderStatusOption.statusCode"
+                :key="orderStatusOption.id"
               >
-                {{ orderStatusOption.description }}
+                {{ orderStatusOption.statusCode }}
               </option>
             </select>
           </div>

@@ -81,7 +81,7 @@
       "relationshipType": "one-to-many"
     },
     {
-      "otherEntityField": "description",
+      "otherEntityField": "statusCode",
       "otherEntityName": "invoiceStatus",
       "relationshipName": "status",
       "relationshipSide": "left",

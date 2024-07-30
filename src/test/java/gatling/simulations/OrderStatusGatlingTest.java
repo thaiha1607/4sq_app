@@ -68,7 +68,8 @@ public class OrderStatusGatlingTest extends Simulation {
                         .body(
                             StringBody(
                                 "{" +
-                                "\"description\": \"SAMPLE_TEXT\"" +
+                                "\"statusCode\": \"SAMPLE_TEXT\"" +
+                                ", \"description\": \"SAMPLE_TEXT\"" +
                                 ", \"createdBy\": \"SAMPLE_TEXT\"" +
                                 ", \"createdDate\": \"2020-01-01T00:00:00.000Z\"" +
                                 ", \"lastModifiedBy\": \"SAMPLE_TEXT\"" +

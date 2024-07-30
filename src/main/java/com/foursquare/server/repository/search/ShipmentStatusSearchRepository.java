@@ -52,7 +52,7 @@ class ShipmentStatusSearchRepositoryInternalImpl implements ShipmentStatusSearch
 
     @Override
     public void index(ShipmentStatus entity) {
-        repository.findById(entity.getStatusCode()).ifPresent(elasticsearchTemplate::save);
+        repository.findById(entity.getId()).ifPresent(elasticsearchTemplate::save);
     }
 
     @Override

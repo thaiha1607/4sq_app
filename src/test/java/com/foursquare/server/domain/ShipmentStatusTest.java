@@ -15,7 +15,7 @@ class ShipmentStatusTest {
         ShipmentStatus shipmentStatus2 = new ShipmentStatus();
         assertThat(shipmentStatus1).isNotEqualTo(shipmentStatus2);
 
-        shipmentStatus2.setStatusCode(shipmentStatus1.getStatusCode());
+        shipmentStatus2.setId(shipmentStatus1.getId());
         assertThat(shipmentStatus1).isEqualTo(shipmentStatus2);
 
         shipmentStatus2 = getShipmentStatusSample2();

@@ -15,7 +15,7 @@ describe('InvoiceStatus e2e test', () => {
   const invoiceStatusPageUrlPattern = new RegExp('/invoice-status(\\?.*)?$');
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
-  const invoiceStatusSample = { description: 'aha' };
+  const invoiceStatusSample = { statusCode: 'behind launch' };
 
   let invoiceStatus;
 
@@ -33,7 +33,7 @@ describe('InvoiceStatus e2e test', () => {
     if (invoiceStatus) {
       cy.authenticatedRequest({
         method: 'DELETE',
-        url: `/api/invoice-statuses/${invoiceStatus.statusCode}`,
+        url: `/api/invoice-statuses/${invoiceStatus.id}`,
       }).then(() => {
         invoiceStatus = undefined;
       });
@@ -157,8 +157,11 @@ describe('InvoiceStatus e2e test', () => {
     });
 
     it('should create an instance of InvoiceStatus', () => {
-      cy.get(`[data-cy="description"]`).type('scrawny');
-      cy.get(`[data-cy="description"]`).should('have.value', 'scrawny');
+      cy.get(`[data-cy="statusCode"]`).type('meager bah');
+      cy.get(`[data-cy="statusCode"]`).should('have.value', 'meager bah');
+
+      cy.get(`[data-cy="description"]`).type('overconfidently');
+      cy.get(`[data-cy="description"]`).should('have.value', 'overconfidently');
 
       cy.get(entityCreateSaveButtonSelector).click();
 

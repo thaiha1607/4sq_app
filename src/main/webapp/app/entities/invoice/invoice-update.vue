@@ -131,13 +131,11 @@
             <select class="form-control" id="invoice-status" data-cy="status" name="status" v-model="invoice.status" required>
               <option v-if="!invoice.status" v-bind:value="null" selected></option>
               <option
-                v-bind:value="
-                  invoice.status && invoiceStatusOption.statusCode === invoice.status.statusCode ? invoice.status : invoiceStatusOption
-                "
+                v-bind:value="invoice.status && invoiceStatusOption.id === invoice.status.id ? invoice.status : invoiceStatusOption"
                 v-for="invoiceStatusOption in invoiceStatuses"
-                :key="invoiceStatusOption.statusCode"
+                :key="invoiceStatusOption.id"
               >
-                {{ invoiceStatusOption.description }}
+                {{ invoiceStatusOption.statusCode }}
               </option>
             </select>
           </div>

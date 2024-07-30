@@ -31,7 +31,7 @@ describe('Invoice e2e test', () => {
     cy.authenticatedRequest({
       method: 'POST',
       url: '/api/invoice-statuses',
-      body: {"description":"concerning aw"},
+      body: {"statusCode":"stepping-stone woot","description":"boohoo lest"},
     }).then(({ body }) => {
       invoiceStatus = body;
     });
@@ -89,7 +89,7 @@ describe('Invoice e2e test', () => {
     if (invoiceStatus) {
       cy.authenticatedRequest({
         method: 'DELETE',
-        url: `/api/invoice-statuses/${invoiceStatus.statusCode}`,
+        url: `/api/invoice-statuses/${invoiceStatus.id}`,
       }).then(() => {
         invoiceStatus = undefined;
       });

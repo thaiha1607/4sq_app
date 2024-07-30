@@ -10,10 +10,10 @@
     -->
     <changeSet id="20240704113125-2" author="jhipster">
 
-        <addForeignKeyConstraint baseColumnNames="status_status_code"
+        <addForeignKeyConstraint baseColumnNames="status_id"
                                  baseTableName="invoice"
                                  constraintName="fk_invoice__status_id"
-                                 referencedColumnNames="status_code"
+                                 referencedColumnNames="id"
                                  referencedTableName="invoice_status"
                                  />
 

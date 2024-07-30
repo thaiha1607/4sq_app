@@ -24,9 +24,9 @@ export default defineComponent({
 
     const previousState = () => router.go(-1);
 
-    const retrieveOrderStatus = async orderStatusStatusCode => {
+    const retrieveOrderStatus = async orderStatusId => {
       try {
-        const res = await orderStatusService().find(orderStatusStatusCode);
+        const res = await orderStatusService().find(orderStatusId);
         res.createdDate = new Date(res.createdDate);
         res.lastModifiedDate = new Date(res.lastModifiedDate);
         orderStatus.value = res;
@@ -41,9 +41,10 @@ export default defineComponent({
 
     const validations = useValidation();
     const validationRules = {
-      description: {
+      statusCode: {
         required: validations.required('This field is required.'),
       },
+      description: {},
       createdBy: {},
       createdDate: {},
       lastModifiedBy: {},
@@ -67,13 +68,13 @@ export default defineComponent({
   methods: {
     save(): void {
       this.isSaving = true;
-      if (this.orderStatus.statusCode) {
+      if (this.orderStatus.id) {
         this.orderStatusService()
           .update(this.orderStatus)
           .then(param => {
             this.isSaving = false;
             this.previousState();
-            this.alertService.showInfo('A OrderStatus is updated with identifier ' + param.statusCode);
+            this.alertService.showInfo('A OrderStatus is updated with identifier ' + param.id);
           })
           .catch(error => {
             this.isSaving = false;
@@ -85,7 +86,7 @@ export default defineComponent({
           .then(param => {
             this.isSaving = false;
             this.previousState();
-            this.alertService.showSuccess('A OrderStatus is created with identifier ' + param.statusCode);
+            this.alertService.showSuccess('A OrderStatus is created with identifier ' + param.id);
           })
           .catch(error => {
             this.isSaving = false;

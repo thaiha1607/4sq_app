@@ -15,7 +15,7 @@ import org.springframework.data.domain.Persistable;
 @Entity
 @Table(name = "shipment_status")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-@JsonIgnoreProperties(value = { "new", "id" })
+@JsonIgnoreProperties(value = { "new" })
 @org.springframework.data.elasticsearch.annotations.Document(indexName = "shipmentstatus")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class ShipmentStatus extends AbstractAuditingEntity<Long> implements Serializable, Persistable<Long> {
@@ -25,12 +25,15 @@ public class ShipmentStatus extends AbstractAuditingEntity<Long> implements Seri
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
     @SequenceGenerator(name = "sequenceGenerator")
-    @Column(name = "status_code")
-    @org.springframework.data.annotation.Id
-    private Long statusCode;
+    @Column(name = "id")
+    private Long id;
 
     @NotNull
-    @Column(name = "description", nullable = false)
+    @Column(name = "status_code", nullable = false)
+    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
+    private String statusCode;
+
+    @Column(name = "description")
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String description;
 
@@ -43,16 +46,29 @@ public class ShipmentStatus extends AbstractAuditingEntity<Long> implements Seri
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
-    public Long getStatusCode() {
+    public Long getId() {
+        return this.id;
+    }
+
+    public ShipmentStatus id(Long id) {
+        this.setId(id);
+        return this;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getStatusCode() {
         return this.statusCode;
     }
 
-    public ShipmentStatus statusCode(Long statusCode) {
+    public ShipmentStatus statusCode(String statusCode) {
         this.setStatusCode(statusCode);
         return this;
     }
 
-    public void setStatusCode(Long statusCode) {
+    public void setStatusCode(String statusCode) {
         this.statusCode = statusCode;
     }
 
@@ -99,11 +115,6 @@ public class ShipmentStatus extends AbstractAuditingEntity<Long> implements Seri
         this.setIsPersisted();
     }
 
-    @Override
-    public Long getId() {
-        return this.statusCode;
-    }
-
     @Transient
     @Override
     public boolean isNew() {
@@ -125,7 +136,7 @@ public class ShipmentStatus extends AbstractAuditingEntity<Long> implements Seri
         if (!(o instanceof ShipmentStatus)) {
             return false;
         }
-        return getStatusCode() != null && getStatusCode().equals(((ShipmentStatus) o).getStatusCode());
+        return getId() != null && getId().equals(((ShipmentStatus) o).getId());
     }
 
     @Override
@@ -138,7 +149,8 @@ public class ShipmentStatus extends AbstractAuditingEntity<Long> implements Seri
     @Override
     public String toString() {
         return "ShipmentStatus{" +
-            "statusCode=" + getStatusCode() +
+            "id=" + getId() +
+            ", statusCode='" + getStatusCode() + "'" +
             ", description='" + getDescription() + "'" +
             ", createdBy='" + getCreatedBy() + "'" +
             ", createdDate='" + getCreatedDate() + "'" +

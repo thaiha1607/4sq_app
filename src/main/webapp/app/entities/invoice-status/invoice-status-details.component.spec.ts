@@ -18,7 +18,7 @@ vitest.mock('vue-router', () => ({
   useRouter: () => ({ go: routerGoMock }),
 }));
 
-const invoiceStatusSample = { statusCode: 123 };
+const invoiceStatusSample = { id: 123 };
 
 describe('Component Tests', () => {
   let alertService: AlertService;

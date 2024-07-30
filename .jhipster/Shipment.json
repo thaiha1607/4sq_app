@@ -82,7 +82,7 @@
       "relationshipValidateRules": "required"
     },
     {
-      "otherEntityField": "description",
+      "otherEntityField": "statusCode",
       "otherEntityName": "shipmentStatus",
       "relationshipName": "status",
       "relationshipSide": "left",

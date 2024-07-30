@@ -15,7 +15,7 @@ describe('ShipmentStatus e2e test', () => {
   const shipmentStatusPageUrlPattern = new RegExp('/shipment-status(\\?.*)?$');
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
-  const shipmentStatusSample = { description: 'meanwhile ouch pineapple' };
+  const shipmentStatusSample = { statusCode: 'drat beneath' };
 
   let shipmentStatus;
 
@@ -33,7 +33,7 @@ describe('ShipmentStatus e2e test', () => {
     if (shipmentStatus) {
       cy.authenticatedRequest({
         method: 'DELETE',
-        url: `/api/shipment-statuses/${shipmentStatus.statusCode}`,
+        url: `/api/shipment-statuses/${shipmentStatus.id}`,
       }).then(() => {
         shipmentStatus = undefined;
       });
@@ -157,8 +157,11 @@ describe('ShipmentStatus e2e test', () => {
     });
 
     it('should create an instance of ShipmentStatus', () => {
-      cy.get(`[data-cy="description"]`).type('cofactor censure');
-      cy.get(`[data-cy="description"]`).should('have.value', 'cofactor censure');
+      cy.get(`[data-cy="statusCode"]`).type('next');
+      cy.get(`[data-cy="statusCode"]`).should('have.value', 'next');
+
+      cy.get(`[data-cy="description"]`).type('meh');
+      cy.get(`[data-cy="description"]`).should('have.value', 'meh');
 
       cy.get(entityCreateSaveButtonSelector).click();
 

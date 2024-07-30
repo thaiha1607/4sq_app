@@ -17,16 +17,16 @@ import org.mapstruct.*;
  */
 @Mapper(componentModel = "spring")
 public interface ShipmentMapper extends EntityMapper<ShipmentDTO, Shipment> {
-    @Mapping(target = "status", source = "status", qualifiedByName = "shipmentStatusDescription")
+    @Mapping(target = "status", source = "status", qualifiedByName = "shipmentStatusStatusCode")
     @Mapping(target = "order", source = "order", qualifiedByName = "orderId")
     @Mapping(target = "invoice", source = "invoice", qualifiedByName = "invoiceId")
     ShipmentDTO toDto(Shipment s);
 
-    @Named("shipmentStatusDescription")
+    @Named("shipmentStatusStatusCode")
     @BeanMapping(ignoreByDefault = true)
+    @Mapping(target = "id", source = "id")
     @Mapping(target = "statusCode", source = "statusCode")
-    @Mapping(target = "description", source = "description")
-    ShipmentStatusDTO toDtoShipmentStatusDescription(ShipmentStatus shipmentStatus);
+    ShipmentStatusDTO toDtoShipmentStatusStatusCode(ShipmentStatus shipmentStatus);
 
     @Named("orderId")
     @BeanMapping(ignoreByDefault = true)

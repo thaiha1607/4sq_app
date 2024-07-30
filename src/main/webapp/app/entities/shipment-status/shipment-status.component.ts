@@ -56,7 +56,7 @@ export default defineComponent({
     const removeId: Ref<number> = ref(null);
     const removeEntity = ref<any>(null);
     const prepareRemove = (instance: IShipmentStatus) => {
-      removeId.value = instance.statusCode;
+      removeId.value = instance.id;
       removeEntity.value.show();
     };
     const closeDialog = () => {

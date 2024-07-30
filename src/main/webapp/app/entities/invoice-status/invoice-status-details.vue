@@ -2,8 +2,14 @@
   <div class="row justify-content-center">
     <div class="col-8">
       <div v-if="invoiceStatus">
-        <h2 class="jh-entity-heading" data-cy="invoiceStatusDetailsHeading"><span>Invoice Status</span> {{ invoiceStatus.statusCode }}</h2>
+        <h2 class="jh-entity-heading" data-cy="invoiceStatusDetailsHeading"><span>Invoice Status</span> {{ invoiceStatus.id }}</h2>
         <dl class="row jh-entity-details">
+          <dt>
+            <span>Status Code</span>
+          </dt>
+          <dd>
+            <span>{{ invoiceStatus.statusCode }}</span>
+          </dd>
           <dt>
             <span>Description</span>
           </dt>
@@ -39,8 +45,8 @@
           <font-awesome-icon icon="arrow-left"></font-awesome-icon>&nbsp;<span>Back</span>
         </button>
         <router-link
-          v-if="invoiceStatus.statusCode"
-          :to="{ name: 'InvoiceStatusEdit', params: { invoiceStatusId: invoiceStatus.statusCode } }"
+          v-if="invoiceStatus.id"
+          :to="{ name: 'InvoiceStatusEdit', params: { invoiceStatusId: invoiceStatus.id } }"
           custom
           v-slot="{ navigate }"
         >

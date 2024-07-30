@@ -115,13 +115,11 @@
             <select class="form-control" id="shipment-status" data-cy="status" name="status" v-model="shipment.status" required>
               <option v-if="!shipment.status" v-bind:value="null" selected></option>
               <option
-                v-bind:value="
-                  shipment.status && shipmentStatusOption.statusCode === shipment.status.statusCode ? shipment.status : shipmentStatusOption
-                "
+                v-bind:value="shipment.status && shipmentStatusOption.id === shipment.status.id ? shipment.status : shipmentStatusOption"
                 v-for="shipmentStatusOption in shipmentStatuses"
-                :key="shipmentStatusOption.statusCode"
+                :key="shipmentStatusOption.id"
               >
-                {{ shipmentStatusOption.description }}
+                {{ shipmentStatusOption.statusCode }}
               </option>
             </select>
           </div>

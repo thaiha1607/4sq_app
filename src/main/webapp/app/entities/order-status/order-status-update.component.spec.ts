@@ -20,7 +20,7 @@ vitest.mock('vue-router', () => ({
   useRouter: () => ({ go: routerGoMock }),
 }));
 
-const orderStatusSample = { statusCode: 123 };
+const orderStatusSample = { id: 123 };
 
 describe('Component Tests', () => {
   let mountOptions: MountingOptions<OrderStatusUpdateComponentType>['global'];
@@ -125,7 +125,7 @@ describe('Component Tests', () => {
         // WHEN
         route = {
           params: {
-            orderStatusId: '' + orderStatusSample.statusCode,
+            orderStatusId: '' + orderStatusSample.id,
           },
         };
         const wrapper = shallowMount(OrderStatusUpdate, { global: mountOptions });

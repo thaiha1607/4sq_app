@@ -1,6 +1,7 @@
 export interface IOrderStatus {
   id?: number;
-  description?: string;
+  statusCode?: string;
+  description?: string | null;
   createdBy?: string;
   createdDate?: Date;
   lastModifiedBy?: string;
@@ -10,7 +11,8 @@ export interface IOrderStatus {
 export class OrderStatus implements IOrderStatus {
   constructor(
     public id?: number,
-    public description?: string,
+    public statusCode?: string,
+    public description?: string | null,
     public createdBy?: string,
     public createdDate?: Date,
     public lastModifiedBy?: string,

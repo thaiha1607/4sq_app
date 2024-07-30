@@ -79,7 +79,7 @@ public class OrderStatusService {
         log.debug("Request to partially update OrderStatus : {}", orderStatusDTO);
 
         return orderStatusRepository
-            .findById(orderStatusDTO.getStatusCode())
+            .findById(orderStatusDTO.getId())
             .map(existingOrderStatus -> {
                 orderStatusMapper.partialUpdate(existingOrderStatus, orderStatusDTO);
 

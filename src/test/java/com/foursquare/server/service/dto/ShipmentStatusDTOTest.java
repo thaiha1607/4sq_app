@@ -11,14 +11,14 @@ class ShipmentStatusDTOTest {
     void dtoEqualsVerifier() throws Exception {
         TestUtil.equalsVerifier(ShipmentStatusDTO.class);
         ShipmentStatusDTO shipmentStatusDTO1 = new ShipmentStatusDTO();
-        shipmentStatusDTO1.setStatusCode(1L);
+        shipmentStatusDTO1.setId(1L);
         ShipmentStatusDTO shipmentStatusDTO2 = new ShipmentStatusDTO();
         assertThat(shipmentStatusDTO1).isNotEqualTo(shipmentStatusDTO2);
-        shipmentStatusDTO2.setStatusCode(shipmentStatusDTO1.getStatusCode());
+        shipmentStatusDTO2.setId(shipmentStatusDTO1.getId());
         assertThat(shipmentStatusDTO1).isEqualTo(shipmentStatusDTO2);
-        shipmentStatusDTO2.setStatusCode(2L);
+        shipmentStatusDTO2.setId(2L);
         assertThat(shipmentStatusDTO1).isNotEqualTo(shipmentStatusDTO2);
-        shipmentStatusDTO1.setStatusCode(null);
+        shipmentStatusDTO1.setId(null);
         assertThat(shipmentStatusDTO1).isNotEqualTo(shipmentStatusDTO2);
     }
 }

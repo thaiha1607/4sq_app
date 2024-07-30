@@ -12,15 +12,12 @@
   "fields": [
     {
       "fieldName": "statusCode",
-      "fieldType": "Long",
-      "options": {
-        "id": true
-      }
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
     },
     {
       "fieldName": "description",
-      "fieldType": "String",
-      "fieldValidateRules": ["required"]
+      "fieldType": "String"
     },
     {
       "auditField": true,

@@ -79,7 +79,7 @@ public class ShipmentStatusService {
         log.debug("Request to partially update ShipmentStatus : {}", shipmentStatusDTO);
 
         return shipmentStatusRepository
-            .findById(shipmentStatusDTO.getStatusCode())
+            .findById(shipmentStatusDTO.getId())
             .map(existingShipmentStatus -> {
                 shipmentStatusMapper.partialUpdate(existingShipmentStatus, shipmentStatusDTO);
 

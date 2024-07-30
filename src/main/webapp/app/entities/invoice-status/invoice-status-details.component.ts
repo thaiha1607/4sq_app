@@ -20,9 +20,9 @@ export default defineComponent({
     const previousState = () => router.go(-1);
     const invoiceStatus: Ref<IInvoiceStatus> = ref({});
 
-    const retrieveInvoiceStatus = async invoiceStatusStatusCode => {
+    const retrieveInvoiceStatus = async invoiceStatusId => {
       try {
-        const res = await invoiceStatusService().find(invoiceStatusStatusCode);
+        const res = await invoiceStatusService().find(invoiceStatusId);
         invoiceStatus.value = res;
       } catch (error) {
         alertService.showHttpError(error.response);

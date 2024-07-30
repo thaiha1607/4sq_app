@@ -53,52 +53,52 @@ public class OrderStatusResource {
     @PostMapping("")
     public ResponseEntity<OrderStatusDTO> createOrderStatus(@Valid @RequestBody OrderStatusDTO orderStatusDTO) throws URISyntaxException {
         log.debug("REST request to save OrderStatus : {}", orderStatusDTO);
-        if (orderStatusDTO.getStatusCode() != null) {
+        if (orderStatusDTO.getId() != null) {
             throw new BadRequestAlertException("A new orderStatus cannot already have an ID", ENTITY_NAME, "idexists");
         }
         orderStatusDTO = orderStatusService.save(orderStatusDTO);
-        return ResponseEntity.created(new URI("/api/order-statuses/" + orderStatusDTO.getStatusCode()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, orderStatusDTO.getStatusCode().toString()))
+        return ResponseEntity.created(new URI("/api/order-statuses/" + orderStatusDTO.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, orderStatusDTO.getId().toString()))
             .body(orderStatusDTO);
     }
 
     /**
-     * {@code PUT  /order-statuses/:statusCode} : Updates an existing orderStatus.
+     * {@code PUT  /order-statuses/:id} : Updates an existing orderStatus.
      *
-     * @param statusCode the id of the orderStatusDTO to save.
+     * @param id the id of the orderStatusDTO to save.
      * @param orderStatusDTO the orderStatusDTO to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated orderStatusDTO,
      * or with status {@code 400 (Bad Request)} if the orderStatusDTO is not valid,
      * or with status {@code 500 (Internal Server Error)} if the orderStatusDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PutMapping("/{statusCode}")
+    @PutMapping("/{id}")
     public ResponseEntity<OrderStatusDTO> updateOrderStatus(
-        @PathVariable(value = "statusCode", required = false) final Long statusCode,
+        @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody OrderStatusDTO orderStatusDTO
     ) throws URISyntaxException {
-        log.debug("REST request to update OrderStatus : {}, {}", statusCode, orderStatusDTO);
-        if (orderStatusDTO.getStatusCode() == null) {
+        log.debug("REST request to update OrderStatus : {}, {}", id, orderStatusDTO);
+        if (orderStatusDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        if (!Objects.equals(statusCode, orderStatusDTO.getStatusCode())) {
+        if (!Objects.equals(id, orderStatusDTO.getId())) {
             throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
         }
 
-        if (!orderStatusRepository.existsById(statusCode)) {
+        if (!orderStatusRepository.existsById(id)) {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
         orderStatusDTO = orderStatusService.update(orderStatusDTO);
         return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, orderStatusDTO.getStatusCode().toString()))
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, orderStatusDTO.getId().toString()))
             .body(orderStatusDTO);
     }
 
     /**
-     * {@code PATCH  /order-statuses/:statusCode} : Partial updates given fields of an existing orderStatus, field will ignore if it is null
+     * {@code PATCH  /order-statuses/:id} : Partial updates given fields of an existing orderStatus, field will ignore if it is null
      *
-     * @param statusCode the id of the orderStatusDTO to save.
+     * @param id the id of the orderStatusDTO to save.
      * @param orderStatusDTO the orderStatusDTO to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated orderStatusDTO,
      * or with status {@code 400 (Bad Request)} if the orderStatusDTO is not valid,
@@ -106,20 +106,20 @@ public class OrderStatusResource {
      * or with status {@code 500 (Internal Server Error)} if the orderStatusDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PatchMapping(value = "/{statusCode}", consumes = { "application/json", "application/merge-patch+json" })
+    @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
     public ResponseEntity<OrderStatusDTO> partialUpdateOrderStatus(
-        @PathVariable(value = "statusCode", required = false) final Long statusCode,
+        @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody OrderStatusDTO orderStatusDTO
     ) throws URISyntaxException {
-        log.debug("REST request to partial update OrderStatus partially : {}, {}", statusCode, orderStatusDTO);
-        if (orderStatusDTO.getStatusCode() == null) {
+        log.debug("REST request to partial update OrderStatus partially : {}, {}", id, orderStatusDTO);
+        if (orderStatusDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        if (!Objects.equals(statusCode, orderStatusDTO.getStatusCode())) {
+        if (!Objects.equals(id, orderStatusDTO.getId())) {
             throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
         }
 
-        if (!orderStatusRepository.existsById(statusCode)) {
+        if (!orderStatusRepository.existsById(id)) {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
@@ -127,7 +127,7 @@ public class OrderStatusResource {
 
         return ResponseUtil.wrapOrNotFound(
             result,
-            HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, orderStatusDTO.getStatusCode().toString())
+            HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, orderStatusDTO.getId().toString())
         );
     }
 

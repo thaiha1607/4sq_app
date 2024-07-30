@@ -15,7 +15,7 @@ class OrderStatusTest {
         OrderStatus orderStatus2 = new OrderStatus();
         assertThat(orderStatus1).isNotEqualTo(orderStatus2);
 
-        orderStatus2.setStatusCode(orderStatus1.getStatusCode());
+        orderStatus2.setId(orderStatus1.getId());
         assertThat(orderStatus1).isEqualTo(orderStatus2);
 
         orderStatus2 = getOrderStatusSample2();

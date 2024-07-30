@@ -15,15 +15,15 @@ import org.mapstruct.*;
  */
 @Mapper(componentModel = "spring")
 public interface InvoiceMapper extends EntityMapper<InvoiceDTO, Invoice> {
-    @Mapping(target = "status", source = "status", qualifiedByName = "invoiceStatusDescription")
+    @Mapping(target = "status", source = "status", qualifiedByName = "invoiceStatusStatusCode")
     @Mapping(target = "order", source = "order", qualifiedByName = "orderId")
     InvoiceDTO toDto(Invoice s);
 
-    @Named("invoiceStatusDescription")
+    @Named("invoiceStatusStatusCode")
     @BeanMapping(ignoreByDefault = true)
+    @Mapping(target = "id", source = "id")
     @Mapping(target = "statusCode", source = "statusCode")
-    @Mapping(target = "description", source = "description")
-    InvoiceStatusDTO toDtoInvoiceStatusDescription(InvoiceStatus invoiceStatus);
+    InvoiceStatusDTO toDtoInvoiceStatusStatusCode(InvoiceStatus invoiceStatus);
 
     @Named("orderId")
     @BeanMapping(ignoreByDefault = true)

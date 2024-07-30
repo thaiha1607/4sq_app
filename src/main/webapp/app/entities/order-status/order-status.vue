@@ -50,6 +50,7 @@
         <thead>
           <tr>
             <th scope="row"><span>ID</span></th>
+            <th scope="row"><span>Status Code</span></th>
             <th scope="row"><span>Description</span></th>
             <th scope="row"><span>Created By</span></th>
             <th scope="row"><span>Created Date</span></th>
@@ -59,12 +60,11 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="orderStatus in orderStatuses" :key="orderStatus.statusCode" data-cy="entityTable">
+          <tr v-for="orderStatus in orderStatuses" :key="orderStatus.id" data-cy="entityTable">
             <td>
-              <router-link :to="{ name: 'OrderStatusView', params: { orderStatusId: orderStatus.statusCode } }">{{
-                orderStatus.statusCode
-              }}</router-link>
+              <router-link :to="{ name: 'OrderStatusView', params: { orderStatusId: orderStatus.id } }">{{ orderStatus.id }}</router-link>
             </td>
+            <td>{{ orderStatus.statusCode }}</td>
             <td>{{ orderStatus.description }}</td>
             <td>{{ orderStatus.createdBy }}</td>
             <td>{{ formatDateShort(orderStatus.createdDate) || '' }}</td>
@@ -72,21 +72,13 @@
             <td>{{ formatDateShort(orderStatus.lastModifiedDate) || '' }}</td>
             <td class="text-right">
               <div class="btn-group">
-                <router-link
-                  :to="{ name: 'OrderStatusView', params: { orderStatusId: orderStatus.statusCode } }"
-                  custom
-                  v-slot="{ navigate }"
-                >
+                <router-link :to="{ name: 'OrderStatusView', params: { orderStatusId: orderStatus.id } }" custom v-slot="{ navigate }">
                   <button @click="navigate" class="btn btn-info btn-sm details" data-cy="entityDetailsButton">
                     <font-awesome-icon icon="eye"></font-awesome-icon>
                     <span class="d-none d-md-inline">View</span>
                   </button>
                 </router-link>
-                <router-link
-                  :to="{ name: 'OrderStatusEdit', params: { orderStatusId: orderStatus.statusCode } }"
-                  custom
-                  v-slot="{ navigate }"
-                >
+                <router-link :to="{ name: 'OrderStatusEdit', params: { orderStatusId: orderStatus.id } }" custom v-slot="{ navigate }">
                   <button @click="navigate" class="btn btn-primary btn-sm edit" data-cy="entityEditButton">
                     <font-awesome-icon icon="pencil-alt"></font-awesome-icon>
                     <span class="d-none d-md-inline">Edit</span>

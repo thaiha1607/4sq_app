@@ -79,7 +79,7 @@ public class InvoiceStatusService {
         log.debug("Request to partially update InvoiceStatus : {}", invoiceStatusDTO);
 
         return invoiceStatusRepository
-            .findById(invoiceStatusDTO.getStatusCode())
+            .findById(invoiceStatusDTO.getId())
             .map(existingInvoiceStatus -> {
                 invoiceStatusMapper.partialUpdate(existingInvoiceStatus, invoiceStatusDTO);
 

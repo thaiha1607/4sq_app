@@ -6,9 +6,25 @@
           Create or edit a Shipment Status
         </h2>
         <div>
-          <div class="form-group" v-if="shipmentStatus.statusCode">
+          <div class="form-group" v-if="shipmentStatus.id">
             <label for="id">ID</label>
-            <input type="text" class="form-control" id="id" name="statusCode" v-model="shipmentStatus.statusCode" readonly />
+            <input type="text" class="form-control" id="id" name="id" v-model="shipmentStatus.id" readonly />
+          </div>
+          <div class="form-group">
+            <label class="form-control-label" for="shipment-status-statusCode">Status Code</label>
+            <input
+              type="text"
+              class="form-control"
+              name="statusCode"
+              id="shipment-status-statusCode"
+              data-cy="statusCode"
+              :class="{ valid: !v$.statusCode.$invalid, invalid: v$.statusCode.$invalid }"
+              v-model="v$.statusCode.$model"
+              required
+            />
+            <div v-if="v$.statusCode.$anyDirty && v$.statusCode.$invalid">
+              <small class="form-text text-danger" v-for="error of v$.statusCode.$errors" :key="error.$uid">{{ error.$message }}</small>
+            </div>
           </div>
           <div class="form-group">
             <label class="form-control-label" for="shipment-status-description">Description</label>
@@ -20,11 +36,7 @@
               data-cy="description"
               :class="{ valid: !v$.description.$invalid, invalid: v$.description.$invalid }"
               v-model="v$.description.$model"
-              required
             />
-            <div v-if="v$.description.$anyDirty && v$.description.$invalid">
-              <small class="form-text text-danger" v-for="error of v$.description.$errors" :key="error.$uid">{{ error.$message }}</small>
-            </div>
           </div>
           <div class="form-group">
             <label class="form-control-label" for="shipment-status-createdBy">Created By</label>

@@ -84,8 +84,8 @@ entity Participant {
 @paginate(pagination)
 @search(elasticsearch)
 entity InvoiceStatus {
-    @Id statusCode Long
-    description String required
+    statusCode String required
+    description String
 }
 @filter
 @dto(mapstruct)
@@ -156,8 +156,8 @@ entity OrderItem {
 @paginate(pagination)
 @search(elasticsearch)
 entity OrderStatus {
-    @Id statusCode Long
-    description String required
+    statusCode String required
+    description String
 }
 @filter
 @dto(mapstruct)
@@ -263,8 +263,8 @@ entity ShipmentItem {
 @paginate(pagination)
 @search(elasticsearch)
 entity ShipmentStatus {
-    @Id statusCode Long
-    description String required
+    statusCode String required
+    description String
 }
 @filter
 @dto(mapstruct)
@@ -387,14 +387,14 @@ relationship ManyToOne {
     WarehouseAssignment{sourceWorkingUnit(name) required} to WorkingUnit
     WarehouseAssignment{targetWorkingUnit(name)} to @OnDelete("SET NULL") WorkingUnit
     UserDetails{workingUnit(name)} to @OnDelete("SET NULL") WorkingUnit
-    Invoice{status(description) required} to InvoiceStatus
-    Order{status(description) required} to OrderStatus
+    Invoice{status(statusCode) required} to InvoiceStatus
+    Order{status(statusCode) required} to OrderStatus
     Order{address} to Address
     ProductQuantity{workingUnit(name) required} to WorkingUnit
     ProductQuantity{productCategory(name) required} to ProductCategory
     ProductCategory{colour(hexCode) required} to Colour
     ShipmentItem{orderItem required} to OrderItem
-    Shipment{status(description) required} to ShipmentStatus
+    Shipment{status(statusCode) required} to ShipmentStatus
     WarehouseAssignment{order required} to Order
     WorkingUnit{address} to Address
     Comment{user(login) required} to @OnDelete("CASCADE") User with builtInEntity

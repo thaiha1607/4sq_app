@@ -51,7 +51,7 @@ class OrderStatusSearchRepositoryInternalImpl implements OrderStatusSearchReposi
 
     @Override
     public void index(OrderStatus entity) {
-        repository.findById(entity.getStatusCode()).ifPresent(elasticsearchTemplate::save);
+        repository.findById(entity.getId()).ifPresent(elasticsearchTemplate::save);
     }
 
     @Override

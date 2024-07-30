@@ -50,6 +50,7 @@
         <thead>
           <tr>
             <th scope="row"><span>ID</span></th>
+            <th scope="row"><span>Status Code</span></th>
             <th scope="row"><span>Description</span></th>
             <th scope="row"><span>Created By</span></th>
             <th scope="row"><span>Created Date</span></th>
@@ -59,12 +60,13 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="shipmentStatus in shipmentStatuses" :key="shipmentStatus.statusCode" data-cy="entityTable">
+          <tr v-for="shipmentStatus in shipmentStatuses" :key="shipmentStatus.id" data-cy="entityTable">
             <td>
-              <router-link :to="{ name: 'ShipmentStatusView', params: { shipmentStatusId: shipmentStatus.statusCode } }">{{
-                shipmentStatus.statusCode
+              <router-link :to="{ name: 'ShipmentStatusView', params: { shipmentStatusId: shipmentStatus.id } }">{{
+                shipmentStatus.id
               }}</router-link>
             </td>
+            <td>{{ shipmentStatus.statusCode }}</td>
             <td>{{ shipmentStatus.description }}</td>
             <td>{{ shipmentStatus.createdBy }}</td>
             <td>{{ formatDateShort(shipmentStatus.createdDate) || '' }}</td>
@@ -73,7 +75,7 @@
             <td class="text-right">
               <div class="btn-group">
                 <router-link
-                  :to="{ name: 'ShipmentStatusView', params: { shipmentStatusId: shipmentStatus.statusCode } }"
+                  :to="{ name: 'ShipmentStatusView', params: { shipmentStatusId: shipmentStatus.id } }"
                   custom
                   v-slot="{ navigate }"
                 >
@@ -83,7 +85,7 @@
                   </button>
                 </router-link>
                 <router-link
-                  :to="{ name: 'ShipmentStatusEdit', params: { shipmentStatusId: shipmentStatus.statusCode } }"
+                  :to="{ name: 'ShipmentStatusEdit', params: { shipmentStatusId: shipmentStatus.id } }"
                   custom
                   v-slot="{ navigate }"
                 >

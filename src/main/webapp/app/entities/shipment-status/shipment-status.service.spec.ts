@@ -33,7 +33,7 @@ describe('Service Tests', () => {
     beforeEach(() => {
       service = new ShipmentStatusService();
       currentDate = new Date();
-      elemDefault = new ShipmentStatus(123, 'AAAAAAA', 'AAAAAAA', currentDate, 'AAAAAAA', currentDate);
+      elemDefault = new ShipmentStatus(123, 'AAAAAAA', 'AAAAAAA', 'AAAAAAA', currentDate, 'AAAAAAA', currentDate);
     });
 
     describe('Service methods', () => {
@@ -65,7 +65,7 @@ describe('Service Tests', () => {
       it('should create a ShipmentStatus', async () => {
         const returnedFromService = Object.assign(
           {
-            statusCode: 123,
+            id: 123,
             createdDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
             lastModifiedDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
           },
@@ -99,6 +99,7 @@ describe('Service Tests', () => {
       it('should update a ShipmentStatus', async () => {
         const returnedFromService = Object.assign(
           {
+            statusCode: 'BBBBBB',
             description: 'BBBBBB',
             createdBy: 'BBBBBB',
             createdDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
@@ -136,8 +137,9 @@ describe('Service Tests', () => {
       it('should partial update a ShipmentStatus', async () => {
         const patchObject = Object.assign(
           {
-            createdBy: 'BBBBBB',
-            createdDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
+            statusCode: 'BBBBBB',
+            description: 'BBBBBB',
+            lastModifiedBy: 'BBBBBB',
           },
           new ShipmentStatus(),
         );
@@ -171,6 +173,7 @@ describe('Service Tests', () => {
       it('should return a list of ShipmentStatus', async () => {
         const returnedFromService = Object.assign(
           {
+            statusCode: 'BBBBBB',
             description: 'BBBBBB',
             createdBy: 'BBBBBB',
             createdDate: dayjs(currentDate).format(DATE_TIME_FORMAT),

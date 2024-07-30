@@ -41,11 +41,14 @@ import org.springframework.transaction.annotation.Transactional;
 @WithMockUser
 class ShipmentStatusResourceIT {
 
+    private static final String DEFAULT_STATUS_CODE = "AAAAAAAAAA";
+    private static final String UPDATED_STATUS_CODE = "BBBBBBBBBB";
+
     private static final String DEFAULT_DESCRIPTION = "AAAAAAAAAA";
     private static final String UPDATED_DESCRIPTION = "BBBBBBBBBB";
 
     private static final String ENTITY_API_URL = "/api/shipment-statuses";
-    private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{statusCode}";
+    private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
     private static final String ENTITY_SEARCH_API_URL = "/api/shipment-statuses/_search";
 
     private static Random random = new Random();
@@ -80,7 +83,7 @@ class ShipmentStatusResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static ShipmentStatus createEntity(EntityManager em) {
-        ShipmentStatus shipmentStatus = new ShipmentStatus().description(DEFAULT_DESCRIPTION);
+        ShipmentStatus shipmentStatus = new ShipmentStatus().statusCode(DEFAULT_STATUS_CODE).description(DEFAULT_DESCRIPTION);
         return shipmentStatus;
     }
 
@@ -91,7 +94,7 @@ class ShipmentStatusResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static ShipmentStatus createUpdatedEntity(EntityManager em) {
-        ShipmentStatus shipmentStatus = new ShipmentStatus().description(UPDATED_DESCRIPTION);
+        ShipmentStatus shipmentStatus = new ShipmentStatus().statusCode(UPDATED_STATUS_CODE).description(UPDATED_DESCRIPTION);
         return shipmentStatus;
     }
 
@@ -145,7 +148,7 @@ class ShipmentStatusResourceIT {
     @Transactional
     void createShipmentStatusWithExistingId() throws Exception {
         // Create the ShipmentStatus with an existing ID
-        shipmentStatus.setStatusCode(1L);
+        shipmentStatus.setId(1L);
         ShipmentStatusDTO shipmentStatusDTO = shipmentStatusMapper.toDto(shipmentStatus);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
@@ -164,11 +167,11 @@ class ShipmentStatusResourceIT {
 
     @Test
     @Transactional
-    void checkDescriptionIsRequired() throws Exception {
+    void checkStatusCodeIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(shipmentStatusSearchRepository.findAll());
         // set the field null
-        shipmentStatus.setDescription(null);
+        shipmentStatus.setStatusCode(null);
 
         // Create the ShipmentStatus, which fails.
         ShipmentStatusDTO shipmentStatusDTO = shipmentStatusMapper.toDto(shipmentStatus);
@@ -191,10 +194,11 @@ class ShipmentStatusResourceIT {
 
         // Get all the shipmentStatusList
         restShipmentStatusMockMvc
-            .perform(get(ENTITY_API_URL + "?sort=statusCode,desc"))
+            .perform(get(ENTITY_API_URL + "?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].statusCode").value(hasItem(shipmentStatus.getStatusCode().intValue())))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(shipmentStatus.getId().intValue())))
+            .andExpect(jsonPath("$.[*].statusCode").value(hasItem(DEFAULT_STATUS_CODE)))
             .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION)));
     }
 
@@ -206,10 +210,11 @@ class ShipmentStatusResourceIT {
 
         // Get the shipmentStatus
         restShipmentStatusMockMvc
-            .perform(get(ENTITY_API_URL_ID, shipmentStatus.getStatusCode()))
+            .perform(get(ENTITY_API_URL_ID, shipmentStatus.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.statusCode").value(shipmentStatus.getStatusCode().intValue()))
+            .andExpect(jsonPath("$.id").value(shipmentStatus.getId().intValue()))
+            .andExpect(jsonPath("$.statusCode").value(DEFAULT_STATUS_CODE))
             .andExpect(jsonPath("$.description").value(DEFAULT_DESCRIPTION));
     }
 
@@ -231,15 +236,15 @@ class ShipmentStatusResourceIT {
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(shipmentStatusSearchRepository.findAll());
 
         // Update the shipmentStatus
-        ShipmentStatus updatedShipmentStatus = shipmentStatusRepository.findById(shipmentStatus.getStatusCode()).orElseThrow();
+        ShipmentStatus updatedShipmentStatus = shipmentStatusRepository.findById(shipmentStatus.getId()).orElseThrow();
         // Disconnect from session so that the updates on updatedShipmentStatus are not directly saved in db
         em.detach(updatedShipmentStatus);
-        updatedShipmentStatus.description(UPDATED_DESCRIPTION);
+        updatedShipmentStatus.statusCode(UPDATED_STATUS_CODE).description(UPDATED_DESCRIPTION);
         ShipmentStatusDTO shipmentStatusDTO = shipmentStatusMapper.toDto(updatedShipmentStatus);
 
         restShipmentStatusMockMvc
             .perform(
-                put(ENTITY_API_URL_ID, shipmentStatusDTO.getStatusCode())
+                put(ENTITY_API_URL_ID, shipmentStatusDTO.getId())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(om.writeValueAsBytes(shipmentStatusDTO))
             )
@@ -266,7 +271,7 @@ class ShipmentStatusResourceIT {
     void putNonExistingShipmentStatus() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(shipmentStatusSearchRepository.findAll());
-        shipmentStatus.setStatusCode(longCount.incrementAndGet());
+        shipmentStatus.setId(longCount.incrementAndGet());
 
         // Create the ShipmentStatus
         ShipmentStatusDTO shipmentStatusDTO = shipmentStatusMapper.toDto(shipmentStatus);
@@ -274,7 +279,7 @@ class ShipmentStatusResourceIT {
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restShipmentStatusMockMvc
             .perform(
-                put(ENTITY_API_URL_ID, shipmentStatusDTO.getStatusCode())
+                put(ENTITY_API_URL_ID, shipmentStatusDTO.getId())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(om.writeValueAsBytes(shipmentStatusDTO))
             )
@@ -291,7 +296,7 @@ class ShipmentStatusResourceIT {
     void putWithIdMismatchShipmentStatus() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(shipmentStatusSearchRepository.findAll());
-        shipmentStatus.setStatusCode(longCount.incrementAndGet());
+        shipmentStatus.setId(longCount.incrementAndGet());
 
         // Create the ShipmentStatus
         ShipmentStatusDTO shipmentStatusDTO = shipmentStatusMapper.toDto(shipmentStatus);
@@ -316,7 +321,7 @@ class ShipmentStatusResourceIT {
     void putWithMissingIdPathParamShipmentStatus() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(shipmentStatusSearchRepository.findAll());
-        shipmentStatus.setStatusCode(longCount.incrementAndGet());
+        shipmentStatus.setId(longCount.incrementAndGet());
 
         // Create the ShipmentStatus
         ShipmentStatusDTO shipmentStatusDTO = shipmentStatusMapper.toDto(shipmentStatus);
@@ -342,11 +347,11 @@ class ShipmentStatusResourceIT {
 
         // Update the shipmentStatus using partial update
         ShipmentStatus partialUpdatedShipmentStatus = new ShipmentStatus();
-        partialUpdatedShipmentStatus.setStatusCode(shipmentStatus.getStatusCode());
+        partialUpdatedShipmentStatus.setId(shipmentStatus.getId());
 
         restShipmentStatusMockMvc
             .perform(
-                patch(ENTITY_API_URL_ID, partialUpdatedShipmentStatus.getStatusCode())
+                patch(ENTITY_API_URL_ID, partialUpdatedShipmentStatus.getId())
                     .contentType("application/merge-patch+json")
                     .content(om.writeValueAsBytes(partialUpdatedShipmentStatus))
             )
@@ -371,13 +376,13 @@ class ShipmentStatusResourceIT {
 
         // Update the shipmentStatus using partial update
         ShipmentStatus partialUpdatedShipmentStatus = new ShipmentStatus();
-        partialUpdatedShipmentStatus.setStatusCode(shipmentStatus.getStatusCode());
+        partialUpdatedShipmentStatus.setId(shipmentStatus.getId());
 
-        partialUpdatedShipmentStatus.description(UPDATED_DESCRIPTION);
+        partialUpdatedShipmentStatus.statusCode(UPDATED_STATUS_CODE).description(UPDATED_DESCRIPTION);
 
         restShipmentStatusMockMvc
             .perform(
-                patch(ENTITY_API_URL_ID, partialUpdatedShipmentStatus.getStatusCode())
+                patch(ENTITY_API_URL_ID, partialUpdatedShipmentStatus.getId())
                     .contentType("application/merge-patch+json")
                     .content(om.writeValueAsBytes(partialUpdatedShipmentStatus))
             )
@@ -394,7 +399,7 @@ class ShipmentStatusResourceIT {
     void patchNonExistingShipmentStatus() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(shipmentStatusSearchRepository.findAll());
-        shipmentStatus.setStatusCode(longCount.incrementAndGet());
+        shipmentStatus.setId(longCount.incrementAndGet());
 
         // Create the ShipmentStatus
         ShipmentStatusDTO shipmentStatusDTO = shipmentStatusMapper.toDto(shipmentStatus);
@@ -402,7 +407,7 @@ class ShipmentStatusResourceIT {
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restShipmentStatusMockMvc
             .perform(
-                patch(ENTITY_API_URL_ID, shipmentStatusDTO.getStatusCode())
+                patch(ENTITY_API_URL_ID, shipmentStatusDTO.getId())
                     .contentType("application/merge-patch+json")
                     .content(om.writeValueAsBytes(shipmentStatusDTO))
             )
@@ -419,7 +424,7 @@ class ShipmentStatusResourceIT {
     void patchWithIdMismatchShipmentStatus() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(shipmentStatusSearchRepository.findAll());
-        shipmentStatus.setStatusCode(longCount.incrementAndGet());
+        shipmentStatus.setId(longCount.incrementAndGet());
 
         // Create the ShipmentStatus
         ShipmentStatusDTO shipmentStatusDTO = shipmentStatusMapper.toDto(shipmentStatus);
@@ -444,7 +449,7 @@ class ShipmentStatusResourceIT {
     void patchWithMissingIdPathParamShipmentStatus() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(shipmentStatusSearchRepository.findAll());
-        shipmentStatus.setStatusCode(longCount.incrementAndGet());
+        shipmentStatus.setId(longCount.incrementAndGet());
 
         // Create the ShipmentStatus
         ShipmentStatusDTO shipmentStatusDTO = shipmentStatusMapper.toDto(shipmentStatus);
@@ -474,7 +479,7 @@ class ShipmentStatusResourceIT {
 
         // Delete the shipmentStatus
         restShipmentStatusMockMvc
-            .perform(delete(ENTITY_API_URL_ID, shipmentStatus.getStatusCode()).accept(MediaType.APPLICATION_JSON))
+            .perform(delete(ENTITY_API_URL_ID, shipmentStatus.getId()).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item
@@ -492,10 +497,11 @@ class ShipmentStatusResourceIT {
 
         // Search the shipmentStatus
         restShipmentStatusMockMvc
-            .perform(get(ENTITY_SEARCH_API_URL + "?query=id:" + shipmentStatus.getStatusCode()))
+            .perform(get(ENTITY_SEARCH_API_URL + "?query=id:" + shipmentStatus.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].statusCode").value(hasItem(shipmentStatus.getStatusCode().intValue())))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(shipmentStatus.getId().intValue())))
+            .andExpect(jsonPath("$.[*].statusCode").value(hasItem(DEFAULT_STATUS_CODE)))
             .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION)));
     }
 
@@ -516,7 +522,7 @@ class ShipmentStatusResourceIT {
     }
 
     protected ShipmentStatus getPersistedShipmentStatus(ShipmentStatus shipmentStatus) {
-        return shipmentStatusRepository.findById(shipmentStatus.getStatusCode()).orElseThrow();
+        return shipmentStatusRepository.findById(shipmentStatus.getId()).orElseThrow();
     }
 
     protected void assertPersistedShipmentStatusToMatchAllProperties(ShipmentStatus expectedShipmentStatus) {

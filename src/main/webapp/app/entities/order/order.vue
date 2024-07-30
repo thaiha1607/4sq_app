@@ -85,8 +85,8 @@
             </td>
             <td>
               <div v-if="order.status">
-                <router-link :to="{ name: 'OrderStatusView', params: { orderStatusId: order.status.statusCode } }">{{
-                  order.status.description
+                <router-link :to="{ name: 'OrderStatusView', params: { orderStatusId: order.status.id } }">{{
+                  order.status.statusCode
                 }}</router-link>
               </div>
             </td>

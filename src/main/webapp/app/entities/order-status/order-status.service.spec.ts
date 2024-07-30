@@ -33,7 +33,7 @@ describe('Service Tests', () => {
     beforeEach(() => {
       service = new OrderStatusService();
       currentDate = new Date();
-      elemDefault = new OrderStatus(123, 'AAAAAAA', 'AAAAAAA', currentDate, 'AAAAAAA', currentDate);
+      elemDefault = new OrderStatus(123, 'AAAAAAA', 'AAAAAAA', 'AAAAAAA', currentDate, 'AAAAAAA', currentDate);
     });
 
     describe('Service methods', () => {
@@ -65,7 +65,7 @@ describe('Service Tests', () => {
       it('should create a OrderStatus', async () => {
         const returnedFromService = Object.assign(
           {
-            statusCode: 123,
+            id: 123,
             createdDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
             lastModifiedDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
           },
@@ -99,6 +99,7 @@ describe('Service Tests', () => {
       it('should update a OrderStatus', async () => {
         const returnedFromService = Object.assign(
           {
+            statusCode: 'BBBBBB',
             description: 'BBBBBB',
             createdBy: 'BBBBBB',
             createdDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
@@ -136,9 +137,10 @@ describe('Service Tests', () => {
       it('should partial update a OrderStatus', async () => {
         const patchObject = Object.assign(
           {
+            statusCode: 'BBBBBB',
+            description: 'BBBBBB',
             createdBy: 'BBBBBB',
-            createdDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
-            lastModifiedBy: 'BBBBBB',
+            lastModifiedDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
           },
           new OrderStatus(),
         );
@@ -172,6 +174,7 @@ describe('Service Tests', () => {
       it('should return a list of OrderStatus', async () => {
         const returnedFromService = Object.assign(
           {
+            statusCode: 'BBBBBB',
             description: 'BBBBBB',
             createdBy: 'BBBBBB',
             createdDate: dayjs(currentDate).format(DATE_TIME_FORMAT),

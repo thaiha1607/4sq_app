@@ -19,10 +19,10 @@ export default class OrderStatusService {
     });
   }
 
-  public find(statusCode: number): Promise<IOrderStatus> {
+  public find(id: number): Promise<IOrderStatus> {
     return new Promise<IOrderStatus>((resolve, reject) => {
       axios
-        .get(`${baseApiUrl}/${statusCode}`)
+        .get(`${baseApiUrl}/${id}`)
         .then(res => {
           resolve(res.data);
         })
@@ -45,10 +45,10 @@ export default class OrderStatusService {
     });
   }
 
-  public delete(statusCode: number): Promise<any> {
+  public delete(id: number): Promise<any> {
     return new Promise<any>((resolve, reject) => {
       axios
-        .delete(`${baseApiUrl}/${statusCode}`)
+        .delete(`${baseApiUrl}/${id}`)
         .then(res => {
           resolve(res);
         })
@@ -74,7 +74,7 @@ export default class OrderStatusService {
   public update(entity: IOrderStatus): Promise<IOrderStatus> {
     return new Promise<IOrderStatus>((resolve, reject) => {
       axios
-        .put(`${baseApiUrl}/${entity.statusCode}`, entity)
+        .put(`${baseApiUrl}/${entity.id}`, entity)
         .then(res => {
           resolve(res.data);
         })
@@ -87,7 +87,7 @@ export default class OrderStatusService {
   public partialUpdate(entity: IOrderStatus): Promise<IOrderStatus> {
     return new Promise<IOrderStatus>((resolve, reject) => {
       axios
-        .patch(`${baseApiUrl}/${entity.statusCode}`, entity)
+        .patch(`${baseApiUrl}/${entity.id}`, entity)
         .then(res => {
           resolve(res.data);
         })

@@ -15,7 +15,7 @@ describe('OrderStatus e2e test', () => {
   const orderStatusPageUrlPattern = new RegExp('/order-status(\\?.*)?$');
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
-  const orderStatusSample = { description: 'ack' };
+  const orderStatusSample = { statusCode: 'label provided' };
 
   let orderStatus;
 
@@ -33,7 +33,7 @@ describe('OrderStatus e2e test', () => {
     if (orderStatus) {
       cy.authenticatedRequest({
         method: 'DELETE',
-        url: `/api/order-statuses/${orderStatus.statusCode}`,
+        url: `/api/order-statuses/${orderStatus.id}`,
       }).then(() => {
         orderStatus = undefined;
       });
@@ -157,8 +157,11 @@ describe('OrderStatus e2e test', () => {
     });
 
     it('should create an instance of OrderStatus', () => {
-      cy.get(`[data-cy="description"]`).type('formulate carp everyone');
-      cy.get(`[data-cy="description"]`).should('have.value', 'formulate carp everyone');
+      cy.get(`[data-cy="statusCode"]`).type('cow but');
+      cy.get(`[data-cy="statusCode"]`).should('have.value', 'cow but');
+
+      cy.get(`[data-cy="description"]`).type('when equally until');
+      cy.get(`[data-cy="description"]`).should('have.value', 'when equally until');
 
       cy.get(entityCreateSaveButtonSelector).click();
 

@@ -55,7 +55,7 @@ describe('Component Tests', () => {
     describe('Mount', () => {
       it('Should call load all on init', async () => {
         // GIVEN
-        shipmentStatusServiceStub.retrieve.resolves({ headers: {}, data: [{ statusCode: 123 }] });
+        shipmentStatusServiceStub.retrieve.resolves({ headers: {}, data: [{ id: 123 }] });
 
         // WHEN
         const wrapper = shallowMount(ShipmentStatus, { global: mountOptions });
@@ -64,7 +64,7 @@ describe('Component Tests', () => {
 
         // THEN
         expect(shipmentStatusServiceStub.retrieve.calledOnce).toBeTruthy();
-        expect(comp.shipmentStatuses[0]).toEqual(expect.objectContaining({ statusCode: 123 }));
+        expect(comp.shipmentStatuses[0]).toEqual(expect.objectContaining({ id: 123 }));
       });
     });
     describe('Handles', () => {
@@ -83,7 +83,7 @@ describe('Component Tests', () => {
         shipmentStatusServiceStub.delete.resolves({});
 
         // WHEN
-        comp.prepareRemove({ statusCode: 123 });
+        comp.prepareRemove({ id: 123 });
 
         comp.removeShipmentStatus();
         await comp.$nextTick(); // clear components

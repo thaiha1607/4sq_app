@@ -41,11 +41,14 @@ import org.springframework.transaction.annotation.Transactional;
 @WithMockUser
 class InvoiceStatusResourceIT {
 
+    private static final String DEFAULT_STATUS_CODE = "AAAAAAAAAA";
+    private static final String UPDATED_STATUS_CODE = "BBBBBBBBBB";
+
     private static final String DEFAULT_DESCRIPTION = "AAAAAAAAAA";
     private static final String UPDATED_DESCRIPTION = "BBBBBBBBBB";
 
     private static final String ENTITY_API_URL = "/api/invoice-statuses";
-    private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{statusCode}";
+    private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
     private static final String ENTITY_SEARCH_API_URL = "/api/invoice-statuses/_search";
 
     private static Random random = new Random();
@@ -80,7 +83,7 @@ class InvoiceStatusResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static InvoiceStatus createEntity(EntityManager em) {
-        InvoiceStatus invoiceStatus = new InvoiceStatus().description(DEFAULT_DESCRIPTION);
+        InvoiceStatus invoiceStatus = new InvoiceStatus().statusCode(DEFAULT_STATUS_CODE).description(DEFAULT_DESCRIPTION);
         return invoiceStatus;
     }
 
@@ -91,7 +94,7 @@ class InvoiceStatusResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static InvoiceStatus createUpdatedEntity(EntityManager em) {
-        InvoiceStatus invoiceStatus = new InvoiceStatus().description(UPDATED_DESCRIPTION);
+        InvoiceStatus invoiceStatus = new InvoiceStatus().statusCode(UPDATED_STATUS_CODE).description(UPDATED_DESCRIPTION);
         return invoiceStatus;
     }
 
@@ -145,7 +148,7 @@ class InvoiceStatusResourceIT {
     @Transactional
     void createInvoiceStatusWithExistingId() throws Exception {
         // Create the InvoiceStatus with an existing ID
-        invoiceStatus.setStatusCode(1L);
+        invoiceStatus.setId(1L);
         InvoiceStatusDTO invoiceStatusDTO = invoiceStatusMapper.toDto(invoiceStatus);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
@@ -164,11 +167,11 @@ class InvoiceStatusResourceIT {
 
     @Test
     @Transactional
-    void checkDescriptionIsRequired() throws Exception {
+    void checkStatusCodeIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(invoiceStatusSearchRepository.findAll());
         // set the field null
-        invoiceStatus.setDescription(null);
+        invoiceStatus.setStatusCode(null);
 
         // Create the InvoiceStatus, which fails.
         InvoiceStatusDTO invoiceStatusDTO = invoiceStatusMapper.toDto(invoiceStatus);
@@ -191,10 +194,11 @@ class InvoiceStatusResourceIT {
 
         // Get all the invoiceStatusList
         restInvoiceStatusMockMvc
-            .perform(get(ENTITY_API_URL + "?sort=statusCode,desc"))
+            .perform(get(ENTITY_API_URL + "?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].statusCode").value(hasItem(invoiceStatus.getStatusCode().intValue())))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(invoiceStatus.getId().intValue())))
+            .andExpect(jsonPath("$.[*].statusCode").value(hasItem(DEFAULT_STATUS_CODE)))
             .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION)));
     }
 
@@ -206,10 +210,11 @@ class InvoiceStatusResourceIT {
 
         // Get the invoiceStatus
         restInvoiceStatusMockMvc
-            .perform(get(ENTITY_API_URL_ID, invoiceStatus.getStatusCode()))
+            .perform(get(ENTITY_API_URL_ID, invoiceStatus.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.statusCode").value(invoiceStatus.getStatusCode().intValue()))
+            .andExpect(jsonPath("$.id").value(invoiceStatus.getId().intValue()))
+            .andExpect(jsonPath("$.statusCode").value(DEFAULT_STATUS_CODE))
             .andExpect(jsonPath("$.description").value(DEFAULT_DESCRIPTION));
     }
 
@@ -231,15 +236,15 @@ class InvoiceStatusResourceIT {
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(invoiceStatusSearchRepository.findAll());
 
         // Update the invoiceStatus
-        InvoiceStatus updatedInvoiceStatus = invoiceStatusRepository.findById(invoiceStatus.getStatusCode()).orElseThrow();
+        InvoiceStatus updatedInvoiceStatus = invoiceStatusRepository.findById(invoiceStatus.getId()).orElseThrow();
         // Disconnect from session so that the updates on updatedInvoiceStatus are not directly saved in db
         em.detach(updatedInvoiceStatus);
-        updatedInvoiceStatus.description(UPDATED_DESCRIPTION);
+        updatedInvoiceStatus.statusCode(UPDATED_STATUS_CODE).description(UPDATED_DESCRIPTION);
         InvoiceStatusDTO invoiceStatusDTO = invoiceStatusMapper.toDto(updatedInvoiceStatus);
 
         restInvoiceStatusMockMvc
             .perform(
-                put(ENTITY_API_URL_ID, invoiceStatusDTO.getStatusCode())
+                put(ENTITY_API_URL_ID, invoiceStatusDTO.getId())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(om.writeValueAsBytes(invoiceStatusDTO))
             )
@@ -266,7 +271,7 @@ class InvoiceStatusResourceIT {
     void putNonExistingInvoiceStatus() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(invoiceStatusSearchRepository.findAll());
-        invoiceStatus.setStatusCode(longCount.incrementAndGet());
+        invoiceStatus.setId(longCount.incrementAndGet());
 
         // Create the InvoiceStatus
         InvoiceStatusDTO invoiceStatusDTO = invoiceStatusMapper.toDto(invoiceStatus);
@@ -274,7 +279,7 @@ class InvoiceStatusResourceIT {
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restInvoiceStatusMockMvc
             .perform(
-                put(ENTITY_API_URL_ID, invoiceStatusDTO.getStatusCode())
+                put(ENTITY_API_URL_ID, invoiceStatusDTO.getId())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(om.writeValueAsBytes(invoiceStatusDTO))
             )
@@ -291,7 +296,7 @@ class InvoiceStatusResourceIT {
     void putWithIdMismatchInvoiceStatus() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(invoiceStatusSearchRepository.findAll());
-        invoiceStatus.setStatusCode(longCount.incrementAndGet());
+        invoiceStatus.setId(longCount.incrementAndGet());
 
         // Create the InvoiceStatus
         InvoiceStatusDTO invoiceStatusDTO = invoiceStatusMapper.toDto(invoiceStatus);
@@ -316,7 +321,7 @@ class InvoiceStatusResourceIT {
     void putWithMissingIdPathParamInvoiceStatus() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(invoiceStatusSearchRepository.findAll());
-        invoiceStatus.setStatusCode(longCount.incrementAndGet());
+        invoiceStatus.setId(longCount.incrementAndGet());
 
         // Create the InvoiceStatus
         InvoiceStatusDTO invoiceStatusDTO = invoiceStatusMapper.toDto(invoiceStatus);
@@ -342,13 +347,13 @@ class InvoiceStatusResourceIT {
 
         // Update the invoiceStatus using partial update
         InvoiceStatus partialUpdatedInvoiceStatus = new InvoiceStatus();
-        partialUpdatedInvoiceStatus.setStatusCode(invoiceStatus.getStatusCode());
+        partialUpdatedInvoiceStatus.setId(invoiceStatus.getId());
 
-        partialUpdatedInvoiceStatus.description(UPDATED_DESCRIPTION);
+        partialUpdatedInvoiceStatus.statusCode(UPDATED_STATUS_CODE).description(UPDATED_DESCRIPTION);
 
         restInvoiceStatusMockMvc
             .perform(
-                patch(ENTITY_API_URL_ID, partialUpdatedInvoiceStatus.getStatusCode())
+                patch(ENTITY_API_URL_ID, partialUpdatedInvoiceStatus.getId())
                     .contentType("application/merge-patch+json")
                     .content(om.writeValueAsBytes(partialUpdatedInvoiceStatus))
             )
@@ -373,13 +378,13 @@ class InvoiceStatusResourceIT {
 
         // Update the invoiceStatus using partial update
         InvoiceStatus partialUpdatedInvoiceStatus = new InvoiceStatus();
-        partialUpdatedInvoiceStatus.setStatusCode(invoiceStatus.getStatusCode());
+        partialUpdatedInvoiceStatus.setId(invoiceStatus.getId());
 
-        partialUpdatedInvoiceStatus.description(UPDATED_DESCRIPTION);
+        partialUpdatedInvoiceStatus.statusCode(UPDATED_STATUS_CODE).description(UPDATED_DESCRIPTION);
 
         restInvoiceStatusMockMvc
             .perform(
-                patch(ENTITY_API_URL_ID, partialUpdatedInvoiceStatus.getStatusCode())
+                patch(ENTITY_API_URL_ID, partialUpdatedInvoiceStatus.getId())
                     .contentType("application/merge-patch+json")
                     .content(om.writeValueAsBytes(partialUpdatedInvoiceStatus))
             )
@@ -396,7 +401,7 @@ class InvoiceStatusResourceIT {
     void patchNonExistingInvoiceStatus() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(invoiceStatusSearchRepository.findAll());
-        invoiceStatus.setStatusCode(longCount.incrementAndGet());
+        invoiceStatus.setId(longCount.incrementAndGet());
 
         // Create the InvoiceStatus
         InvoiceStatusDTO invoiceStatusDTO = invoiceStatusMapper.toDto(invoiceStatus);
@@ -404,7 +409,7 @@ class InvoiceStatusResourceIT {
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restInvoiceStatusMockMvc
             .perform(
-                patch(ENTITY_API_URL_ID, invoiceStatusDTO.getStatusCode())
+                patch(ENTITY_API_URL_ID, invoiceStatusDTO.getId())
                     .contentType("application/merge-patch+json")
                     .content(om.writeValueAsBytes(invoiceStatusDTO))
             )
@@ -421,7 +426,7 @@ class InvoiceStatusResourceIT {
     void patchWithIdMismatchInvoiceStatus() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(invoiceStatusSearchRepository.findAll());
-        invoiceStatus.setStatusCode(longCount.incrementAndGet());
+        invoiceStatus.setId(longCount.incrementAndGet());
 
         // Create the InvoiceStatus
         InvoiceStatusDTO invoiceStatusDTO = invoiceStatusMapper.toDto(invoiceStatus);
@@ -446,7 +451,7 @@ class InvoiceStatusResourceIT {
     void patchWithMissingIdPathParamInvoiceStatus() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(invoiceStatusSearchRepository.findAll());
-        invoiceStatus.setStatusCode(longCount.incrementAndGet());
+        invoiceStatus.setId(longCount.incrementAndGet());
 
         // Create the InvoiceStatus
         InvoiceStatusDTO invoiceStatusDTO = invoiceStatusMapper.toDto(invoiceStatus);
@@ -476,7 +481,7 @@ class InvoiceStatusResourceIT {
 
         // Delete the invoiceStatus
         restInvoiceStatusMockMvc
-            .perform(delete(ENTITY_API_URL_ID, invoiceStatus.getStatusCode()).accept(MediaType.APPLICATION_JSON))
+            .perform(delete(ENTITY_API_URL_ID, invoiceStatus.getId()).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item
@@ -494,10 +499,11 @@ class InvoiceStatusResourceIT {
 
         // Search the invoiceStatus
         restInvoiceStatusMockMvc
-            .perform(get(ENTITY_SEARCH_API_URL + "?query=id:" + invoiceStatus.getStatusCode()))
+            .perform(get(ENTITY_SEARCH_API_URL + "?query=id:" + invoiceStatus.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].statusCode").value(hasItem(invoiceStatus.getStatusCode().intValue())))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(invoiceStatus.getId().intValue())))
+            .andExpect(jsonPath("$.[*].statusCode").value(hasItem(DEFAULT_STATUS_CODE)))
             .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION)));
     }
 
@@ -518,7 +524,7 @@ class InvoiceStatusResourceIT {
     }
 
     protected InvoiceStatus getPersistedInvoiceStatus(InvoiceStatus invoiceStatus) {
-        return invoiceStatusRepository.findById(invoiceStatus.getStatusCode()).orElseThrow();
+        return invoiceStatusRepository.findById(invoiceStatus.getId()).orElseThrow();
     }
 
     protected void assertPersistedInvoiceStatusToMatchAllProperties(InvoiceStatus expectedInvoiceStatus) {

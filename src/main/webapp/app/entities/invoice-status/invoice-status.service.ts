@@ -19,10 +19,10 @@ export default class InvoiceStatusService {
     });
   }
 
-  public find(statusCode: number): Promise<IInvoiceStatus> {
+  public find(id: number): Promise<IInvoiceStatus> {
     return new Promise<IInvoiceStatus>((resolve, reject) => {
       axios
-        .get(`${baseApiUrl}/${statusCode}`)
+        .get(`${baseApiUrl}/${id}`)
         .then(res => {
           resolve(res.data);
         })
@@ -45,10 +45,10 @@ export default class InvoiceStatusService {
     });
   }
 
-  public delete(statusCode: number): Promise<any> {
+  public delete(id: number): Promise<any> {
     return new Promise<any>((resolve, reject) => {
       axios
-        .delete(`${baseApiUrl}/${statusCode}`)
+        .delete(`${baseApiUrl}/${id}`)
         .then(res => {
           resolve(res);
         })
@@ -74,7 +74,7 @@ export default class InvoiceStatusService {
   public update(entity: IInvoiceStatus): Promise<IInvoiceStatus> {
     return new Promise<IInvoiceStatus>((resolve, reject) => {
       axios
-        .put(`${baseApiUrl}/${entity.statusCode}`, entity)
+        .put(`${baseApiUrl}/${entity.id}`, entity)
         .then(res => {
           resolve(res.data);
         })
@@ -87,7 +87,7 @@ export default class InvoiceStatusService {
   public partialUpdate(entity: IInvoiceStatus): Promise<IInvoiceStatus> {
     return new Promise<IInvoiceStatus>((resolve, reject) => {
       axios
-        .patch(`${baseApiUrl}/${entity.statusCode}`, entity)
+        .patch(`${baseApiUrl}/${entity.id}`, entity)
         .then(res => {
           resolve(res.data);
         })

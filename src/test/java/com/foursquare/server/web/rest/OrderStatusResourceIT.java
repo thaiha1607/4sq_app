@@ -41,11 +41,14 @@ import org.springframework.transaction.annotation.Transactional;
 @WithMockUser
 class OrderStatusResourceIT {
 
+    private static final String DEFAULT_STATUS_CODE = "AAAAAAAAAA";
+    private static final String UPDATED_STATUS_CODE = "BBBBBBBBBB";
+
     private static final String DEFAULT_DESCRIPTION = "AAAAAAAAAA";
     private static final String UPDATED_DESCRIPTION = "BBBBBBBBBB";
 
     private static final String ENTITY_API_URL = "/api/order-statuses";
-    private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{statusCode}";
+    private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
     private static final String ENTITY_SEARCH_API_URL = "/api/order-statuses/_search";
 
     private static Random random = new Random();
@@ -80,7 +83,7 @@ class OrderStatusResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static OrderStatus createEntity(EntityManager em) {
-        OrderStatus orderStatus = new OrderStatus().description(DEFAULT_DESCRIPTION);
+        OrderStatus orderStatus = new OrderStatus().statusCode(DEFAULT_STATUS_CODE).description(DEFAULT_DESCRIPTION);
         return orderStatus;
     }
 
@@ -91,7 +94,7 @@ class OrderStatusResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static OrderStatus createUpdatedEntity(EntityManager em) {
-        OrderStatus orderStatus = new OrderStatus().description(UPDATED_DESCRIPTION);
+        OrderStatus orderStatus = new OrderStatus().statusCode(UPDATED_STATUS_CODE).description(UPDATED_DESCRIPTION);
         return orderStatus;
     }
 
@@ -145,7 +148,7 @@ class OrderStatusResourceIT {
     @Transactional
     void createOrderStatusWithExistingId() throws Exception {
         // Create the OrderStatus with an existing ID
-        orderStatus.setStatusCode(1L);
+        orderStatus.setId(1L);
         OrderStatusDTO orderStatusDTO = orderStatusMapper.toDto(orderStatus);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
@@ -164,11 +167,11 @@ class OrderStatusResourceIT {
 
     @Test
     @Transactional
-    void checkDescriptionIsRequired() throws Exception {
+    void checkStatusCodeIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(orderStatusSearchRepository.findAll());
         // set the field null
-        orderStatus.setDescription(null);
+        orderStatus.setStatusCode(null);
 
         // Create the OrderStatus, which fails.
         OrderStatusDTO orderStatusDTO = orderStatusMapper.toDto(orderStatus);
@@ -191,10 +194,11 @@ class OrderStatusResourceIT {
 
         // Get all the orderStatusList
         restOrderStatusMockMvc
-            .perform(get(ENTITY_API_URL + "?sort=statusCode,desc"))
+            .perform(get(ENTITY_API_URL + "?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].statusCode").value(hasItem(orderStatus.getStatusCode().intValue())))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(orderStatus.getId().intValue())))
+            .andExpect(jsonPath("$.[*].statusCode").value(hasItem(DEFAULT_STATUS_CODE)))
             .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION)));
     }
 
@@ -206,10 +210,11 @@ class OrderStatusResourceIT {
 
         // Get the orderStatus
         restOrderStatusMockMvc
-            .perform(get(ENTITY_API_URL_ID, orderStatus.getStatusCode()))
+            .perform(get(ENTITY_API_URL_ID, orderStatus.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.statusCode").value(orderStatus.getStatusCode().intValue()))
+            .andExpect(jsonPath("$.id").value(orderStatus.getId().intValue()))
+            .andExpect(jsonPath("$.statusCode").value(DEFAULT_STATUS_CODE))
             .andExpect(jsonPath("$.description").value(DEFAULT_DESCRIPTION));
     }
 
@@ -231,15 +236,15 @@ class OrderStatusResourceIT {
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(orderStatusSearchRepository.findAll());
 
         // Update the orderStatus
-        OrderStatus updatedOrderStatus = orderStatusRepository.findById(orderStatus.getStatusCode()).orElseThrow();
+        OrderStatus updatedOrderStatus = orderStatusRepository.findById(orderStatus.getId()).orElseThrow();
         // Disconnect from session so that the updates on updatedOrderStatus are not directly saved in db
         em.detach(updatedOrderStatus);
-        updatedOrderStatus.description(UPDATED_DESCRIPTION);
+        updatedOrderStatus.statusCode(UPDATED_STATUS_CODE).description(UPDATED_DESCRIPTION);
         OrderStatusDTO orderStatusDTO = orderStatusMapper.toDto(updatedOrderStatus);
 
         restOrderStatusMockMvc
             .perform(
-                put(ENTITY_API_URL_ID, orderStatusDTO.getStatusCode())
+                put(ENTITY_API_URL_ID, orderStatusDTO.getId())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(om.writeValueAsBytes(orderStatusDTO))
             )
@@ -266,7 +271,7 @@ class OrderStatusResourceIT {
     void putNonExistingOrderStatus() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(orderStatusSearchRepository.findAll());
-        orderStatus.setStatusCode(longCount.incrementAndGet());
+        orderStatus.setId(longCount.incrementAndGet());
 
         // Create the OrderStatus
         OrderStatusDTO orderStatusDTO = orderStatusMapper.toDto(orderStatus);
@@ -274,7 +279,7 @@ class OrderStatusResourceIT {
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restOrderStatusMockMvc
             .perform(
-                put(ENTITY_API_URL_ID, orderStatusDTO.getStatusCode())
+                put(ENTITY_API_URL_ID, orderStatusDTO.getId())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(om.writeValueAsBytes(orderStatusDTO))
             )
@@ -291,7 +296,7 @@ class OrderStatusResourceIT {
     void putWithIdMismatchOrderStatus() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(orderStatusSearchRepository.findAll());
-        orderStatus.setStatusCode(longCount.incrementAndGet());
+        orderStatus.setId(longCount.incrementAndGet());
 
         // Create the OrderStatus
         OrderStatusDTO orderStatusDTO = orderStatusMapper.toDto(orderStatus);
@@ -316,7 +321,7 @@ class OrderStatusResourceIT {
     void putWithMissingIdPathParamOrderStatus() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(orderStatusSearchRepository.findAll());
-        orderStatus.setStatusCode(longCount.incrementAndGet());
+        orderStatus.setId(longCount.incrementAndGet());
 
         // Create the OrderStatus
         OrderStatusDTO orderStatusDTO = orderStatusMapper.toDto(orderStatus);
@@ -342,11 +347,11 @@ class OrderStatusResourceIT {
 
         // Update the orderStatus using partial update
         OrderStatus partialUpdatedOrderStatus = new OrderStatus();
-        partialUpdatedOrderStatus.setStatusCode(orderStatus.getStatusCode());
+        partialUpdatedOrderStatus.setId(orderStatus.getId());
 
         restOrderStatusMockMvc
             .perform(
-                patch(ENTITY_API_URL_ID, partialUpdatedOrderStatus.getStatusCode())
+                patch(ENTITY_API_URL_ID, partialUpdatedOrderStatus.getId())
                     .contentType("application/merge-patch+json")
                     .content(om.writeValueAsBytes(partialUpdatedOrderStatus))
             )
@@ -371,13 +376,13 @@ class OrderStatusResourceIT {
 
         // Update the orderStatus using partial update
         OrderStatus partialUpdatedOrderStatus = new OrderStatus();
-        partialUpdatedOrderStatus.setStatusCode(orderStatus.getStatusCode());
+        partialUpdatedOrderStatus.setId(orderStatus.getId());
 
-        partialUpdatedOrderStatus.description(UPDATED_DESCRIPTION);
+        partialUpdatedOrderStatus.statusCode(UPDATED_STATUS_CODE).description(UPDATED_DESCRIPTION);
 
         restOrderStatusMockMvc
             .perform(
-                patch(ENTITY_API_URL_ID, partialUpdatedOrderStatus.getStatusCode())
+                patch(ENTITY_API_URL_ID, partialUpdatedOrderStatus.getId())
                     .contentType("application/merge-patch+json")
                     .content(om.writeValueAsBytes(partialUpdatedOrderStatus))
             )
@@ -394,7 +399,7 @@ class OrderStatusResourceIT {
     void patchNonExistingOrderStatus() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(orderStatusSearchRepository.findAll());
-        orderStatus.setStatusCode(longCount.incrementAndGet());
+        orderStatus.setId(longCount.incrementAndGet());
 
         // Create the OrderStatus
         OrderStatusDTO orderStatusDTO = orderStatusMapper.toDto(orderStatus);
@@ -402,7 +407,7 @@ class OrderStatusResourceIT {
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restOrderStatusMockMvc
             .perform(
-                patch(ENTITY_API_URL_ID, orderStatusDTO.getStatusCode())
+                patch(ENTITY_API_URL_ID, orderStatusDTO.getId())
                     .contentType("application/merge-patch+json")
                     .content(om.writeValueAsBytes(orderStatusDTO))
             )
@@ -419,7 +424,7 @@ class OrderStatusResourceIT {
     void patchWithIdMismatchOrderStatus() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(orderStatusSearchRepository.findAll());
-        orderStatus.setStatusCode(longCount.incrementAndGet());
+        orderStatus.setId(longCount.incrementAndGet());
 
         // Create the OrderStatus
         OrderStatusDTO orderStatusDTO = orderStatusMapper.toDto(orderStatus);
@@ -444,7 +449,7 @@ class OrderStatusResourceIT {
     void patchWithMissingIdPathParamOrderStatus() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(orderStatusSearchRepository.findAll());
-        orderStatus.setStatusCode(longCount.incrementAndGet());
+        orderStatus.setId(longCount.incrementAndGet());
 
         // Create the OrderStatus
         OrderStatusDTO orderStatusDTO = orderStatusMapper.toDto(orderStatus);
@@ -474,7 +479,7 @@ class OrderStatusResourceIT {
 
         // Delete the orderStatus
         restOrderStatusMockMvc
-            .perform(delete(ENTITY_API_URL_ID, orderStatus.getStatusCode()).accept(MediaType.APPLICATION_JSON))
+            .perform(delete(ENTITY_API_URL_ID, orderStatus.getId()).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item
@@ -492,10 +497,11 @@ class OrderStatusResourceIT {
 
         // Search the orderStatus
         restOrderStatusMockMvc
-            .perform(get(ENTITY_SEARCH_API_URL + "?query=id:" + orderStatus.getStatusCode()))
+            .perform(get(ENTITY_SEARCH_API_URL + "?query=id:" + orderStatus.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].statusCode").value(hasItem(orderStatus.getStatusCode().intValue())))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(orderStatus.getId().intValue())))
+            .andExpect(jsonPath("$.[*].statusCode").value(hasItem(DEFAULT_STATUS_CODE)))
             .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION)));
     }
 
@@ -516,7 +522,7 @@ class OrderStatusResourceIT {
     }
 
     protected OrderStatus getPersistedOrderStatus(OrderStatus orderStatus) {
-        return orderStatusRepository.findById(orderStatus.getStatusCode()).orElseThrow();
+        return orderStatusRepository.findById(orderStatus.getId()).orElseThrow();
     }
 
     protected void assertPersistedOrderStatusToMatchAllProperties(OrderStatus expectedOrderStatus) {

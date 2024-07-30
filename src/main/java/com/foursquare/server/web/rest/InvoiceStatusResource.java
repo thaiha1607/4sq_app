@@ -54,52 +54,52 @@ public class InvoiceStatusResource {
     public ResponseEntity<InvoiceStatusDTO> createInvoiceStatus(@Valid @RequestBody InvoiceStatusDTO invoiceStatusDTO)
         throws URISyntaxException {
         log.debug("REST request to save InvoiceStatus : {}", invoiceStatusDTO);
-        if (invoiceStatusDTO.getStatusCode() != null) {
+        if (invoiceStatusDTO.getId() != null) {
             throw new BadRequestAlertException("A new invoiceStatus cannot already have an ID", ENTITY_NAME, "idexists");
         }
         invoiceStatusDTO = invoiceStatusService.save(invoiceStatusDTO);
-        return ResponseEntity.created(new URI("/api/invoice-statuses/" + invoiceStatusDTO.getStatusCode()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, invoiceStatusDTO.getStatusCode().toString()))
+        return ResponseEntity.created(new URI("/api/invoice-statuses/" + invoiceStatusDTO.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, invoiceStatusDTO.getId().toString()))
             .body(invoiceStatusDTO);
     }
 
     /**
-     * {@code PUT  /invoice-statuses/:statusCode} : Updates an existing invoiceStatus.
+     * {@code PUT  /invoice-statuses/:id} : Updates an existing invoiceStatus.
      *
-     * @param statusCode the id of the invoiceStatusDTO to save.
+     * @param id the id of the invoiceStatusDTO to save.
      * @param invoiceStatusDTO the invoiceStatusDTO to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated invoiceStatusDTO,
      * or with status {@code 400 (Bad Request)} if the invoiceStatusDTO is not valid,
      * or with status {@code 500 (Internal Server Error)} if the invoiceStatusDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PutMapping("/{statusCode}")
+    @PutMapping("/{id}")
     public ResponseEntity<InvoiceStatusDTO> updateInvoiceStatus(
-        @PathVariable(value = "statusCode", required = false) final Long statusCode,
+        @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody InvoiceStatusDTO invoiceStatusDTO
     ) throws URISyntaxException {
-        log.debug("REST request to update InvoiceStatus : {}, {}", statusCode, invoiceStatusDTO);
-        if (invoiceStatusDTO.getStatusCode() == null) {
+        log.debug("REST request to update InvoiceStatus : {}, {}", id, invoiceStatusDTO);
+        if (invoiceStatusDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        if (!Objects.equals(statusCode, invoiceStatusDTO.getStatusCode())) {
+        if (!Objects.equals(id, invoiceStatusDTO.getId())) {
             throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
         }
 
-        if (!invoiceStatusRepository.existsById(statusCode)) {
+        if (!invoiceStatusRepository.existsById(id)) {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
         invoiceStatusDTO = invoiceStatusService.update(invoiceStatusDTO);
         return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, invoiceStatusDTO.getStatusCode().toString()))
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, invoiceStatusDTO.getId().toString()))
             .body(invoiceStatusDTO);
     }
 
     /**
-     * {@code PATCH  /invoice-statuses/:statusCode} : Partial updates given fields of an existing invoiceStatus, field will ignore if it is null
+     * {@code PATCH  /invoice-statuses/:id} : Partial updates given fields of an existing invoiceStatus, field will ignore if it is null
      *
-     * @param statusCode the id of the invoiceStatusDTO to save.
+     * @param id the id of the invoiceStatusDTO to save.
      * @param invoiceStatusDTO the invoiceStatusDTO to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated invoiceStatusDTO,
      * or with status {@code 400 (Bad Request)} if the invoiceStatusDTO is not valid,
@@ -107,20 +107,20 @@ public class InvoiceStatusResource {
      * or with status {@code 500 (Internal Server Error)} if the invoiceStatusDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PatchMapping(value = "/{statusCode}", consumes = { "application/json", "application/merge-patch+json" })
+    @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
     public ResponseEntity<InvoiceStatusDTO> partialUpdateInvoiceStatus(
-        @PathVariable(value = "statusCode", required = false) final Long statusCode,
+        @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody InvoiceStatusDTO invoiceStatusDTO
     ) throws URISyntaxException {
-        log.debug("REST request to partial update InvoiceStatus partially : {}, {}", statusCode, invoiceStatusDTO);
-        if (invoiceStatusDTO.getStatusCode() == null) {
+        log.debug("REST request to partial update InvoiceStatus partially : {}, {}", id, invoiceStatusDTO);
+        if (invoiceStatusDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        if (!Objects.equals(statusCode, invoiceStatusDTO.getStatusCode())) {
+        if (!Objects.equals(id, invoiceStatusDTO.getId())) {
             throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
         }
 
-        if (!invoiceStatusRepository.existsById(statusCode)) {
+        if (!invoiceStatusRepository.existsById(id)) {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
@@ -128,7 +128,7 @@ public class InvoiceStatusResource {
 
         return ResponseUtil.wrapOrNotFound(
             result,
-            HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, invoiceStatusDTO.getStatusCode().toString())
+            HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, invoiceStatusDTO.getId().toString())
         );
     }
 

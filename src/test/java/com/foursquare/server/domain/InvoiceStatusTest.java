@@ -15,7 +15,7 @@ class InvoiceStatusTest {
         InvoiceStatus invoiceStatus2 = new InvoiceStatus();
         assertThat(invoiceStatus1).isNotEqualTo(invoiceStatus2);
 
-        invoiceStatus2.setStatusCode(invoiceStatus1.getStatusCode());
+        invoiceStatus2.setId(invoiceStatus1.getId());
         assertThat(invoiceStatus1).isEqualTo(invoiceStatus2);
 
         invoiceStatus2 = getInvoiceStatusSample2();

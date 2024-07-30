@@ -50,6 +50,7 @@
         <thead>
           <tr>
             <th scope="row"><span>ID</span></th>
+            <th scope="row"><span>Status Code</span></th>
             <th scope="row"><span>Description</span></th>
             <th scope="row"><span>Created By</span></th>
             <th scope="row"><span>Created Date</span></th>
@@ -59,12 +60,13 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="invoiceStatus in invoiceStatuses" :key="invoiceStatus.statusCode" data-cy="entityTable">
+          <tr v-for="invoiceStatus in invoiceStatuses" :key="invoiceStatus.id" data-cy="entityTable">
             <td>
-              <router-link :to="{ name: 'InvoiceStatusView', params: { invoiceStatusId: invoiceStatus.statusCode } }">{{
-                invoiceStatus.statusCode
+              <router-link :to="{ name: 'InvoiceStatusView', params: { invoiceStatusId: invoiceStatus.id } }">{{
+                invoiceStatus.id
               }}</router-link>
             </td>
+            <td>{{ invoiceStatus.statusCode }}</td>
             <td>{{ invoiceStatus.description }}</td>
             <td>{{ invoiceStatus.createdBy }}</td>
             <td>{{ formatDateShort(invoiceStatus.createdDate) || '' }}</td>
@@ -73,7 +75,7 @@
             <td class="text-right">
               <div class="btn-group">
                 <router-link
-                  :to="{ name: 'InvoiceStatusView', params: { invoiceStatusId: invoiceStatus.statusCode } }"
+                  :to="{ name: 'InvoiceStatusView', params: { invoiceStatusId: invoiceStatus.id } }"
                   custom
                   v-slot="{ navigate }"
                 >
@@ -83,7 +85,7 @@
                   </button>
                 </router-link>
                 <router-link
-                  :to="{ name: 'InvoiceStatusEdit', params: { invoiceStatusId: invoiceStatus.statusCode } }"
+                  :to="{ name: 'InvoiceStatusEdit', params: { invoiceStatusId: invoiceStatus.id } }"
                   custom
                   v-slot="{ navigate }"
                 >

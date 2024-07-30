@@ -18,7 +18,7 @@ import org.mapstruct.*;
 @Mapper(componentModel = "spring")
 public interface OrderMapper extends EntityMapper<OrderDTO, Order> {
     @Mapping(target = "customer", source = "customer", qualifiedByName = "userLogin")
-    @Mapping(target = "status", source = "status", qualifiedByName = "orderStatusDescription")
+    @Mapping(target = "status", source = "status", qualifiedByName = "orderStatusStatusCode")
     @Mapping(target = "address", source = "address", qualifiedByName = "addressId")
     @Mapping(target = "parentOrder", source = "parentOrder", qualifiedByName = "orderId")
     OrderDTO toDto(Order s);
@@ -34,11 +34,11 @@ public interface OrderMapper extends EntityMapper<OrderDTO, Order> {
     @Mapping(target = "login", source = "login")
     UserDTO toDtoUserLogin(User user);
 
-    @Named("orderStatusDescription")
+    @Named("orderStatusStatusCode")
     @BeanMapping(ignoreByDefault = true)
+    @Mapping(target = "id", source = "id")
     @Mapping(target = "statusCode", source = "statusCode")
-    @Mapping(target = "description", source = "description")
-    OrderStatusDTO toDtoOrderStatusDescription(OrderStatus orderStatus);
+    OrderStatusDTO toDtoOrderStatusStatusCode(OrderStatus orderStatus);
 
     @Named("addressId")
     @BeanMapping(ignoreByDefault = true)

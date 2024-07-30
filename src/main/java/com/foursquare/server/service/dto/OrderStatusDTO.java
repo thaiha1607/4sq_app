@@ -11,9 +11,11 @@ import java.util.Objects;
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class OrderStatusDTO implements Serializable {
 
-    private Long statusCode;
+    private Long id;
 
     @NotNull
+    private String statusCode;
+
     private String description;
 
     private String createdBy;
@@ -24,11 +26,19 @@ public class OrderStatusDTO implements Serializable {
 
     private Instant lastModifiedDate;
 
-    public Long getStatusCode() {
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getStatusCode() {
         return statusCode;
     }
 
-    public void setStatusCode(Long statusCode) {
+    public void setStatusCode(String statusCode) {
         this.statusCode = statusCode;
     }
 
@@ -82,22 +92,23 @@ public class OrderStatusDTO implements Serializable {
         }
 
         OrderStatusDTO orderStatusDTO = (OrderStatusDTO) o;
-        if (this.statusCode == null) {
+        if (this.id == null) {
             return false;
         }
-        return Objects.equals(this.statusCode, orderStatusDTO.statusCode);
+        return Objects.equals(this.id, orderStatusDTO.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.statusCode);
+        return Objects.hash(this.id);
     }
 
     // prettier-ignore
     @Override
     public String toString() {
         return "OrderStatusDTO{" +
-            "statusCode=" + getStatusCode() +
+            "id=" + getId() +
+            ", statusCode='" + getStatusCode() + "'" +
             ", description='" + getDescription() + "'" +
             ", createdBy='" + getCreatedBy() + "'" +
             ", createdDate='" + getCreatedDate() + "'" +
