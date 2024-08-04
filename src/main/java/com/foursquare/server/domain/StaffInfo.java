@@ -1,6 +1,7 @@
 package com.foursquare.server.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.foursquare.server.domain.enumeration.StaffStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
@@ -10,15 +11,15 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.springframework.data.domain.Persistable;
 
 /**
- * A UserDetails.
+ * A StaffInfo.
  */
 @Entity
-@Table(name = "user_details")
+@Table(name = "staff_info")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @JsonIgnoreProperties(value = { "new" })
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "userdetails")
+@org.springframework.data.elasticsearch.annotations.Document(indexName = "staffinfo")
 @SuppressWarnings("common-java:DuplicatedBlocks")
-public class UserDetails extends AbstractAuditingEntity<Long> implements Serializable, Persistable<Long> {
+public class StaffInfo extends AbstractAuditingEntity<Long> implements Serializable, Persistable<Long> {
 
     private static final long serialVersionUID = 1L;
 
@@ -28,13 +29,11 @@ public class UserDetails extends AbstractAuditingEntity<Long> implements Seriali
     @Column(name = "id")
     private Long id;
 
-    /**
-     * Phone number in E.164 format.
-     */
-    @Pattern(regexp = "^\\+[0-9]\\d{1,14}$")
-    @Column(name = "phone")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
-    private String phone;
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Keyword)
+    private StaffStatus status;
 
     // Inherited createdBy definition
     // Inherited createdDate definition
@@ -48,13 +47,17 @@ public class UserDetails extends AbstractAuditingEntity<Long> implements Seriali
     @JoinColumn(unique = true)
     private User user;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value = { "address" }, allowSetters = true)
+    private WorkingUnit workingUnit;
+
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
     public Long getId() {
         return this.id;
     }
 
-    public UserDetails id(Long id) {
+    public StaffInfo id(Long id) {
         this.setId(id);
         return this;
     }
@@ -63,39 +66,39 @@ public class UserDetails extends AbstractAuditingEntity<Long> implements Seriali
         this.id = id;
     }
 
-    public String getPhone() {
-        return this.phone;
+    public StaffStatus getStatus() {
+        return this.status;
     }
 
-    public UserDetails phone(String phone) {
-        this.setPhone(phone);
+    public StaffInfo status(StaffStatus status) {
+        this.setStatus(status);
         return this;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setStatus(StaffStatus status) {
+        this.status = status;
     }
 
     // Inherited createdBy methods
-    public UserDetails createdBy(String createdBy) {
+    public StaffInfo createdBy(String createdBy) {
         this.setCreatedBy(createdBy);
         return this;
     }
 
     // Inherited createdDate methods
-    public UserDetails createdDate(Instant createdDate) {
+    public StaffInfo createdDate(Instant createdDate) {
         this.setCreatedDate(createdDate);
         return this;
     }
 
     // Inherited lastModifiedBy methods
-    public UserDetails lastModifiedBy(String lastModifiedBy) {
+    public StaffInfo lastModifiedBy(String lastModifiedBy) {
         this.setLastModifiedBy(lastModifiedBy);
         return this;
     }
 
     // Inherited lastModifiedDate methods
-    public UserDetails lastModifiedDate(Instant lastModifiedDate) {
+    public StaffInfo lastModifiedDate(Instant lastModifiedDate) {
         this.setLastModifiedDate(lastModifiedDate);
         return this;
     }
@@ -112,7 +115,7 @@ public class UserDetails extends AbstractAuditingEntity<Long> implements Seriali
         return !this.isPersisted;
     }
 
-    public UserDetails setIsPersisted() {
+    public StaffInfo setIsPersisted() {
         this.isPersisted = true;
         return this;
     }
@@ -125,8 +128,21 @@ public class UserDetails extends AbstractAuditingEntity<Long> implements Seriali
         this.user = user;
     }
 
-    public UserDetails user(User user) {
+    public StaffInfo user(User user) {
         this.setUser(user);
+        return this;
+    }
+
+    public WorkingUnit getWorkingUnit() {
+        return this.workingUnit;
+    }
+
+    public void setWorkingUnit(WorkingUnit workingUnit) {
+        this.workingUnit = workingUnit;
+    }
+
+    public StaffInfo workingUnit(WorkingUnit workingUnit) {
+        this.setWorkingUnit(workingUnit);
         return this;
     }
 
@@ -137,10 +153,10 @@ public class UserDetails extends AbstractAuditingEntity<Long> implements Seriali
         if (this == o) {
             return true;
         }
-        if (!(o instanceof UserDetails)) {
+        if (!(o instanceof StaffInfo)) {
             return false;
         }
-        return getId() != null && getId().equals(((UserDetails) o).getId());
+        return getId() != null && getId().equals(((StaffInfo) o).getId());
     }
 
     @Override
@@ -152,9 +168,9 @@ public class UserDetails extends AbstractAuditingEntity<Long> implements Seriali
     // prettier-ignore
     @Override
     public String toString() {
-        return "UserDetails{" +
+        return "StaffInfo{" +
             "id=" + getId() +
-            ", phone='" + getPhone() + "'" +
+            ", status='" + getStatus() + "'" +
             ", createdBy='" + getCreatedBy() + "'" +
             ", createdDate='" + getCreatedDate() + "'" +
             ", lastModifiedBy='" + getLastModifiedBy() + "'" +

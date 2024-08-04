@@ -29,16 +29,14 @@ public interface UserDetailsRepository extends JpaRepository<UserDetails, Long> 
     }
 
     @Query(
-        value = "select userDetails from UserDetails userDetails left join fetch userDetails.user left join fetch userDetails.workingUnit",
+        value = "select userDetails from UserDetails userDetails left join fetch userDetails.user",
         countQuery = "select count(userDetails) from UserDetails userDetails"
     )
     Page<UserDetails> findAllWithToOneRelationships(Pageable pageable);
 
-    @Query("select userDetails from UserDetails userDetails left join fetch userDetails.user left join fetch userDetails.workingUnit")
+    @Query("select userDetails from UserDetails userDetails left join fetch userDetails.user")
     List<UserDetails> findAllWithToOneRelationships();
 
-    @Query(
-        "select userDetails from UserDetails userDetails left join fetch userDetails.user left join fetch userDetails.workingUnit where userDetails.id =:id"
-    )
+    @Query("select userDetails from UserDetails userDetails left join fetch userDetails.user where userDetails.id =:id")
     Optional<UserDetails> findOneWithToOneRelationships(@Param("id") Long id);
 }

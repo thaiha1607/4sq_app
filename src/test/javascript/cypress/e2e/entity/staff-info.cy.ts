@@ -10,14 +10,14 @@ import {
   entityConfirmDeleteButtonSelector,
 } from '../../support/entity';
 
-describe('UserDetails e2e test', () => {
-  const userDetailsPageUrl = '/user-details';
-  const userDetailsPageUrlPattern = new RegExp('/user-details(\\?.*)?$');
+describe('StaffInfo e2e test', () => {
+  const staffInfoPageUrl = '/staff-info';
+  const staffInfoPageUrlPattern = new RegExp('/staff-info(\\?.*)?$');
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
-  // const userDetailsSample = {};
+  // const staffInfoSample = {"status":"INACTIVE"};
 
-  let userDetails;
+  let staffInfo;
   // let user;
 
   beforeEach(() => {
@@ -30,7 +30,7 @@ describe('UserDetails e2e test', () => {
     cy.authenticatedRequest({
       method: 'POST',
       url: '/api/users',
-      body: {"login":"xKBZBu","firstName":"Reta","lastName":"Price","email":"Patricia61@hotmail.com","imageUrl":"gosh derivative"},
+      body: {"login":"kfTBC","firstName":"Tomas","lastName":"Prohaska","email":"Neal10@yahoo.com","imageUrl":"yum"},
     }).then(({ body }) => {
       user = body;
     });
@@ -38,9 +38,9 @@ describe('UserDetails e2e test', () => {
    */
 
   beforeEach(() => {
-    cy.intercept('GET', '/api/user-details+(?*|)').as('entitiesRequest');
-    cy.intercept('POST', '/api/user-details').as('postEntityRequest');
-    cy.intercept('DELETE', '/api/user-details/*').as('deleteEntityRequest');
+    cy.intercept('GET', '/api/staff-infos+(?*|)').as('entitiesRequest');
+    cy.intercept('POST', '/api/staff-infos').as('postEntityRequest');
+    cy.intercept('DELETE', '/api/staff-infos/*').as('deleteEntityRequest');
   });
 
   /* Disabled due to incompatibility
@@ -51,16 +51,21 @@ describe('UserDetails e2e test', () => {
       body: [user],
     });
 
+    cy.intercept('GET', '/api/working-units', {
+      statusCode: 200,
+      body: [],
+    });
+
   });
    */
 
   afterEach(() => {
-    if (userDetails) {
+    if (staffInfo) {
       cy.authenticatedRequest({
         method: 'DELETE',
-        url: `/api/user-details/${userDetails.id}`,
+        url: `/api/staff-infos/${staffInfo.id}`,
       }).then(() => {
-        userDetails = undefined;
+        staffInfo = undefined;
       });
     }
   });
@@ -78,9 +83,9 @@ describe('UserDetails e2e test', () => {
   });
    */
 
-  it('UserDetails menu should load UserDetails page', () => {
+  it('StaffInfos menu should load StaffInfos page', () => {
     cy.visit('/');
-    cy.clickOnEntityMenuItem('user-details');
+    cy.clickOnEntityMenuItem('staff-info');
     cy.wait('@entitiesRequest').then(({ response }) => {
       if (response?.body.length === 0) {
         cy.get(entityTableSelector).should('not.exist');
@@ -88,27 +93,27 @@ describe('UserDetails e2e test', () => {
         cy.get(entityTableSelector).should('exist');
       }
     });
-    cy.getEntityHeading('UserDetails').should('exist');
-    cy.url().should('match', userDetailsPageUrlPattern);
+    cy.getEntityHeading('StaffInfo').should('exist');
+    cy.url().should('match', staffInfoPageUrlPattern);
   });
 
-  describe('UserDetails page', () => {
+  describe('StaffInfo page', () => {
     describe('create button click', () => {
       beforeEach(() => {
-        cy.visit(userDetailsPageUrl);
+        cy.visit(staffInfoPageUrl);
         cy.wait('@entitiesRequest');
       });
 
-      it('should load create UserDetails page', () => {
+      it('should load create StaffInfo page', () => {
         cy.get(entityCreateButtonSelector).click();
-        cy.url().should('match', new RegExp('/user-details/new$'));
-        cy.getEntityCreateUpdateHeading('UserDetails');
+        cy.url().should('match', new RegExp('/staff-info/new$'));
+        cy.getEntityCreateUpdateHeading('StaffInfo');
         cy.get(entityCreateSaveButtonSelector).should('exist');
         cy.get(entityCreateCancelButtonSelector).click();
         cy.wait('@entitiesRequest').then(({ response }) => {
           expect(response?.statusCode).to.equal(200);
         });
-        cy.url().should('match', userDetailsPageUrlPattern);
+        cy.url().should('match', staffInfoPageUrlPattern);
       });
     });
 
@@ -117,35 +122,35 @@ describe('UserDetails e2e test', () => {
       beforeEach(() => {
         cy.authenticatedRequest({
           method: 'POST',
-          url: '/api/user-details',
+          url: '/api/staff-infos',
           body: {
-            ...userDetailsSample,
+            ...staffInfoSample,
             user: user,
           },
         }).then(({ body }) => {
-          userDetails = body;
+          staffInfo = body;
 
           cy.intercept(
             {
               method: 'GET',
-              url: '/api/user-details+(?*|)',
+              url: '/api/staff-infos+(?*|)',
               times: 1,
             },
             {
               statusCode: 200,
-              body: [userDetails],
+              body: [staffInfo],
             }
           ).as('entitiesRequestInternal');
         });
 
-        cy.visit(userDetailsPageUrl);
+        cy.visit(staffInfoPageUrl);
 
         cy.wait('@entitiesRequestInternal');
       });
        */
 
       beforeEach(function () {
-        cy.visit(userDetailsPageUrl);
+        cy.visit(staffInfoPageUrl);
 
         cy.wait('@entitiesRequest').then(({ response }) => {
           if (response?.body.length === 0) {
@@ -154,40 +159,40 @@ describe('UserDetails e2e test', () => {
         });
       });
 
-      it('detail button click should load details UserDetails page', () => {
+      it('detail button click should load details StaffInfo page', () => {
         cy.get(entityDetailsButtonSelector).first().click();
-        cy.getEntityDetailsHeading('userDetails');
+        cy.getEntityDetailsHeading('staffInfo');
         cy.get(entityDetailsBackButtonSelector).click();
         cy.wait('@entitiesRequest').then(({ response }) => {
           expect(response?.statusCode).to.equal(200);
         });
-        cy.url().should('match', userDetailsPageUrlPattern);
+        cy.url().should('match', staffInfoPageUrlPattern);
       });
 
-      it('edit button click should load edit UserDetails page and go back', () => {
+      it('edit button click should load edit StaffInfo page and go back', () => {
         cy.get(entityEditButtonSelector).first().click();
-        cy.getEntityCreateUpdateHeading('UserDetails');
+        cy.getEntityCreateUpdateHeading('StaffInfo');
         cy.get(entityCreateSaveButtonSelector).should('exist');
         cy.get(entityCreateCancelButtonSelector).click();
         cy.wait('@entitiesRequest').then(({ response }) => {
           expect(response?.statusCode).to.equal(200);
         });
-        cy.url().should('match', userDetailsPageUrlPattern);
+        cy.url().should('match', staffInfoPageUrlPattern);
       });
 
-      it('edit button click should load edit UserDetails page and save', () => {
+      it('edit button click should load edit StaffInfo page and save', () => {
         cy.get(entityEditButtonSelector).first().click();
-        cy.getEntityCreateUpdateHeading('UserDetails');
+        cy.getEntityCreateUpdateHeading('StaffInfo');
         cy.get(entityCreateSaveButtonSelector).click();
         cy.wait('@entitiesRequest').then(({ response }) => {
           expect(response?.statusCode).to.equal(200);
         });
-        cy.url().should('match', userDetailsPageUrlPattern);
+        cy.url().should('match', staffInfoPageUrlPattern);
       });
 
-      it.skip('last delete button click should delete instance of UserDetails', () => {
+      it.skip('last delete button click should delete instance of StaffInfo', () => {
         cy.get(entityDeleteButtonSelector).last().click();
-        cy.getEntityDeleteDialogHeading('userDetails').should('exist');
+        cy.getEntityDeleteDialogHeading('staffInfo').should('exist');
         cy.get(entityConfirmDeleteButtonSelector).click();
         cy.wait('@deleteEntityRequest').then(({ response }) => {
           expect(response?.statusCode).to.equal(204);
@@ -195,23 +200,22 @@ describe('UserDetails e2e test', () => {
         cy.wait('@entitiesRequest').then(({ response }) => {
           expect(response?.statusCode).to.equal(200);
         });
-        cy.url().should('match', userDetailsPageUrlPattern);
+        cy.url().should('match', staffInfoPageUrlPattern);
 
-        userDetails = undefined;
+        staffInfo = undefined;
       });
     });
   });
 
-  describe('new UserDetails page', () => {
+  describe('new StaffInfo page', () => {
     beforeEach(() => {
-      cy.visit(`${userDetailsPageUrl}`);
+      cy.visit(`${staffInfoPageUrl}`);
       cy.get(entityCreateButtonSelector).click();
-      cy.getEntityCreateUpdateHeading('UserDetails');
+      cy.getEntityCreateUpdateHeading('StaffInfo');
     });
 
-    it.skip('should create an instance of UserDetails', () => {
-      cy.get(`[data-cy="phone"]`).type('+9941945');
-      cy.get(`[data-cy="phone"]`).should('have.value', '+9941945');
+    it.skip('should create an instance of StaffInfo', () => {
+      cy.get(`[data-cy="status"]`).select('INACTIVE');
 
       cy.get(`[data-cy="user"]`).select(1);
 
@@ -219,12 +223,12 @@ describe('UserDetails e2e test', () => {
 
       cy.wait('@postEntityRequest').then(({ response }) => {
         expect(response?.statusCode).to.equal(201);
-        userDetails = response.body;
+        staffInfo = response.body;
       });
       cy.wait('@entitiesRequest').then(({ response }) => {
         expect(response?.statusCode).to.equal(200);
       });
-      cy.url().should('match', userDetailsPageUrlPattern);
+      cy.url().should('match', staffInfoPageUrlPattern);
     });
   });
 });

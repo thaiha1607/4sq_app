@@ -123,6 +123,7 @@ public class CacheConfiguration {
             createCache(cm, com.foursquare.server.domain.WarehouseAssignment.class.getName(), jcacheConfiguration);
             createCache(cm, com.foursquare.server.domain.WorkingUnit.class.getName(), jcacheConfiguration);
             createCache(cm, com.foursquare.server.domain.Comment.class.getName(), jcacheConfiguration);
+            createCache(cm, com.foursquare.server.domain.StaffInfo.class.getName(), jcacheConfiguration);
             // jhipster-needle-redis-add-entry
         };
     }

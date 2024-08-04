@@ -1,6 +1,6 @@
 {
   "annotations": {
-    "changelogDate": "20240704112525",
+    "changelogDate": "20240804084002",
     "dto": "mapstruct",
     "filter": true,
     "paginate": "no",
@@ -11,11 +11,10 @@
   "enableAudit": true,
   "fields": [
     {
-      "documentation": "Phone number in E.164 format.",
-      "fieldName": "phone",
-      "fieldType": "String",
-      "fieldValidateRules": ["pattern"],
-      "fieldValidateRulesPattern": "^\\+[0-9]\\d{1,14}$"
+      "fieldName": "status",
+      "fieldType": "StaffStatus",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "ACTIVE,INACTIVE,SUSPENDED,TERMINATED,OTHER"
     },
     {
       "auditField": true,
@@ -52,7 +51,7 @@
       "readonly": true
     }
   ],
-  "name": "UserDetails",
+  "name": "StaffInfo",
   "relationships": [
     {
       "options": {
@@ -65,6 +64,16 @@
       "relationshipType": "one-to-one",
       "relationshipValidateRules": "required",
       "relationshipWithBuiltInEntity": true
+    },
+    {
+      "options": {
+        "onDelete": "SET NULL"
+      },
+      "otherEntityField": "name",
+      "otherEntityName": "workingUnit",
+      "relationshipName": "workingUnit",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
     }
   ]
 }

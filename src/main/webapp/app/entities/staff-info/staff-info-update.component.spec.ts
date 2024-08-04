@@ -5,14 +5,15 @@ import sinon, { type SinonStubbedInstance } from 'sinon';
 import { type RouteLocation } from 'vue-router';
 
 import dayjs from 'dayjs';
-import UserDetailsUpdate from './user-details-update.vue';
-import UserDetailsService from './user-details.service';
+import StaffInfoUpdate from './staff-info-update.vue';
+import StaffInfoService from './staff-info.service';
 import { DATE_TIME_LONG_FORMAT } from '@/shared/composables/date-format';
 import AlertService from '@/shared/alert/alert.service';
 
 import UserService from '@/entities/user/user.service';
+import WorkingUnitService from '@/entities/working-unit/working-unit.service';
 
-type UserDetailsUpdateComponentType = InstanceType<typeof UserDetailsUpdate>;
+type StaffInfoUpdateComponentType = InstanceType<typeof StaffInfoUpdate>;
 
 let route: Partial<RouteLocation>;
 const routerGoMock = vitest.fn();
@@ -22,20 +23,20 @@ vitest.mock('vue-router', () => ({
   useRouter: () => ({ go: routerGoMock }),
 }));
 
-const userDetailsSample = { id: 123 };
+const staffInfoSample = { id: 123 };
 
 describe('Component Tests', () => {
-  let mountOptions: MountingOptions<UserDetailsUpdateComponentType>['global'];
+  let mountOptions: MountingOptions<StaffInfoUpdateComponentType>['global'];
   let alertService: AlertService;
 
-  describe('UserDetails Management Update Component', () => {
-    let comp: UserDetailsUpdateComponentType;
-    let userDetailsServiceStub: SinonStubbedInstance<UserDetailsService>;
+  describe('StaffInfo Management Update Component', () => {
+    let comp: StaffInfoUpdateComponentType;
+    let staffInfoServiceStub: SinonStubbedInstance<StaffInfoService>;
 
     beforeEach(() => {
       route = {};
-      userDetailsServiceStub = sinon.createStubInstance<UserDetailsService>(UserDetailsService);
-      userDetailsServiceStub.retrieve.onFirstCall().resolves(Promise.resolve([]));
+      staffInfoServiceStub = sinon.createStubInstance<StaffInfoService>(StaffInfoService);
+      staffInfoServiceStub.retrieve.onFirstCall().resolves(Promise.resolve([]));
 
       alertService = new AlertService({
         bvToast: {
@@ -53,10 +54,14 @@ describe('Component Tests', () => {
         },
         provide: {
           alertService,
-          userDetailsService: () => userDetailsServiceStub,
+          staffInfoService: () => staffInfoServiceStub,
 
           userService: () =>
             sinon.createStubInstance<UserService>(UserService, {
+              retrieve: sinon.stub().resolves({}),
+            } as any),
+          workingUnitService: () =>
+            sinon.createStubInstance<WorkingUnitService>(WorkingUnitService, {
               retrieve: sinon.stub().resolves({}),
             } as any),
         },
@@ -69,7 +74,7 @@ describe('Component Tests', () => {
 
     describe('load', () => {
       beforeEach(() => {
-        const wrapper = shallowMount(UserDetailsUpdate, { global: mountOptions });
+        const wrapper = shallowMount(StaffInfoUpdate, { global: mountOptions });
         comp = wrapper.vm;
       });
       it('Should convert date from string', () => {
@@ -91,34 +96,34 @@ describe('Component Tests', () => {
     describe('save', () => {
       it('Should call update service on save for existing entity', async () => {
         // GIVEN
-        const wrapper = shallowMount(UserDetailsUpdate, { global: mountOptions });
+        const wrapper = shallowMount(StaffInfoUpdate, { global: mountOptions });
         comp = wrapper.vm;
-        comp.userDetails = userDetailsSample;
-        userDetailsServiceStub.update.resolves(userDetailsSample);
+        comp.staffInfo = staffInfoSample;
+        staffInfoServiceStub.update.resolves(staffInfoSample);
 
         // WHEN
         comp.save();
         await comp.$nextTick();
 
         // THEN
-        expect(userDetailsServiceStub.update.calledWith(userDetailsSample)).toBeTruthy();
+        expect(staffInfoServiceStub.update.calledWith(staffInfoSample)).toBeTruthy();
         expect(comp.isSaving).toEqual(false);
       });
 
       it('Should call create service on save for new entity', async () => {
         // GIVEN
         const entity = {};
-        userDetailsServiceStub.create.resolves(entity);
-        const wrapper = shallowMount(UserDetailsUpdate, { global: mountOptions });
+        staffInfoServiceStub.create.resolves(entity);
+        const wrapper = shallowMount(StaffInfoUpdate, { global: mountOptions });
         comp = wrapper.vm;
-        comp.userDetails = entity;
+        comp.staffInfo = entity;
 
         // WHEN
         comp.save();
         await comp.$nextTick();
 
         // THEN
-        expect(userDetailsServiceStub.create.calledWith(entity)).toBeTruthy();
+        expect(staffInfoServiceStub.create.calledWith(entity)).toBeTruthy();
         expect(comp.isSaving).toEqual(false);
       });
     });
@@ -126,28 +131,28 @@ describe('Component Tests', () => {
     describe('Before route enter', () => {
       it('Should retrieve data', async () => {
         // GIVEN
-        userDetailsServiceStub.find.resolves(userDetailsSample);
-        userDetailsServiceStub.retrieve.resolves([userDetailsSample]);
+        staffInfoServiceStub.find.resolves(staffInfoSample);
+        staffInfoServiceStub.retrieve.resolves([staffInfoSample]);
 
         // WHEN
         route = {
           params: {
-            userDetailsId: '' + userDetailsSample.id,
+            staffInfoId: '' + staffInfoSample.id,
           },
         };
-        const wrapper = shallowMount(UserDetailsUpdate, { global: mountOptions });
+        const wrapper = shallowMount(StaffInfoUpdate, { global: mountOptions });
         comp = wrapper.vm;
         await comp.$nextTick();
 
         // THEN
-        expect(comp.userDetails).toMatchObject(userDetailsSample);
+        expect(comp.staffInfo).toMatchObject(staffInfoSample);
       });
     });
 
     describe('Previous state', () => {
       it('Should go previous state', async () => {
-        userDetailsServiceStub.find.resolves(userDetailsSample);
-        const wrapper = shallowMount(UserDetailsUpdate, { global: mountOptions });
+        staffInfoServiceStub.find.resolves(staffInfoSample);
+        const wrapper = shallowMount(StaffInfoUpdate, { global: mountOptions });
         comp = wrapper.vm;
         await comp.$nextTick();
 

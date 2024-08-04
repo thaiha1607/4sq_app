@@ -2,46 +2,46 @@
   <div class="row justify-content-center">
     <div class="col-8">
       <form name="editForm" novalidate v-on:submit.prevent="save()">
-        <h2 id="foursquareApp.userDetails.home.createOrEditLabel" data-cy="UserDetailsCreateUpdateHeading">
-          Create or edit a User Details
-        </h2>
+        <h2 id="foursquareApp.staffInfo.home.createOrEditLabel" data-cy="StaffInfoCreateUpdateHeading">Create or edit a Staff Info</h2>
         <div>
-          <div class="form-group" v-if="userDetails.id">
+          <div class="form-group" v-if="staffInfo.id">
             <label for="id">ID</label>
-            <input type="text" class="form-control" id="id" name="id" v-model="userDetails.id" readonly />
+            <input type="text" class="form-control" id="id" name="id" v-model="staffInfo.id" readonly />
           </div>
           <div class="form-group">
-            <label class="form-control-label" for="user-details-phone">Phone</label>
-            <input
-              type="text"
+            <label class="form-control-label" for="staff-info-status">Status</label>
+            <select
               class="form-control"
-              name="phone"
-              id="user-details-phone"
-              data-cy="phone"
-              :class="{ valid: !v$.phone.$invalid, invalid: v$.phone.$invalid }"
-              v-model="v$.phone.$model"
-            />
-            <div v-if="v$.phone.$anyDirty && v$.phone.$invalid">
-              <small class="form-text text-danger" v-for="error of v$.phone.$errors" :key="error.$uid">{{ error.$message }}</small>
+              name="status"
+              :class="{ valid: !v$.status.$invalid, invalid: v$.status.$invalid }"
+              v-model="v$.status.$model"
+              id="staff-info-status"
+              data-cy="status"
+              required
+            >
+              <option v-for="staffStatus in staffStatusValues" :key="staffStatus" v-bind:value="staffStatus">{{ staffStatus }}</option>
+            </select>
+            <div v-if="v$.status.$anyDirty && v$.status.$invalid">
+              <small class="form-text text-danger" v-for="error of v$.status.$errors" :key="error.$uid">{{ error.$message }}</small>
             </div>
           </div>
           <div class="form-group">
-            <label class="form-control-label" for="user-details-createdBy">Created By</label>
+            <label class="form-control-label" for="staff-info-createdBy">Created By</label>
             <input
               type="text"
               class="form-control"
               name="createdBy"
-              id="user-details-createdBy"
+              id="staff-info-createdBy"
               data-cy="createdBy"
               :class="{ valid: !v$.createdBy.$invalid, invalid: v$.createdBy.$invalid }"
               v-model="v$.createdBy.$model"
             />
           </div>
           <div class="form-group">
-            <label class="form-control-label" for="user-details-createdDate">Created Date</label>
+            <label class="form-control-label" for="staff-info-createdDate">Created Date</label>
             <div class="d-flex">
               <input
-                id="user-details-createdDate"
+                id="staff-info-createdDate"
                 data-cy="createdDate"
                 type="datetime-local"
                 class="form-control"
@@ -53,22 +53,22 @@
             </div>
           </div>
           <div class="form-group">
-            <label class="form-control-label" for="user-details-lastModifiedBy">Last Modified By</label>
+            <label class="form-control-label" for="staff-info-lastModifiedBy">Last Modified By</label>
             <input
               type="text"
               class="form-control"
               name="lastModifiedBy"
-              id="user-details-lastModifiedBy"
+              id="staff-info-lastModifiedBy"
               data-cy="lastModifiedBy"
               :class="{ valid: !v$.lastModifiedBy.$invalid, invalid: v$.lastModifiedBy.$invalid }"
               v-model="v$.lastModifiedBy.$model"
             />
           </div>
           <div class="form-group">
-            <label class="form-control-label" for="user-details-lastModifiedDate">Last Modified Date</label>
+            <label class="form-control-label" for="staff-info-lastModifiedDate">Last Modified Date</label>
             <div class="d-flex">
               <input
-                id="user-details-lastModifiedDate"
+                id="staff-info-lastModifiedDate"
                 data-cy="lastModifiedDate"
                 type="datetime-local"
                 class="form-control"
@@ -80,11 +80,11 @@
             </div>
           </div>
           <div class="form-group">
-            <label class="form-control-label" for="user-details-user">User</label>
-            <select class="form-control" id="user-details-user" data-cy="user" name="user" v-model="userDetails.user" required>
-              <option v-if="!userDetails.user" v-bind:value="null" selected></option>
+            <label class="form-control-label" for="staff-info-user">User</label>
+            <select class="form-control" id="staff-info-user" data-cy="user" name="user" v-model="staffInfo.user" required>
+              <option v-if="!staffInfo.user" v-bind:value="null" selected></option>
               <option
-                v-bind:value="userDetails.user && userOption.id === userDetails.user.id ? userDetails.user : userOption"
+                v-bind:value="staffInfo.user && userOption.id === staffInfo.user.id ? staffInfo.user : userOption"
                 v-for="userOption in users"
                 :key="userOption.id"
               >
@@ -94,6 +94,27 @@
           </div>
           <div v-if="v$.user.$anyDirty && v$.user.$invalid">
             <small class="form-text text-danger" v-for="error of v$.user.$errors" :key="error.$uid">{{ error.$message }}</small>
+          </div>
+          <div class="form-group">
+            <label class="form-control-label" for="staff-info-workingUnit">Working Unit</label>
+            <select
+              class="form-control"
+              id="staff-info-workingUnit"
+              data-cy="workingUnit"
+              name="workingUnit"
+              v-model="staffInfo.workingUnit"
+            >
+              <option v-bind:value="null"></option>
+              <option
+                v-bind:value="
+                  staffInfo.workingUnit && workingUnitOption.id === staffInfo.workingUnit.id ? staffInfo.workingUnit : workingUnitOption
+                "
+                v-for="workingUnitOption in workingUnits"
+                :key="workingUnitOption.id"
+              >
+                {{ workingUnitOption.name }}
+              </option>
+            </select>
           </div>
         </div>
         <div>
@@ -114,4 +135,4 @@
     </div>
   </div>
 </template>
-<script lang="ts" src="./user-details-update.component.ts"></script>
+<script lang="ts" src="./staff-info-update.component.ts"></script>

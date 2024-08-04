@@ -34,6 +34,21 @@ entity UserDetails {
     /** Phone number in E.164 format. */
     phone String pattern(/^\+[0-9]\d{1,14}$/)
 }
+enum StaffStatus {
+    ACTIVE,
+    INACTIVE,
+    SUSPENDED,
+    TERMINATED,
+    OTHER
+}
+@filter
+@dto(mapstruct)
+@service(serviceImpl)
+@paginate(no)
+@search(no)
+entity StaffInfo {
+    status StaffStatus required
+}
 @filter
 @dto(mapstruct)
 @service(serviceClass)
@@ -355,6 +370,7 @@ entity Comment {
  */
 relationship OneToOne {
     UserDetails{user(login) required} to @OnDelete("CASCADE") User with builtInEntity
+    StaffInfo{user(login) required} to @OnDelete("CASCADE") User with builtInEntity
 }
 /**
  * One to many relationship.
@@ -386,7 +402,7 @@ relationship ManyToOne {
     WarehouseAssignment{user(login)} to @OnDelete("SET NULL") User with builtInEntity
     WarehouseAssignment{sourceWorkingUnit(name) required} to WorkingUnit
     WarehouseAssignment{targetWorkingUnit(name)} to @OnDelete("SET NULL") WorkingUnit
-    UserDetails{workingUnit(name)} to @OnDelete("SET NULL") WorkingUnit
+    StaffInfo{workingUnit(name)} to @OnDelete("SET NULL") WorkingUnit
     Invoice{status(statusCode) required} to InvoiceStatus
     Order{status(statusCode) required} to OrderStatus
     Order{address} to Address

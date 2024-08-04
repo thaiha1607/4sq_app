@@ -1,22 +1,21 @@
 package com.foursquare.server.service.dto;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import com.foursquare.server.domain.enumeration.StaffStatus;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Objects;
 
 /**
- * A DTO for the {@link com.foursquare.server.domain.UserDetails} entity.
+ * A DTO for the {@link com.foursquare.server.domain.StaffInfo} entity.
  */
 @SuppressWarnings("common-java:DuplicatedBlocks")
-public class UserDetailsDTO implements Serializable {
+public class StaffInfoDTO implements Serializable {
 
     private Long id;
 
-    @Pattern(regexp = "^\\+[0-9]\\d{1,14}$")
-    @Schema(description = "Phone number in E.164 format.")
-    private String phone;
+    @NotNull
+    private StaffStatus status;
 
     private String createdBy;
 
@@ -29,6 +28,8 @@ public class UserDetailsDTO implements Serializable {
     @NotNull
     private UserDTO user;
 
+    private WorkingUnitDTO workingUnit;
+
     public Long getId() {
         return id;
     }
@@ -37,12 +38,12 @@ public class UserDetailsDTO implements Serializable {
         this.id = id;
     }
 
-    public String getPhone() {
-        return phone;
+    public StaffStatus getStatus() {
+        return status;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setStatus(StaffStatus status) {
+        this.status = status;
     }
 
     public String getCreatedBy() {
@@ -85,20 +86,28 @@ public class UserDetailsDTO implements Serializable {
         this.user = user;
     }
 
+    public WorkingUnitDTO getWorkingUnit() {
+        return workingUnit;
+    }
+
+    public void setWorkingUnit(WorkingUnitDTO workingUnit) {
+        this.workingUnit = workingUnit;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof UserDetailsDTO)) {
+        if (!(o instanceof StaffInfoDTO)) {
             return false;
         }
 
-        UserDetailsDTO userDetailsDTO = (UserDetailsDTO) o;
+        StaffInfoDTO staffInfoDTO = (StaffInfoDTO) o;
         if (this.id == null) {
             return false;
         }
-        return Objects.equals(this.id, userDetailsDTO.id);
+        return Objects.equals(this.id, staffInfoDTO.id);
     }
 
     @Override
@@ -109,14 +118,15 @@ public class UserDetailsDTO implements Serializable {
     // prettier-ignore
     @Override
     public String toString() {
-        return "UserDetailsDTO{" +
+        return "StaffInfoDTO{" +
             "id=" + getId() +
-            ", phone='" + getPhone() + "'" +
+            ", status='" + getStatus() + "'" +
             ", createdBy='" + getCreatedBy() + "'" +
             ", createdDate='" + getCreatedDate() + "'" +
             ", lastModifiedBy='" + getLastModifiedBy() + "'" +
             ", lastModifiedDate='" + getLastModifiedDate() + "'" +
             ", user=" + getUser() +
+            ", workingUnit=" + getWorkingUnit() +
             "}";
     }
 }

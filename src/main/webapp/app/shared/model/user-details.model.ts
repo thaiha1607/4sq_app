@@ -1,5 +1,4 @@
 import { type IUser } from '@/shared/model/user.model';
-import { type IWorkingUnit } from '@/shared/model/working-unit.model';
 
 export interface IUserDetails {
   id?: number;
@@ -9,7 +8,6 @@ export interface IUserDetails {
   lastModifiedBy?: string;
   lastModifiedDate?: Date;
   user?: IUser;
-  workingUnit?: IWorkingUnit | null;
 }
 
 export class UserDetails implements IUserDetails {
@@ -21,6 +19,5 @@ export class UserDetails implements IUserDetails {
     public lastModifiedBy?: string,
     public lastModifiedDate?: Date,
     public user?: IUser,
-    public workingUnit?: IWorkingUnit | null,
   ) {}
 }

@@ -44,12 +44,13 @@
       "UserAddress",
       "WarehouseAssignment",
       "WorkingUnit",
-      "Comment"
+      "Comment",
+      "StaffInfo"
     ],
     "jhipsterVersion": "8.6.0",
     "jwtSecretKey": "ZTM0YTk0MzE3YTM4ZWJmODMxMDA4MzYwNWUzNzA5OTg0ZDEyYzNlODBkYzVlNDUwOTE4YzI1ZWM5ZmM1OTljODU0MDBjZDljNjFkM2Q3YWU4MjM0MzFiMjNiMTIzNzhmNDIzYjQ1MjliODJmYzM3NGZjNThlOGViNTQ3OWQ1Yjk=",
     "languages": ["en", "vi"],
-    "lastLiquibaseTimestamp": 1720785158000,
+    "lastLiquibaseTimestamp": 1722760802000,
     "messageBroker": "kafka",
     "nativeLanguage": "en",
     "packageFolder": "com/foursquare/server",

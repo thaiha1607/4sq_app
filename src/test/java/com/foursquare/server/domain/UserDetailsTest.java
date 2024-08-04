@@ -1,7 +1,6 @@
 package com.foursquare.server.domain;
 
 import static com.foursquare.server.domain.UserDetailsTestSamples.*;
-import static com.foursquare.server.domain.WorkingUnitTestSamples.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.foursquare.server.web.rest.TestUtil;
@@ -21,17 +20,5 @@ class UserDetailsTest {
 
         userDetails2 = getUserDetailsSample2();
         assertThat(userDetails1).isNotEqualTo(userDetails2);
-    }
-
-    @Test
-    void workingUnitTest() {
-        UserDetails userDetails = getUserDetailsRandomSampleGenerator();
-        WorkingUnit workingUnitBack = getWorkingUnitRandomSampleGenerator();
-
-        userDetails.setWorkingUnit(workingUnitBack);
-        assertThat(userDetails.getWorkingUnit()).isEqualTo(workingUnitBack);
-
-        userDetails.workingUnit(null);
-        assertThat(userDetails.getWorkingUnit()).isNull();
     }
 }

@@ -24,6 +24,7 @@ import UserAddressService from './user-address/user-address.service';
 import WarehouseAssignmentService from './warehouse-assignment/warehouse-assignment.service';
 import WorkingUnitService from './working-unit/working-unit.service';
 import CommentService from './comment/comment.service';
+import StaffInfoService from './staff-info/staff-info.service';
 import UserService from '@/entities/user/user.service';
 // jhipster-needle-add-entity-service-to-entities-component-import - JHipster will import entities services here
 
@@ -56,6 +57,7 @@ export default defineComponent({
     provide('warehouseAssignmentService', () => new WarehouseAssignmentService());
     provide('workingUnitService', () => new WorkingUnitService());
     provide('commentService', () => new CommentService());
+    provide('staffInfoService', () => new StaffInfoService());
     // jhipster-needle-add-entity-service-to-entities-component - JHipster will import entities services here
   },
 });

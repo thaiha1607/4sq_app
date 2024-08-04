@@ -1,52 +1,62 @@
 <template>
   <div class="row justify-content-center">
     <div class="col-8">
-      <div v-if="userDetails">
-        <h2 class="jh-entity-heading" data-cy="userDetailsDetailsHeading"><span>User Details</span> {{ userDetails.id }}</h2>
+      <div v-if="staffInfo">
+        <h2 class="jh-entity-heading" data-cy="staffInfoDetailsHeading"><span>Staff Info</span> {{ staffInfo.id }}</h2>
         <dl class="row jh-entity-details">
           <dt>
-            <span>Phone</span>
+            <span>Status</span>
           </dt>
           <dd>
-            <span>{{ userDetails.phone }}</span>
+            <span>{{ staffInfo.status }}</span>
           </dd>
           <dt>
             <span>Created By</span>
           </dt>
           <dd>
-            <span>{{ userDetails.createdBy }}</span>
+            <span>{{ staffInfo.createdBy }}</span>
           </dd>
           <dt>
             <span>Created Date</span>
           </dt>
           <dd>
-            <span v-if="userDetails.createdDate">{{ formatDateLong(userDetails.createdDate) }}</span>
+            <span v-if="staffInfo.createdDate">{{ formatDateLong(staffInfo.createdDate) }}</span>
           </dd>
           <dt>
             <span>Last Modified By</span>
           </dt>
           <dd>
-            <span>{{ userDetails.lastModifiedBy }}</span>
+            <span>{{ staffInfo.lastModifiedBy }}</span>
           </dd>
           <dt>
             <span>Last Modified Date</span>
           </dt>
           <dd>
-            <span v-if="userDetails.lastModifiedDate">{{ formatDateLong(userDetails.lastModifiedDate) }}</span>
+            <span v-if="staffInfo.lastModifiedDate">{{ formatDateLong(staffInfo.lastModifiedDate) }}</span>
           </dd>
           <dt>
             <span>User</span>
           </dt>
           <dd>
-            {{ userDetails.user ? userDetails.user.login : '' }}
+            {{ staffInfo.user ? staffInfo.user.login : '' }}
+          </dd>
+          <dt>
+            <span>Working Unit</span>
+          </dt>
+          <dd>
+            <div v-if="staffInfo.workingUnit">
+              <router-link :to="{ name: 'WorkingUnitView', params: { workingUnitId: staffInfo.workingUnit.id } }">{{
+                staffInfo.workingUnit.name
+              }}</router-link>
+            </div>
           </dd>
         </dl>
         <button type="submit" v-on:click.prevent="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
           <font-awesome-icon icon="arrow-left"></font-awesome-icon>&nbsp;<span>Back</span>
         </button>
         <router-link
-          v-if="userDetails.id"
-          :to="{ name: 'UserDetailsEdit', params: { userDetailsId: userDetails.id } }"
+          v-if="staffInfo.id"
+          :to="{ name: 'StaffInfoEdit', params: { staffInfoId: staffInfo.id } }"
           custom
           v-slot="{ navigate }"
         >
@@ -59,4 +69,4 @@
   </div>
 </template>
 
-<script lang="ts" src="./user-details-details.component.ts"></script>
+<script lang="ts" src="./staff-info-details.component.ts"></script>
