@@ -77,6 +77,11 @@ export default defineComponent({
         required: validations.required('This field is required.'),
         min: validations.minValue('This field should be at least 0.', 0),
       },
+      rollQty: {
+        required: validations.required('This field is required.'),
+        integer: validations.integer('This field should be a number.'),
+        min: validations.minValue('This field should be at least 0.', 0),
+      },
       createdBy: {},
       createdDate: {},
       lastModifiedBy: {},

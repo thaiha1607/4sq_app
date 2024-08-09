@@ -33,7 +33,7 @@ describe('Shipment e2e test', () => {
     cy.authenticatedRequest({
       method: 'POST',
       url: '/api/shipment-items',
-      body: {"qty":19432,"total":11455.76},
+      body: {"qty":8478,"total":23014.76,"rollQty":26264},
     }).then(({ body }) => {
       shipmentItem = body;
     });

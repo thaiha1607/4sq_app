@@ -261,6 +261,7 @@ entity ShipmentAssignment {
     id UUID
     status AssignmentStatus required
     note String
+    otherInfo String
 }
 @filter
 @dto(mapstruct)
@@ -271,6 +272,7 @@ entity ShipmentItem {
     id UUID
     qty Integer required min(0)
     total BigDecimal required min(0)
+    rollQty Integer required min(0)
 }
 @filter
 @dto(mapstruct)
@@ -337,6 +339,7 @@ entity WarehouseAssignment {
     id UUID
     status AssignmentStatus required
     note String
+    otherInfo String
 }
 @filter
 @dto(mapstruct)

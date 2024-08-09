@@ -33,7 +33,7 @@ describe('Service Tests', () => {
     beforeEach(() => {
       service = new ShipmentItemService();
       currentDate = new Date();
-      elemDefault = new ShipmentItem('9fec3727-3421-4967-b213-ba36557ca194', 0, 0, 'AAAAAAA', currentDate, 'AAAAAAA', currentDate);
+      elemDefault = new ShipmentItem('9fec3727-3421-4967-b213-ba36557ca194', 0, 0, 0, 'AAAAAAA', currentDate, 'AAAAAAA', currentDate);
     });
 
     describe('Service methods', () => {
@@ -101,6 +101,7 @@ describe('Service Tests', () => {
           {
             qty: 1,
             total: 1,
+            rollQty: 1,
             createdBy: 'BBBBBB',
             createdDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
             lastModifiedBy: 'BBBBBB',
@@ -139,9 +140,9 @@ describe('Service Tests', () => {
           {
             qty: 1,
             total: 1,
-            createdBy: 'BBBBBB',
+            rollQty: 1,
             createdDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
-            lastModifiedDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
+            lastModifiedBy: 'BBBBBB',
           },
           new ShipmentItem(),
         );
@@ -177,6 +178,7 @@ describe('Service Tests', () => {
           {
             qty: 1,
             total: 1,
+            rollQty: 1,
             createdBy: 'BBBBBB',
             createdDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
             lastModifiedBy: 'BBBBBB',

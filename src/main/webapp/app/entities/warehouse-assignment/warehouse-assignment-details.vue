@@ -19,6 +19,12 @@
             <span>{{ warehouseAssignment.note }}</span>
           </dd>
           <dt>
+            <span>Other Info</span>
+          </dt>
+          <dd>
+            <span>{{ warehouseAssignment.otherInfo }}</span>
+          </dd>
+          <dt>
             <span>Created By</span>
           </dt>
           <dd>

@@ -52,6 +52,7 @@
             <th scope="row"><span>ID</span></th>
             <th scope="row"><span>Status</span></th>
             <th scope="row"><span>Note</span></th>
+            <th scope="row"><span>Other Info</span></th>
             <th scope="row"><span>Created By</span></th>
             <th scope="row"><span>Created Date</span></th>
             <th scope="row"><span>Last Modified By</span></th>
@@ -72,6 +73,7 @@
             </td>
             <td>{{ warehouseAssignment.status }}</td>
             <td>{{ warehouseAssignment.note }}</td>
+            <td>{{ warehouseAssignment.otherInfo }}</td>
             <td>{{ warehouseAssignment.createdBy }}</td>
             <td>{{ formatDateShort(warehouseAssignment.createdDate) || '' }}</td>
             <td>{{ warehouseAssignment.lastModifiedBy }}</td>

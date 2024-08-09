@@ -23,6 +23,10 @@ public class ShipmentItemDTO implements Serializable {
     @DecimalMin(value = "0")
     private BigDecimal total;
 
+    @NotNull
+    @Min(value = 0)
+    private Integer rollQty;
+
     private String createdBy;
 
     private Instant createdDate;
@@ -59,6 +63,14 @@ public class ShipmentItemDTO implements Serializable {
 
     public void setTotal(BigDecimal total) {
         this.total = total;
+    }
+
+    public Integer getRollQty() {
+        return rollQty;
+    }
+
+    public void setRollQty(Integer rollQty) {
+        this.rollQty = rollQty;
     }
 
     public String getCreatedBy() {
@@ -137,6 +149,7 @@ public class ShipmentItemDTO implements Serializable {
             "id='" + getId() + "'" +
             ", qty=" + getQty() +
             ", total=" + getTotal() +
+            ", rollQty=" + getRollQty() +
             ", createdBy='" + getCreatedBy() + "'" +
             ", createdDate='" + getCreatedDate() + "'" +
             ", lastModifiedBy='" + getLastModifiedBy() + "'" +

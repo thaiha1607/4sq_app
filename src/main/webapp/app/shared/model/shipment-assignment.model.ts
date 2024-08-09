@@ -6,6 +6,7 @@ export interface IShipmentAssignment {
   id?: string;
   status?: keyof typeof AssignmentStatus;
   note?: string | null;
+  otherInfo?: string | null;
   createdBy?: string;
   createdDate?: Date;
   lastModifiedBy?: string;
@@ -19,6 +20,7 @@ export class ShipmentAssignment implements IShipmentAssignment {
     public id?: string,
     public status?: keyof typeof AssignmentStatus,
     public note?: string | null,
+    public otherInfo?: string | null,
     public createdBy?: string,
     public createdDate?: Date,
     public lastModifiedBy?: string,

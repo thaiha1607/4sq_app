@@ -20,6 +20,8 @@ public class ShipmentAssignmentDTO implements Serializable {
 
     private String note;
 
+    private String otherInfo;
+
     private String createdBy;
 
     private Instant createdDate;
@@ -55,6 +57,14 @@ public class ShipmentAssignmentDTO implements Serializable {
 
     public void setNote(String note) {
         this.note = note;
+    }
+
+    public String getOtherInfo() {
+        return otherInfo;
+    }
+
+    public void setOtherInfo(String otherInfo) {
+        this.otherInfo = otherInfo;
     }
 
     public String getCreatedBy() {
@@ -133,6 +143,7 @@ public class ShipmentAssignmentDTO implements Serializable {
             "id='" + getId() + "'" +
             ", status='" + getStatus() + "'" +
             ", note='" + getNote() + "'" +
+            ", otherInfo='" + getOtherInfo() + "'" +
             ", createdBy='" + getCreatedBy() + "'" +
             ", createdDate='" + getCreatedDate() + "'" +
             ", lastModifiedBy='" + getLastModifiedBy() + "'" +

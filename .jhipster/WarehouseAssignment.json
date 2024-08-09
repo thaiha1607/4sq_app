@@ -25,6 +25,10 @@
       "fieldType": "String"
     },
     {
+      "fieldName": "otherInfo",
+      "fieldType": "String"
+    },
+    {
       "auditField": true,
       "autoGenerate": true,
       "columnType": "varchar(50)",

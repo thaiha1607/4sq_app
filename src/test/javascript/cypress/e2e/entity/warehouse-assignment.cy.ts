@@ -15,7 +15,7 @@ describe('WarehouseAssignment e2e test', () => {
   const warehouseAssignmentPageUrlPattern = new RegExp('/warehouse-assignment(\\?.*)?$');
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
-  // const warehouseAssignmentSample = {"status":"ASSIGNED"};
+  // const warehouseAssignmentSample = {"status":"FAILED"};
 
   let warehouseAssignment;
   // let workingUnit;
@@ -240,8 +240,11 @@ describe('WarehouseAssignment e2e test', () => {
     it.skip('should create an instance of WarehouseAssignment', () => {
       cy.get(`[data-cy="status"]`).select('PENDING');
 
-      cy.get(`[data-cy="note"]`).type('consequently');
-      cy.get(`[data-cy="note"]`).should('have.value', 'consequently');
+      cy.get(`[data-cy="note"]`).type('diesel lower since');
+      cy.get(`[data-cy="note"]`).should('have.value', 'diesel lower since');
+
+      cy.get(`[data-cy="otherInfo"]`).type('equalize rusty extremely');
+      cy.get(`[data-cy="otherInfo"]`).should('have.value', 'equalize rusty extremely');
 
       cy.get(`[data-cy="sourceWorkingUnit"]`).select(1);
       cy.get(`[data-cy="order"]`).select(1);

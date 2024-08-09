@@ -51,7 +51,8 @@ public class ShipmentItemAsserts {
         assertThat(expected)
             .as("Verify ShipmentItem relevant properties")
             .satisfies(e -> assertThat(e.getQty()).as("check qty").isEqualTo(actual.getQty()))
-            .satisfies(e -> assertThat(e.getTotal()).as("check total").usingComparator(bigDecimalCompareTo).isEqualTo(actual.getTotal()));
+            .satisfies(e -> assertThat(e.getTotal()).as("check total").usingComparator(bigDecimalCompareTo).isEqualTo(actual.getTotal()))
+            .satisfies(e -> assertThat(e.getRollQty()).as("check rollQty").isEqualTo(actual.getRollQty()));
     }
 
     /**

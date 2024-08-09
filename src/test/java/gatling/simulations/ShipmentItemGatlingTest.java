@@ -70,6 +70,7 @@ public class ShipmentItemGatlingTest extends Simulation {
                                 "{" +
                                 "\"qty\": 0" +
                                 ", \"total\": 0" +
+                                ", \"rollQty\": 0" +
                                 ", \"createdBy\": \"SAMPLE_TEXT\"" +
                                 ", \"createdDate\": \"2020-01-01T00:00:00.000Z\"" +
                                 ", \"lastModifiedBy\": \"SAMPLE_TEXT\"" +

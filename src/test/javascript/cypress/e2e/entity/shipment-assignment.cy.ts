@@ -15,7 +15,7 @@ describe('ShipmentAssignment e2e test', () => {
   const shipmentAssignmentPageUrlPattern = new RegExp('/shipment-assignment(\\?.*)?$');
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
-  // const shipmentAssignmentSample = {"status":"ASSIGNED"};
+  // const shipmentAssignmentSample = {"status":"PENDING"};
 
   let shipmentAssignment;
   // let shipment;
@@ -215,10 +215,13 @@ describe('ShipmentAssignment e2e test', () => {
     });
 
     it.skip('should create an instance of ShipmentAssignment', () => {
-      cy.get(`[data-cy="status"]`).select('FAILED');
+      cy.get(`[data-cy="status"]`).select('IN_PROGRESS');
 
-      cy.get(`[data-cy="note"]`).type('forenenst tepee');
-      cy.get(`[data-cy="note"]`).should('have.value', 'forenenst tepee');
+      cy.get(`[data-cy="note"]`).type('consequently');
+      cy.get(`[data-cy="note"]`).should('have.value', 'consequently');
+
+      cy.get(`[data-cy="otherInfo"]`).type('stable');
+      cy.get(`[data-cy="otherInfo"]`).should('have.value', 'stable');
 
       cy.get(`[data-cy="shipment"]`).select(1);
 

@@ -50,7 +50,8 @@ public class ShipmentAssignmentAsserts {
         assertThat(expected)
             .as("Verify ShipmentAssignment relevant properties")
             .satisfies(e -> assertThat(e.getStatus()).as("check status").isEqualTo(actual.getStatus()))
-            .satisfies(e -> assertThat(e.getNote()).as("check note").isEqualTo(actual.getNote()));
+            .satisfies(e -> assertThat(e.getNote()).as("check note").isEqualTo(actual.getNote()))
+            .satisfies(e -> assertThat(e.getOtherInfo()).as("check otherInfo").isEqualTo(actual.getOtherInfo()));
     }
 
     /**

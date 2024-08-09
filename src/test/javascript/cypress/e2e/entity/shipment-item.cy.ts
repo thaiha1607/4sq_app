@@ -15,7 +15,7 @@ describe('ShipmentItem e2e test', () => {
   const shipmentItemPageUrlPattern = new RegExp('/shipment-item(\\?.*)?$');
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
-  // const shipmentItemSample = {"qty":28946,"total":25131.52};
+  // const shipmentItemSample = {"qty":14995,"total":18993.73,"rollQty":22743};
 
   let shipmentItem;
   // let orderItem;
@@ -233,11 +233,14 @@ describe('ShipmentItem e2e test', () => {
     });
 
     it.skip('should create an instance of ShipmentItem', () => {
-      cy.get(`[data-cy="qty"]`).type('8232');
-      cy.get(`[data-cy="qty"]`).should('have.value', '8232');
+      cy.get(`[data-cy="qty"]`).type('27003');
+      cy.get(`[data-cy="qty"]`).should('have.value', '27003');
 
-      cy.get(`[data-cy="total"]`).type('22710.19');
-      cy.get(`[data-cy="total"]`).should('have.value', '22710.19');
+      cy.get(`[data-cy="total"]`).type('14459.21');
+      cy.get(`[data-cy="total"]`).should('have.value', '14459.21');
+
+      cy.get(`[data-cy="rollQty"]`).type('2202');
+      cy.get(`[data-cy="rollQty"]`).should('have.value', '2202');
 
       cy.get(`[data-cy="orderItem"]`).select(1);
       cy.get(`[data-cy="shipment"]`).select(1);

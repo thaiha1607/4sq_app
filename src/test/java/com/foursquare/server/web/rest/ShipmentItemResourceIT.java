@@ -50,6 +50,9 @@ class ShipmentItemResourceIT {
     private static final BigDecimal DEFAULT_TOTAL = new BigDecimal(0);
     private static final BigDecimal UPDATED_TOTAL = new BigDecimal(1);
 
+    private static final Integer DEFAULT_ROLL_QTY = 0;
+    private static final Integer UPDATED_ROLL_QTY = 1;
+
     private static final String ENTITY_API_URL = "/api/shipment-items";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
     private static final String ENTITY_SEARCH_API_URL = "/api/shipment-items/_search";
@@ -83,7 +86,7 @@ class ShipmentItemResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static ShipmentItem createEntity(EntityManager em) {
-        ShipmentItem shipmentItem = new ShipmentItem().qty(DEFAULT_QTY).total(DEFAULT_TOTAL);
+        ShipmentItem shipmentItem = new ShipmentItem().qty(DEFAULT_QTY).total(DEFAULT_TOTAL).rollQty(DEFAULT_ROLL_QTY);
         return shipmentItem;
     }
 
@@ -94,7 +97,7 @@ class ShipmentItemResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static ShipmentItem createUpdatedEntity(EntityManager em) {
-        ShipmentItem shipmentItem = new ShipmentItem().qty(UPDATED_QTY).total(UPDATED_TOTAL);
+        ShipmentItem shipmentItem = new ShipmentItem().qty(UPDATED_QTY).total(UPDATED_TOTAL).rollQty(UPDATED_ROLL_QTY);
         return shipmentItem;
     }
 
@@ -209,6 +212,27 @@ class ShipmentItemResourceIT {
 
     @Test
     @Transactional
+    void checkRollQtyIsRequired() throws Exception {
+        long databaseSizeBeforeTest = getRepositoryCount();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(shipmentItemSearchRepository.findAll());
+        // set the field null
+        shipmentItem.setRollQty(null);
+
+        // Create the ShipmentItem, which fails.
+        ShipmentItemDTO shipmentItemDTO = shipmentItemMapper.toDto(shipmentItem);
+
+        restShipmentItemMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(shipmentItemDTO)))
+            .andExpect(status().isBadRequest());
+
+        assertSameRepositoryCount(databaseSizeBeforeTest);
+
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(shipmentItemSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
+    }
+
+    @Test
+    @Transactional
     void getAllShipmentItems() throws Exception {
         // Initialize the database
         insertedShipmentItem = shipmentItemRepository.saveAndFlush(shipmentItem);
@@ -220,7 +244,8 @@ class ShipmentItemResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(shipmentItem.getId().toString())))
             .andExpect(jsonPath("$.[*].qty").value(hasItem(DEFAULT_QTY)))
-            .andExpect(jsonPath("$.[*].total").value(hasItem(sameNumber(DEFAULT_TOTAL))));
+            .andExpect(jsonPath("$.[*].total").value(hasItem(sameNumber(DEFAULT_TOTAL))))
+            .andExpect(jsonPath("$.[*].rollQty").value(hasItem(DEFAULT_ROLL_QTY)));
     }
 
     @Test
@@ -236,7 +261,8 @@ class ShipmentItemResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(shipmentItem.getId().toString()))
             .andExpect(jsonPath("$.qty").value(DEFAULT_QTY))
-            .andExpect(jsonPath("$.total").value(sameNumber(DEFAULT_TOTAL)));
+            .andExpect(jsonPath("$.total").value(sameNumber(DEFAULT_TOTAL)))
+            .andExpect(jsonPath("$.rollQty").value(DEFAULT_ROLL_QTY));
     }
 
     @Test
@@ -260,7 +286,7 @@ class ShipmentItemResourceIT {
         ShipmentItem updatedShipmentItem = shipmentItemRepository.findById(shipmentItem.getId()).orElseThrow();
         // Disconnect from session so that the updates on updatedShipmentItem are not directly saved in db
         em.detach(updatedShipmentItem);
-        updatedShipmentItem.qty(UPDATED_QTY).total(UPDATED_TOTAL);
+        updatedShipmentItem.qty(UPDATED_QTY).total(UPDATED_TOTAL).rollQty(UPDATED_ROLL_QTY);
         ShipmentItemDTO shipmentItemDTO = shipmentItemMapper.toDto(updatedShipmentItem);
 
         restShipmentItemMockMvc
@@ -370,6 +396,8 @@ class ShipmentItemResourceIT {
         ShipmentItem partialUpdatedShipmentItem = new ShipmentItem();
         partialUpdatedShipmentItem.setId(shipmentItem.getId());
 
+        partialUpdatedShipmentItem.rollQty(UPDATED_ROLL_QTY);
+
         restShipmentItemMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, partialUpdatedShipmentItem.getId())
@@ -399,7 +427,7 @@ class ShipmentItemResourceIT {
         ShipmentItem partialUpdatedShipmentItem = new ShipmentItem();
         partialUpdatedShipmentItem.setId(shipmentItem.getId());
 
-        partialUpdatedShipmentItem.qty(UPDATED_QTY).total(UPDATED_TOTAL);
+        partialUpdatedShipmentItem.qty(UPDATED_QTY).total(UPDATED_TOTAL).rollQty(UPDATED_ROLL_QTY);
 
         restShipmentItemMockMvc
             .perform(
@@ -523,7 +551,8 @@ class ShipmentItemResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(shipmentItem.getId().toString())))
             .andExpect(jsonPath("$.[*].qty").value(hasItem(DEFAULT_QTY)))
-            .andExpect(jsonPath("$.[*].total").value(hasItem(sameNumber(DEFAULT_TOTAL))));
+            .andExpect(jsonPath("$.[*].total").value(hasItem(sameNumber(DEFAULT_TOTAL))))
+            .andExpect(jsonPath("$.[*].rollQty").value(hasItem(DEFAULT_ROLL_QTY)));
     }
 
     protected long getRepositoryCount() {

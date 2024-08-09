@@ -39,6 +39,10 @@ public class WarehouseAssignment extends AbstractAuditingEntity<UUID> implements
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String note;
 
+    @Column(name = "other_info")
+    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
+    private String otherInfo;
+
     // Inherited createdBy definition
     // Inherited createdDate definition
     // Inherited lastModifiedBy definition
@@ -105,6 +109,19 @@ public class WarehouseAssignment extends AbstractAuditingEntity<UUID> implements
 
     public void setNote(String note) {
         this.note = note;
+    }
+
+    public String getOtherInfo() {
+        return this.otherInfo;
+    }
+
+    public WarehouseAssignment otherInfo(String otherInfo) {
+        this.setOtherInfo(otherInfo);
+        return this;
+    }
+
+    public void setOtherInfo(String otherInfo) {
+        this.otherInfo = otherInfo;
     }
 
     // Inherited createdBy methods
@@ -226,6 +243,7 @@ public class WarehouseAssignment extends AbstractAuditingEntity<UUID> implements
             "id=" + getId() +
             ", status='" + getStatus() + "'" +
             ", note='" + getNote() + "'" +
+            ", otherInfo='" + getOtherInfo() + "'" +
             ", createdBy='" + getCreatedBy() + "'" +
             ", createdDate='" + getCreatedDate() + "'" +
             ", lastModifiedBy='" + getLastModifiedBy() + "'" +

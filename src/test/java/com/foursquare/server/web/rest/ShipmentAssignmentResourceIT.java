@@ -58,6 +58,9 @@ class ShipmentAssignmentResourceIT {
     private static final String DEFAULT_NOTE = "AAAAAAAAAA";
     private static final String UPDATED_NOTE = "BBBBBBBBBB";
 
+    private static final String DEFAULT_OTHER_INFO = "AAAAAAAAAA";
+    private static final String UPDATED_OTHER_INFO = "BBBBBBBBBB";
+
     private static final String ENTITY_API_URL = "/api/shipment-assignments";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
     private static final String ENTITY_SEARCH_API_URL = "/api/shipment-assignments/_search";
@@ -100,7 +103,10 @@ class ShipmentAssignmentResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static ShipmentAssignment createEntity(EntityManager em) {
-        ShipmentAssignment shipmentAssignment = new ShipmentAssignment().status(DEFAULT_STATUS).note(DEFAULT_NOTE);
+        ShipmentAssignment shipmentAssignment = new ShipmentAssignment()
+            .status(DEFAULT_STATUS)
+            .note(DEFAULT_NOTE)
+            .otherInfo(DEFAULT_OTHER_INFO);
         return shipmentAssignment;
     }
 
@@ -111,7 +117,10 @@ class ShipmentAssignmentResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static ShipmentAssignment createUpdatedEntity(EntityManager em) {
-        ShipmentAssignment shipmentAssignment = new ShipmentAssignment().status(UPDATED_STATUS).note(UPDATED_NOTE);
+        ShipmentAssignment shipmentAssignment = new ShipmentAssignment()
+            .status(UPDATED_STATUS)
+            .note(UPDATED_NOTE)
+            .otherInfo(UPDATED_OTHER_INFO);
         return shipmentAssignment;
     }
 
@@ -219,7 +228,8 @@ class ShipmentAssignmentResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(shipmentAssignment.getId().toString())))
             .andExpect(jsonPath("$.[*].status").value(hasItem(DEFAULT_STATUS.toString())))
-            .andExpect(jsonPath("$.[*].note").value(hasItem(DEFAULT_NOTE)));
+            .andExpect(jsonPath("$.[*].note").value(hasItem(DEFAULT_NOTE)))
+            .andExpect(jsonPath("$.[*].otherInfo").value(hasItem(DEFAULT_OTHER_INFO)));
     }
 
     @SuppressWarnings({ "unchecked" })
@@ -252,7 +262,8 @@ class ShipmentAssignmentResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(shipmentAssignment.getId().toString()))
             .andExpect(jsonPath("$.status").value(DEFAULT_STATUS.toString()))
-            .andExpect(jsonPath("$.note").value(DEFAULT_NOTE));
+            .andExpect(jsonPath("$.note").value(DEFAULT_NOTE))
+            .andExpect(jsonPath("$.otherInfo").value(DEFAULT_OTHER_INFO));
     }
 
     @Test
@@ -276,7 +287,7 @@ class ShipmentAssignmentResourceIT {
         ShipmentAssignment updatedShipmentAssignment = shipmentAssignmentRepository.findById(shipmentAssignment.getId()).orElseThrow();
         // Disconnect from session so that the updates on updatedShipmentAssignment are not directly saved in db
         em.detach(updatedShipmentAssignment);
-        updatedShipmentAssignment.status(UPDATED_STATUS).note(UPDATED_NOTE);
+        updatedShipmentAssignment.status(UPDATED_STATUS).note(UPDATED_NOTE).otherInfo(UPDATED_OTHER_INFO);
         ShipmentAssignmentDTO shipmentAssignmentDTO = shipmentAssignmentMapper.toDto(updatedShipmentAssignment);
 
         restShipmentAssignmentMockMvc
@@ -388,7 +399,7 @@ class ShipmentAssignmentResourceIT {
         ShipmentAssignment partialUpdatedShipmentAssignment = new ShipmentAssignment();
         partialUpdatedShipmentAssignment.setId(shipmentAssignment.getId());
 
-        partialUpdatedShipmentAssignment.status(UPDATED_STATUS).note(UPDATED_NOTE);
+        partialUpdatedShipmentAssignment.status(UPDATED_STATUS).note(UPDATED_NOTE).otherInfo(UPDATED_OTHER_INFO);
 
         restShipmentAssignmentMockMvc
             .perform(
@@ -419,7 +430,7 @@ class ShipmentAssignmentResourceIT {
         ShipmentAssignment partialUpdatedShipmentAssignment = new ShipmentAssignment();
         partialUpdatedShipmentAssignment.setId(shipmentAssignment.getId());
 
-        partialUpdatedShipmentAssignment.status(UPDATED_STATUS).note(UPDATED_NOTE);
+        partialUpdatedShipmentAssignment.status(UPDATED_STATUS).note(UPDATED_NOTE).otherInfo(UPDATED_OTHER_INFO);
 
         restShipmentAssignmentMockMvc
             .perform(
@@ -546,7 +557,8 @@ class ShipmentAssignmentResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(shipmentAssignment.getId().toString())))
             .andExpect(jsonPath("$.[*].status").value(hasItem(DEFAULT_STATUS.toString())))
-            .andExpect(jsonPath("$.[*].note").value(hasItem(DEFAULT_NOTE)));
+            .andExpect(jsonPath("$.[*].note").value(hasItem(DEFAULT_NOTE)))
+            .andExpect(jsonPath("$.[*].otherInfo").value(hasItem(DEFAULT_OTHER_INFO)));
     }
 
     protected long getRepositoryCount() {

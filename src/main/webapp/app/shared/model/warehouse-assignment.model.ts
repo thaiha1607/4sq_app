@@ -7,6 +7,7 @@ export interface IWarehouseAssignment {
   id?: string;
   status?: keyof typeof AssignmentStatus;
   note?: string | null;
+  otherInfo?: string | null;
   createdBy?: string;
   createdDate?: Date;
   lastModifiedBy?: string;
@@ -22,6 +23,7 @@ export class WarehouseAssignment implements IWarehouseAssignment {
     public id?: string,
     public status?: keyof typeof AssignmentStatus,
     public note?: string | null,
+    public otherInfo?: string | null,
     public createdBy?: string,
     public createdDate?: Date,
     public lastModifiedBy?: string,

@@ -40,6 +40,12 @@ public class ShipmentItem extends AbstractAuditingEntity<UUID> implements Serial
     @Column(name = "total", precision = 21, scale = 2, nullable = false)
     private BigDecimal total;
 
+    @NotNull
+    @Min(value = 0)
+    @Column(name = "roll_qty", nullable = false)
+    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
+    private Integer rollQty;
+
     // Inherited createdBy definition
     // Inherited createdDate definition
     // Inherited lastModifiedBy definition
@@ -96,6 +102,19 @@ public class ShipmentItem extends AbstractAuditingEntity<UUID> implements Serial
 
     public void setTotal(BigDecimal total) {
         this.total = total;
+    }
+
+    public Integer getRollQty() {
+        return this.rollQty;
+    }
+
+    public ShipmentItem rollQty(Integer rollQty) {
+        this.setRollQty(rollQty);
+        return this;
+    }
+
+    public void setRollQty(Integer rollQty) {
+        this.rollQty = rollQty;
     }
 
     // Inherited createdBy methods
@@ -191,6 +210,7 @@ public class ShipmentItem extends AbstractAuditingEntity<UUID> implements Serial
             "id=" + getId() +
             ", qty=" + getQty() +
             ", total=" + getTotal() +
+            ", rollQty=" + getRollQty() +
             ", createdBy='" + getCreatedBy() + "'" +
             ", createdDate='" + getCreatedDate() + "'" +
             ", lastModifiedBy='" + getLastModifiedBy() + "'" +

@@ -82,6 +82,7 @@ export default defineComponent({
         required: validations.required('This field is required.'),
       },
       note: {},
+      otherInfo: {},
       createdBy: {},
       createdDate: {},
       lastModifiedBy: {},

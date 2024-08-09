@@ -20,6 +20,9 @@
             <column name="total" type="decimal(21,2)">
                 <constraints nullable="false" />
             </column>
+            <column name="roll_qty" type="integer">
+                <constraints nullable="false" />
+            </column>
             <column name="created_by" type="varchar(50)">
                 <constraints nullable="false" />
             </column>
@@ -63,6 +66,7 @@
             <column name="id" type="${uuidType}"/>
             <column name="qty" type="numeric"/>
             <column name="total" type="numeric"/>
+            <column name="roll_qty" type="numeric"/>
             <column name="created_by" type="string"/>
             <column name="created_date" type="date"/>
             <column name="last_modified_by" type="string"/>

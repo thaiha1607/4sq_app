@@ -38,6 +38,7 @@ describe('Service Tests', () => {
         'PENDING',
         'AAAAAAA',
         'AAAAAAA',
+        'AAAAAAA',
         currentDate,
         'AAAAAAA',
         currentDate,
@@ -109,6 +110,7 @@ describe('Service Tests', () => {
           {
             status: 'BBBBBB',
             note: 'BBBBBB',
+            otherInfo: 'BBBBBB',
             createdBy: 'BBBBBB',
             createdDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
             lastModifiedBy: 'BBBBBB',
@@ -145,9 +147,11 @@ describe('Service Tests', () => {
       it('should partial update a WarehouseAssignment', async () => {
         const patchObject = Object.assign(
           {
+            status: 'BBBBBB',
             note: 'BBBBBB',
-            createdBy: 'BBBBBB',
-            createdDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
+            otherInfo: 'BBBBBB',
+            lastModifiedBy: 'BBBBBB',
+            lastModifiedDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
           },
           new WarehouseAssignment(),
         );
@@ -183,6 +187,7 @@ describe('Service Tests', () => {
           {
             status: 'BBBBBB',
             note: 'BBBBBB',
+            otherInfo: 'BBBBBB',
             createdBy: 'BBBBBB',
             createdDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
             lastModifiedBy: 'BBBBBB',

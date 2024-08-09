@@ -17,6 +17,12 @@
             <span>{{ shipmentItem.total }}</span>
           </dd>
           <dt>
+            <span>Roll Qty</span>
+          </dt>
+          <dd>
+            <span>{{ shipmentItem.rollQty }}</span>
+          </dd>
+          <dt>
             <span>Created By</span>
           </dt>
           <dd>

@@ -52,6 +52,7 @@
             <th scope="row"><span>ID</span></th>
             <th scope="row"><span>Qty</span></th>
             <th scope="row"><span>Total</span></th>
+            <th scope="row"><span>Roll Qty</span></th>
             <th scope="row"><span>Created By</span></th>
             <th scope="row"><span>Created Date</span></th>
             <th scope="row"><span>Last Modified By</span></th>
@@ -70,6 +71,7 @@
             </td>
             <td>{{ shipmentItem.qty }}</td>
             <td>{{ shipmentItem.total }}</td>
+            <td>{{ shipmentItem.rollQty }}</td>
             <td>{{ shipmentItem.createdBy }}</td>
             <td>{{ formatDateShort(shipmentItem.createdDate) || '' }}</td>
             <td>{{ shipmentItem.lastModifiedBy }}</td>

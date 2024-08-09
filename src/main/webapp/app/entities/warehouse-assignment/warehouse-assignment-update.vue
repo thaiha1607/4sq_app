@@ -42,6 +42,18 @@
             />
           </div>
           <div class="form-group">
+            <label class="form-control-label" for="warehouse-assignment-otherInfo">Other Info</label>
+            <input
+              type="text"
+              class="form-control"
+              name="otherInfo"
+              id="warehouse-assignment-otherInfo"
+              data-cy="otherInfo"
+              :class="{ valid: !v$.otherInfo.$invalid, invalid: v$.otherInfo.$invalid }"
+              v-model="v$.otherInfo.$model"
+            />
+          </div>
+          <div class="form-group">
             <label class="form-control-label" for="warehouse-assignment-createdBy">Created By</label>
             <input
               type="text"

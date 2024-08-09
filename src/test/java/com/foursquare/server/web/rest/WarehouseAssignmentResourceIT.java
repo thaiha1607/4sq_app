@@ -59,6 +59,9 @@ class WarehouseAssignmentResourceIT {
     private static final String DEFAULT_NOTE = "AAAAAAAAAA";
     private static final String UPDATED_NOTE = "BBBBBBBBBB";
 
+    private static final String DEFAULT_OTHER_INFO = "AAAAAAAAAA";
+    private static final String UPDATED_OTHER_INFO = "BBBBBBBBBB";
+
     private static final String ENTITY_API_URL = "/api/warehouse-assignments";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
     private static final String ENTITY_SEARCH_API_URL = "/api/warehouse-assignments/_search";
@@ -101,7 +104,10 @@ class WarehouseAssignmentResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static WarehouseAssignment createEntity(EntityManager em) {
-        WarehouseAssignment warehouseAssignment = new WarehouseAssignment().status(DEFAULT_STATUS).note(DEFAULT_NOTE);
+        WarehouseAssignment warehouseAssignment = new WarehouseAssignment()
+            .status(DEFAULT_STATUS)
+            .note(DEFAULT_NOTE)
+            .otherInfo(DEFAULT_OTHER_INFO);
         // Add required entity
         WorkingUnit workingUnit;
         if (TestUtil.findAll(em, WorkingUnit.class).isEmpty()) {
@@ -122,7 +128,10 @@ class WarehouseAssignmentResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static WarehouseAssignment createUpdatedEntity(EntityManager em) {
-        WarehouseAssignment warehouseAssignment = new WarehouseAssignment().status(UPDATED_STATUS).note(UPDATED_NOTE);
+        WarehouseAssignment warehouseAssignment = new WarehouseAssignment()
+            .status(UPDATED_STATUS)
+            .note(UPDATED_NOTE)
+            .otherInfo(UPDATED_OTHER_INFO);
         // Add required entity
         WorkingUnit workingUnit;
         if (TestUtil.findAll(em, WorkingUnit.class).isEmpty()) {
@@ -240,7 +249,8 @@ class WarehouseAssignmentResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(warehouseAssignment.getId().toString())))
             .andExpect(jsonPath("$.[*].status").value(hasItem(DEFAULT_STATUS.toString())))
-            .andExpect(jsonPath("$.[*].note").value(hasItem(DEFAULT_NOTE)));
+            .andExpect(jsonPath("$.[*].note").value(hasItem(DEFAULT_NOTE)))
+            .andExpect(jsonPath("$.[*].otherInfo").value(hasItem(DEFAULT_OTHER_INFO)));
     }
 
     @SuppressWarnings({ "unchecked" })
@@ -273,7 +283,8 @@ class WarehouseAssignmentResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(warehouseAssignment.getId().toString()))
             .andExpect(jsonPath("$.status").value(DEFAULT_STATUS.toString()))
-            .andExpect(jsonPath("$.note").value(DEFAULT_NOTE));
+            .andExpect(jsonPath("$.note").value(DEFAULT_NOTE))
+            .andExpect(jsonPath("$.otherInfo").value(DEFAULT_OTHER_INFO));
     }
 
     @Test
@@ -297,7 +308,7 @@ class WarehouseAssignmentResourceIT {
         WarehouseAssignment updatedWarehouseAssignment = warehouseAssignmentRepository.findById(warehouseAssignment.getId()).orElseThrow();
         // Disconnect from session so that the updates on updatedWarehouseAssignment are not directly saved in db
         em.detach(updatedWarehouseAssignment);
-        updatedWarehouseAssignment.status(UPDATED_STATUS).note(UPDATED_NOTE);
+        updatedWarehouseAssignment.status(UPDATED_STATUS).note(UPDATED_NOTE).otherInfo(UPDATED_OTHER_INFO);
         WarehouseAssignmentDTO warehouseAssignmentDTO = warehouseAssignmentMapper.toDto(updatedWarehouseAssignment);
 
         restWarehouseAssignmentMockMvc
@@ -440,7 +451,7 @@ class WarehouseAssignmentResourceIT {
         WarehouseAssignment partialUpdatedWarehouseAssignment = new WarehouseAssignment();
         partialUpdatedWarehouseAssignment.setId(warehouseAssignment.getId());
 
-        partialUpdatedWarehouseAssignment.status(UPDATED_STATUS).note(UPDATED_NOTE);
+        partialUpdatedWarehouseAssignment.status(UPDATED_STATUS).note(UPDATED_NOTE).otherInfo(UPDATED_OTHER_INFO);
 
         restWarehouseAssignmentMockMvc
             .perform(
@@ -569,7 +580,8 @@ class WarehouseAssignmentResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(warehouseAssignment.getId().toString())))
             .andExpect(jsonPath("$.[*].status").value(hasItem(DEFAULT_STATUS.toString())))
-            .andExpect(jsonPath("$.[*].note").value(hasItem(DEFAULT_NOTE)));
+            .andExpect(jsonPath("$.[*].note").value(hasItem(DEFAULT_NOTE)))
+            .andExpect(jsonPath("$.[*].otherInfo").value(hasItem(DEFAULT_OTHER_INFO)));
     }
 
     protected long getRepositoryCount() {

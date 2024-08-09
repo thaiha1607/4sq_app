@@ -5,6 +5,7 @@ export interface IShipmentItem {
   id?: string;
   qty?: number;
   total?: number;
+  rollQty?: number;
   createdBy?: string;
   createdDate?: Date;
   lastModifiedBy?: string;
@@ -18,6 +19,7 @@ export class ShipmentItem implements IShipmentItem {
     public id?: string,
     public qty?: number,
     public total?: number,
+    public rollQty?: number,
     public createdBy?: string,
     public createdDate?: Date,
     public lastModifiedBy?: string,

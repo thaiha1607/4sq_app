@@ -43,6 +43,22 @@
             </div>
           </div>
           <div class="form-group">
+            <label class="form-control-label" for="shipment-item-rollQty">Roll Qty</label>
+            <input
+              type="number"
+              class="form-control"
+              name="rollQty"
+              id="shipment-item-rollQty"
+              data-cy="rollQty"
+              :class="{ valid: !v$.rollQty.$invalid, invalid: v$.rollQty.$invalid }"
+              v-model.number="v$.rollQty.$model"
+              required
+            />
+            <div v-if="v$.rollQty.$anyDirty && v$.rollQty.$invalid">
+              <small class="form-text text-danger" v-for="error of v$.rollQty.$errors" :key="error.$uid">{{ error.$message }}</small>
+            </div>
+          </div>
+          <div class="form-group">
             <label class="form-control-label" for="shipment-item-createdBy">Created By</label>
             <input
               type="text"
