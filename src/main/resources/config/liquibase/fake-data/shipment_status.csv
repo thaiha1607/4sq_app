@@ -1,11 +1,11 @@
 id;status_code;description;created_by;created_date;last_modified_by;last_modified_date
-1;huzzah er muddy;so square garter;summon look mismatch;2024-07-04T06:20:17;positively;2024-07-04T03:25:01
-2;petition consequently;suspiciously hourly;snakebite on;2024-07-03T22:20:03;panel gadzooks;2024-07-03T22:48:00
-3;happily;probable;proceed leg mechanically;2024-07-03T21:18:59;hungrily save castle;2024-07-04T07:01:45
-4;flawless;fairly behind dislocate;heed before excluding;2024-07-04T05:13:49;disembowel;2024-07-04T06:10:53
-5;neatly ack;freely;jubilantly;2024-07-04T05:00:14;napkin;2024-07-03T19:27:54
-6;oar into;revivify roof;outshine;2024-07-03T14:36:46;hm supposing brazen;2024-07-03T18:01:28
-7;eek vivo quirkily;an times;uh-huh;2024-07-03T20:08:47;fee whoever;2024-07-04T08:35:34
-8;knowledgeably understatement;spouse upward;variant the upright;2024-07-03T16:55:23;crime editorialize upon;2024-07-03T19:03:39
-9;psst violet yuck;modification gee likewise;almost;2024-07-03T17:47:07;cheerfully fitting;2024-07-04T01:07:29
-10;entrepreneur separate;when shakily;beyond tiny cookbook;2024-07-03T15:21:52;technology;2024-07-04T04:34:00
+1;PENDING;The shipment is pending and has not been processed yet;SYSTEM;1970-01-01T00:00:00;SYSTEM;1970-01-01T00:00:00
+2;PROCESSED;The shipment has been processed and is ready for further handling or transportation;SYSTEM;1970-01-01T00:00:00;SYSTEM;1970-01-01T00:00:00
+3;SHIPPED;The shipment has been shipped and is in transit to its destination;SYSTEM;1970-01-01T00:00:00;SYSTEM;1970-01-01T00:00:00
+4;IN_TRANSIT;The shipment is currently in transit and is being transported to its destination;SYSTEM;1970-01-01T00:00:00;SYSTEM;1970-01-01T00:00:00
+5;OUT_FOR_DELIVERY;The shipment is out for delivery and is expected to be delivered to the recipient soon;SYSTEM;1970-01-01T00:00:00;SYSTEM;1970-01-01T00:00:00
+6;DELIVERED;The shipment has been successfully delivered to the recipient;SYSTEM;1970-01-01T00:00:00;SYSTEM;1970-01-01T00:00:00
+7;FAILED_DELIVERY_ATTEMPT;There was a failed attempt to deliver the shipment to the recipient;SYSTEM;1970-01-01T00:00:00;SYSTEM;1970-01-01T00:00:00
+8;RETURNED;The shipment has been returned to the sender or the original location;SYSTEM;1970-01-01T00:00:00;SYSTEM;1970-01-01T00:00:00
+9;CANCELLED;The shipment has been cancelled and will not be delivered;SYSTEM;1970-01-01T00:00:00;SYSTEM;1970-01-01T00:00:00
+10;ON_HOLD;The shipment is currently on hold and will not be processed or delivered until further notice;SYSTEM;1970-01-01T00:00:00;SYSTEM;1970-01-01T00:00:00

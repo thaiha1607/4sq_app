@@ -1,11 +1,15 @@
 id;status_code;description;created_by;created_date;last_modified_by;last_modified_date
-1;into figurine;the trifling corruption;reconnect;2024-07-04T09:03:44;offensively toy;2024-07-03T20:36:05
-2;instead very;psst geez phooey;accurate calcification;2024-07-03T13:10:38;down tie monthly;2024-07-04T02:07:18
-3;than knavishly;passivize counselor though;badly sheepishly;2024-07-04T08:13:33;well;2024-07-03T23:22:34
-4;hence;soliloquy since;er red;2024-07-03T13:20:21;boo;2024-07-03T12:25:01
-5;useless trill gloomy;yippee;phooey balls;2024-07-03T21:23:05;as police junk;2024-07-04T04:50:57
-6;amongst telex leather;below reference apropos;howitzer;2024-07-03T11:51:30;delirious water vital;2024-07-04T00:04:55
-7;sans of sadly;gah;concerning;2024-07-03T16:20:28;decision-making hmph;2024-07-04T05:53:03
-8;scarily;remit faithfully metallic;um prefigure very;2024-07-03T18:07:43;thaw instead vaguely;2024-07-03T19:16:33
-9;where;for seat;gee;2024-07-03T23:10:47;brr;2024-07-04T00:05:15
-10;beside;whenever;knottily;2024-07-03T12:09:08;arid;2024-07-04T07:29:21
+1;PENDING;The order has been created but not yet confirmed;SYSTEM;1970-01-01T00:00:00;SYSTEM;1970-01-01T00:00:00
+2;CONFIRMED;The order has been confirmed by the manager and is ready for processing;SYSTEM;1970-01-01T00:00:00;SYSTEM;1970-01-01T00:00:00
+3;PROCESSING;The order is currently being processed in the warehouse;SYSTEM;1970-01-01T00:00:00;SYSTEM;1970-01-01T00:00:00
+4;WAITING_FOR_ACTION;The order is waiting for some action to be taken, possibly by the manager;SYSTEM;1970-01-01T00:00:00;SYSTEM;1970-01-01T00:00:00
+5;SHIPPED;The order has been shipped to the customer;SYSTEM;1970-01-01T00:00:00;SYSTEM;1970-01-01T00:00:00
+6;DELIVERED;The order has been delivered to the customer;SYSTEM;1970-01-01T00:00:00;SYSTEM;1970-01-01T00:00:00
+7;CANCELLED;The order has been cancelled;SYSTEM;1970-01-01T00:00:00;SYSTEM;1970-01-01T00:00:00
+8;RETURNED;The order has been returned by the customer;SYSTEM;1970-01-01T00:00:00;SYSTEM;1970-01-01T00:00:00
+9;ON_HOLD;The order is on hold, possibly due to an issue or pending further information;SYSTEM;1970-01-01T00:00:00;SYSTEM;1970-01-01T00:00:00
+10;FAILED_DELIVERY_ATTEMPT;An attempt to deliver the order failed;SYSTEM;1970-01-01T00:00:00;SYSTEM;1970-01-01T00:00:00
+11;REFUNDED;The order has been refunded;SYSTEM;1970-01-01T00:00:00;SYSTEM;1970-01-01T00:00:00
+12;PARTIALLY_SHIPPED;Part of the order has been shipped;SYSTEM;1970-01-01T00:00:00;SYSTEM;1970-01-01T00:00:00
+13;PARTIALLY_DELIVERED;Part of the order has been delivered;SYSTEM;1970-01-01T00:00:00;SYSTEM;1970-01-01T00:00:00
+14;AWAITING_PAYMENT;The order is awaiting payment before it can be processed further;SYSTEM;1970-01-01T00:00:00;SYSTEM;1970-01-01T00:00:00

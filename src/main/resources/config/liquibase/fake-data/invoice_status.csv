@@ -1,11 +1,11 @@
 id;status_code;description;created_by;created_date;last_modified_by;last_modified_date
-1;below;robust;until;2024-07-04T05:23:04;shoddy training;2024-07-03T18:48:39
-2;ah;recruit incense;overprint impossible apropos;2024-07-03T14:26:27;forebear far;2024-07-03T16:39:59
-3;carbonize loyally;now but;before;2024-07-03T12:31:02;merrily;2024-07-03T13:50:20
-4;overconfidently boo;serious enigma;throughout;2024-07-04T02:43:17;hungrily geez reckless;2024-07-04T08:34:01
-5;finally who;actual nestle;hopelessly;2024-07-03T23:31:03;vaguely phooey;2024-07-04T06:33:33
-6;woot methinks;touch against;off appraise during;2024-07-04T11:05:23;ah;2024-07-03T14:09:37
-7;beneath credibility before;reference tensely miserably;train meh;2024-07-04T09:56:15;gosh;2024-07-04T11:30:18
-8;fast;lag graze bagpipe;well gray pro;2024-07-04T02:16:42;hence stuff which;2024-07-04T02:25:35
-9;instead even;aboard hospitable;pummel retry crusade;2024-07-04T08:41:53;phew nonstop chiffonier;2024-07-03T23:36:25
-10;truthfully painfully ick;genuine;ray till bamboo;2024-07-04T04:07:23;jiggle pique;2024-07-03T22:25:13
+1;DRAFT;The invoice is in draft mode and has not been finalized;SYSTEM;1970-01-01T00:00:00;SYSTEM;1970-01-01T00:00:00
+2;ACTIVE;The invoice is active and likely awaiting further action;SYSTEM;1970-01-01T00:00:00;SYSTEM;1970-01-01T00:00:00
+3;SENT;The invoice has been sent to the recipient;SYSTEM;1970-01-01T00:00:00;SYSTEM;1970-01-01T00:00:00
+4;DISPUTED;The invoice is being disputed by the recipient;SYSTEM;1970-01-01T00:00:00;SYSTEM;1970-01-01T00:00:00
+5;OVERDUE;The invoice is overdue for payment;SYSTEM;1970-01-01T00:00:00;SYSTEM;1970-01-01T00:00:00
+6;PARTIAL;A partial payment has been made on the invoice;SYSTEM;1970-01-01T00:00:00;SYSTEM;1970-01-01T00:00:00
+7;PAID;The invoice has been fully paid;SYSTEM;1970-01-01T00:00:00;SYSTEM;1970-01-01T00:00:00
+8;VOID;The invoice has been voided and is no longer valid;SYSTEM;1970-01-01T00:00:00;SYSTEM;1970-01-01T00:00:00
+9;DEBT;The invoice represents a debt that is owed;SYSTEM;1970-01-01T00:00:00;SYSTEM;1970-01-01T00:00:00
+10;RESERVED;The invoice is reserved for a specific purpose or future action;SYSTEM;1970-01-01T00:00:00;SYSTEM;1970-01-01T00:00:00
