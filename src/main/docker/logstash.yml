@@ -1,0 +1,13 @@
+# This configuration is intended for development purpose, it's **your** responsibility to harden it for production
+name: foursquareapp
+services:
+  logstash:
+    image: docker.elastic.co/logstash/logstash-oss:8.15.0
+    volumes:
+      - ./logstash/psql.conf:/usr/share/logstash/config/psql.conf:ro
+      - ./logstash/logstash.yml:/usr/share/logstash/config/logstash.yml
+      - ./jdbc/postgresql-42.7.3.jar:/usr/share/logstash/logstash-core/lib/jars/postgresql-42.7.3.jar:ro
+    ports:
+      - 5044:5044
+      - 9600:9600
+    command: bash -c "/usr/share/logstash/bin/logstash-plugin install logstash-input-jdbc && logstash -f /usr/share/logstash/config/psql.conf"
