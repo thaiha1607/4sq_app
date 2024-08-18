@@ -1,0 +1,2 @@
+# Exclude PostgreSQL JDBC driver
+!postgresql-*.jar
