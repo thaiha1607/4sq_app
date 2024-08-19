@@ -1,37 +1,59 @@
-package com.foursquare.server.web.rest.dto;
+package com.foursquare.server.domain;
 
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.Objects;
-import org.javers.core.metamodel.object.CdoSnapshot;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
+@Entity
+@Table(name = "jhi_entity_audit_event")
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class EntityAuditEvent implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private String id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
+    @SequenceGenerator(name = "sequenceGenerator")
+    private Long id;
 
+    @NotNull
+    @Column(name = "entity_id", nullable = false)
     private String entityId;
 
+    @NotNull
+    @Size(max = 255)
+    @Column(name = "entity_type", length = 255, nullable = false)
     private String entityType;
 
+    @NotNull
+    @Size(max = 20)
+    @Column(name = "action", length = 20, nullable = false)
     private String action;
 
+    @Column(name = "entity_value")
     private String entityValue;
 
+    @Column(name = "commit_version")
     private Integer commitVersion;
 
+    @Size(max = 100)
+    @Column(name = "modified_by", length = 100)
     private String modifiedBy;
 
+    @NotNull
+    @Column(name = "modified_date", nullable = false)
     private Instant modifiedDate;
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -137,51 +159,5 @@ public class EntityAuditEvent implements Serializable {
             "'" +
             '}'
         );
-    }
-
-    public static EntityAuditEvent fromJaversSnapshot(CdoSnapshot snapshot) {
-        EntityAuditEvent entityAuditEvent = new EntityAuditEvent();
-
-        switch (snapshot.getType()) {
-            case INITIAL:
-                entityAuditEvent.setAction("CREATE");
-                break;
-            case UPDATE:
-                entityAuditEvent.setAction("UPDATE");
-                break;
-            case TERMINAL:
-                entityAuditEvent.setAction("DELETE");
-                break;
-        }
-
-        entityAuditEvent.setId(snapshot.getCommitId().toString());
-        entityAuditEvent.setCommitVersion(Math.round(snapshot.getVersion()));
-        entityAuditEvent.setEntityType(snapshot.getManagedType().getName());
-        entityAuditEvent.setEntityId(snapshot.getGlobalId().value().split("/")[1]);
-        entityAuditEvent.setModifiedBy(snapshot.getCommitMetadata().getAuthor());
-
-        if (snapshot.getState().getPropertyNames().size() > 0) {
-            int count = 0;
-            StringBuilder sb = new StringBuilder("{");
-
-            for (String s : snapshot.getState().getPropertyNames()) {
-                count++;
-                Object propertyValue = snapshot.getPropertyValue(s);
-                sb.append("\"" + s + "\": \"" + propertyValue + "\"");
-                if (count < snapshot.getState().getPropertyNames().size()) {
-                    sb.append(",");
-                }
-            }
-
-            sb.append("}");
-            entityAuditEvent.setEntityValue(sb.toString());
-        }
-        LocalDateTime localTime = snapshot.getCommitMetadata().getCommitDate();
-
-        Instant modifyDate = localTime.toInstant(ZoneOffset.UTC);
-
-        entityAuditEvent.setModifiedDate(modifyDate);
-
-        return entityAuditEvent;
     }
 }

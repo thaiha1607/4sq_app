@@ -4,7 +4,6 @@ import com.foursquare.server.domain.WarehouseAssignment;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import org.javers.spring.annotation.JaversSpringDataAuditable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.*;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Repository;
  * Spring Data JPA repository for the WarehouseAssignment entity.
  */
 @Repository
-@JaversSpringDataAuditable
 public interface WarehouseAssignmentRepository extends JpaRepository<WarehouseAssignment, UUID> {
     @Query(
         "select warehouseAssignment from WarehouseAssignment warehouseAssignment where warehouseAssignment.user.login = ?#{authentication.name}"

@@ -4,7 +4,6 @@ import com.foursquare.server.domain.Participant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import org.javers.spring.annotation.JaversSpringDataAuditable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.*;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Repository;
  * Spring Data JPA repository for the Participant entity.
  */
 @Repository
-@JaversSpringDataAuditable
 public interface ParticipantRepository extends JpaRepository<Participant, UUID> {
     @Query("select participant from Participant participant where participant.user.login = ?#{authentication.name}")
     List<Participant> findByUserIsCurrentUser();

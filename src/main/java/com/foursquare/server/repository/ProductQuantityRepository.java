@@ -4,7 +4,6 @@ import com.foursquare.server.domain.ProductQuantity;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import org.javers.spring.annotation.JaversSpringDataAuditable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.*;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Repository;
  * Spring Data JPA repository for the ProductQuantity entity.
  */
 @Repository
-@JaversSpringDataAuditable
 public interface ProductQuantityRepository extends JpaRepository<ProductQuantity, UUID> {
     default Optional<ProductQuantity> findOneWithEagerRelationships(UUID id) {
         return this.findOneWithToOneRelationships(id);

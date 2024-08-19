@@ -3,7 +3,6 @@ package com.foursquare.server.repository;
 import com.foursquare.server.domain.StaffInfo;
 import java.util.List;
 import java.util.Optional;
-import org.javers.spring.annotation.JaversSpringDataAuditable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.*;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Repository;
  * Spring Data JPA repository for the StaffInfo entity.
  */
 @Repository
-@JaversSpringDataAuditable
 public interface StaffInfoRepository extends JpaRepository<StaffInfo, Long> {
     default Optional<StaffInfo> findOneWithEagerRelationships(Long id) {
         return this.findOneWithToOneRelationships(id);

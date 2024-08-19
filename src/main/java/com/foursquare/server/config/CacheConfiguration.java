@@ -83,6 +83,7 @@ public class CacheConfiguration {
             createCache(cm, com.foursquare.server.domain.User.class.getName(), jcacheConfiguration);
             createCache(cm, com.foursquare.server.domain.Authority.class.getName(), jcacheConfiguration);
             createCache(cm, com.foursquare.server.domain.User.class.getName() + ".authorities", jcacheConfiguration);
+            createCache(cm, com.foursquare.server.domain.EntityAuditEvent.class.getName(), jcacheConfiguration);
             createCache(cm, com.foursquare.server.domain.UserDetails.class.getName(), jcacheConfiguration);
             createCache(cm, com.foursquare.server.domain.Address.class.getName(), jcacheConfiguration);
             createCache(cm, com.foursquare.server.domain.Colour.class.getName(), jcacheConfiguration);

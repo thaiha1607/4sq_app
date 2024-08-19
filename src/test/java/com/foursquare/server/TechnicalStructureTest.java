@@ -2,8 +2,12 @@ package com.foursquare.server;
 
 import static com.tngtech.archunit.base.DescribedPredicate.alwaysTrue;
 import static com.tngtech.archunit.core.domain.JavaClass.Predicates.belongToAnyOf;
+import static com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAPackage;
+import static com.tngtech.archunit.core.domain.JavaClass.Predicates.type;
 import static com.tngtech.archunit.library.Architectures.layeredArchitecture;
 
+import com.foursquare.server.audit.EntityAuditEventListener;
+import com.foursquare.server.domain.AbstractAuditingEntity;
 import com.tngtech.archunit.core.importer.ImportOption.DoNotIncludeTests;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
@@ -30,6 +34,8 @@ class TechnicalStructureTest {
         .whereLayer("Persistence").mayOnlyBeAccessedByLayers("Service", "Security", "Web", "Config")
         .whereLayer("Domain").mayOnlyBeAccessedByLayers("Persistence", "Service", "Security", "Web", "Config")
 
+        .ignoreDependency(resideInAPackage("com.foursquare.server.audit"), alwaysTrue())
+        .ignoreDependency(type(AbstractAuditingEntity.class), type(EntityAuditEventListener.class))
         .ignoreDependency(belongToAnyOf(FoursquareApp.class), alwaysTrue())
         .ignoreDependency(alwaysTrue(), belongToAnyOf(
             com.foursquare.server.config.Constants.class,
