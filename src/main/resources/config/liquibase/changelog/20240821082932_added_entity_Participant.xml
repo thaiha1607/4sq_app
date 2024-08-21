@@ -14,7 +14,7 @@
             <column name="id" type="${uuidType}">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="is_admin" type="boolean" defaultValueBoolean="true">
+            <column name="is_admin" type="boolean" defaultValueBoolean="false">
                 <constraints nullable="true" />
             </column>
             <column name="created_by" type="varchar(50)">
