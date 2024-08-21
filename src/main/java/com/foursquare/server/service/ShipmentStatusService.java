@@ -2,14 +2,12 @@ package com.foursquare.server.service;
 
 import com.foursquare.server.domain.ShipmentStatus;
 import com.foursquare.server.repository.ShipmentStatusRepository;
-import com.foursquare.server.repository.search.ShipmentStatusSearchRepository;
 import com.foursquare.server.service.dto.ShipmentStatusDTO;
 import com.foursquare.server.service.mapper.ShipmentStatusMapper;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -28,16 +26,9 @@ public class ShipmentStatusService {
 
     private final ShipmentStatusMapper shipmentStatusMapper;
 
-    private final ShipmentStatusSearchRepository shipmentStatusSearchRepository;
-
-    public ShipmentStatusService(
-        ShipmentStatusRepository shipmentStatusRepository,
-        ShipmentStatusMapper shipmentStatusMapper,
-        ShipmentStatusSearchRepository shipmentStatusSearchRepository
-    ) {
+    public ShipmentStatusService(ShipmentStatusRepository shipmentStatusRepository, ShipmentStatusMapper shipmentStatusMapper) {
         this.shipmentStatusRepository = shipmentStatusRepository;
         this.shipmentStatusMapper = shipmentStatusMapper;
-        this.shipmentStatusSearchRepository = shipmentStatusSearchRepository;
     }
 
     /**
@@ -50,7 +41,6 @@ public class ShipmentStatusService {
         log.debug("Request to save ShipmentStatus : {}", shipmentStatusDTO);
         ShipmentStatus shipmentStatus = shipmentStatusMapper.toEntity(shipmentStatusDTO);
         shipmentStatus = shipmentStatusRepository.save(shipmentStatus);
-        shipmentStatusSearchRepository.index(shipmentStatus);
         return shipmentStatusMapper.toDto(shipmentStatus);
     }
 
@@ -65,7 +55,6 @@ public class ShipmentStatusService {
         ShipmentStatus shipmentStatus = shipmentStatusMapper.toEntity(shipmentStatusDTO);
         shipmentStatus.setIsPersisted();
         shipmentStatus = shipmentStatusRepository.save(shipmentStatus);
-        shipmentStatusSearchRepository.index(shipmentStatus);
         return shipmentStatusMapper.toDto(shipmentStatus);
     }
 
@@ -86,10 +75,6 @@ public class ShipmentStatusService {
                 return existingShipmentStatus;
             })
             .map(shipmentStatusRepository::save)
-            .map(savedShipmentStatus -> {
-                shipmentStatusSearchRepository.index(savedShipmentStatus);
-                return savedShipmentStatus;
-            })
             .map(shipmentStatusMapper::toDto);
     }
 
@@ -128,24 +113,5 @@ public class ShipmentStatusService {
     public void delete(Long id) {
         log.debug("Request to delete ShipmentStatus : {}", id);
         shipmentStatusRepository.deleteById(id);
-        shipmentStatusSearchRepository.deleteFromIndexById(id);
-    }
-
-    /**
-     * Search for the shipmentStatus corresponding to the query.
-     *
-     * @param query the query of the search.
-     * @return the list of entities.
-     */
-    @Transactional(readOnly = true)
-    public List<ShipmentStatusDTO> search(String query) {
-        log.debug("Request to search ShipmentStatuses for query {}", query);
-        try {
-            return StreamSupport.stream(shipmentStatusSearchRepository.search(query).spliterator(), false)
-                .map(shipmentStatusMapper::toDto)
-                .toList();
-        } catch (RuntimeException e) {
-            throw e;
-        }
     }
 }

@@ -20,7 +20,6 @@ import org.springframework.data.domain.Persistable;
 @Table(name = "message")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @JsonIgnoreProperties(value = { "new" })
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "message")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class Message extends AbstractAuditingEntity<UUID> implements Serializable, Persistable<UUID> {
 
@@ -34,12 +33,10 @@ public class Message extends AbstractAuditingEntity<UUID> implements Serializabl
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Keyword)
     private MessageType type;
 
     @NotNull
     @Column(name = "content", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String content;
 
     // Inherited createdBy definition

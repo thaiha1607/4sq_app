@@ -4,7 +4,6 @@ import com.foursquare.server.repository.UserAddressRepository;
 import com.foursquare.server.service.UserAddressService;
 import com.foursquare.server.service.dto.UserAddressDTO;
 import com.foursquare.server.web.rest.errors.BadRequestAlertException;
-import com.foursquare.server.web.rest.errors.ElasticsearchExceptionMapper;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
@@ -172,22 +171,5 @@ public class UserAddressResource {
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
-    }
-
-    /**
-     * {@code SEARCH  /user-addresses/_search?query=:query} : search for the userAddress corresponding
-     * to the query.
-     *
-     * @param query the query of the userAddress search.
-     * @return the result of the search.
-     */
-    @GetMapping("/_search")
-    public List<UserAddressDTO> searchUserAddresses(@RequestParam("query") String query) {
-        log.debug("REST request to search UserAddresses for query {}", query);
-        try {
-            return userAddressService.search(query);
-        } catch (RuntimeException e) {
-            throw ElasticsearchExceptionMapper.mapException(e);
-        }
     }
 }

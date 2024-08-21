@@ -17,7 +17,6 @@ import org.springframework.data.domain.Persistable;
 @Table(name = "staff_info")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @JsonIgnoreProperties(value = { "new" })
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "staffinfo")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class StaffInfo extends AbstractAuditingEntity<Long> implements Serializable, Persistable<Long> {
 
@@ -32,7 +31,6 @@ public class StaffInfo extends AbstractAuditingEntity<Long> implements Serializa
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Keyword)
     private StaffStatus status;
 
     // Inherited createdBy definition

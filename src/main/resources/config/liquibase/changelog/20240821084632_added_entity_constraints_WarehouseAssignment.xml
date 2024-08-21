@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    <!--
+        Added the constraints for entity WarehouseAssignment.
+    -->
+    <changeSet id="20240821084632-2" author="jhipster">
+
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="warehouse_assignment"
+                                 constraintName="fk_warehouse_assignment__user_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="jhi_user"
+                                 onDelete="SET NULL"
+                                 />
+
+        <addForeignKeyConstraint baseColumnNames="source_working_unit_id"
+                                 baseTableName="warehouse_assignment"
+                                 constraintName="fk_warehouse_assignment__source_working_unit_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="working_unit"
+                                 />
+
+        <addForeignKeyConstraint baseColumnNames="target_working_unit_id"
+                                 baseTableName="warehouse_assignment"
+                                 constraintName="fk_warehouse_assignment__target_working_unit_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="working_unit"
+                                 onDelete="SET NULL"
+                                 />
+
+        <addForeignKeyConstraint baseColumnNames="order_id"
+                                 baseTableName="warehouse_assignment"
+                                 constraintName="fk_warehouse_assignment__order_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="jhi_order"
+                                 />
+    </changeSet>
+</databaseChangeLog>

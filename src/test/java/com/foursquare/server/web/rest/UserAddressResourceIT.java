@@ -3,7 +3,6 @@ package com.foursquare.server.web.rest;
 import static com.foursquare.server.domain.UserAddressAsserts.*;
 import static com.foursquare.server.web.rest.TestUtil.createUpdateProxyForBean;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -17,16 +16,12 @@ import com.foursquare.server.domain.UserAddress;
 import com.foursquare.server.domain.enumeration.AddressType;
 import com.foursquare.server.repository.UserAddressRepository;
 import com.foursquare.server.repository.UserRepository;
-import com.foursquare.server.repository.search.UserAddressSearchRepository;
 import com.foursquare.server.service.UserAddressService;
 import com.foursquare.server.service.dto.UserAddressDTO;
 import com.foursquare.server.service.mapper.UserAddressMapper;
 import jakarta.persistence.EntityManager;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-import org.assertj.core.util.IterableUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,7 +32,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.util.Streamable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -63,7 +57,6 @@ class UserAddressResourceIT {
 
     private static final String ENTITY_API_URL = "/api/user-addresses";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
-    private static final String ENTITY_SEARCH_API_URL = "/api/user-addresses/_search";
 
     @Autowired
     private ObjectMapper om;
@@ -82,9 +75,6 @@ class UserAddressResourceIT {
 
     @Mock
     private UserAddressService userAddressServiceMock;
-
-    @Autowired
-    private UserAddressSearchRepository userAddressSearchRepository;
 
     @Autowired
     private EntityManager em;
@@ -157,7 +147,6 @@ class UserAddressResourceIT {
     public void cleanup() {
         if (insertedUserAddress != null) {
             userAddressRepository.delete(insertedUserAddress);
-            userAddressSearchRepository.delete(insertedUserAddress);
             insertedUserAddress = null;
         }
     }
@@ -166,7 +155,6 @@ class UserAddressResourceIT {
     @Transactional
     void createUserAddress() throws Exception {
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(userAddressSearchRepository.findAll());
         // Create the UserAddress
         UserAddressDTO userAddressDTO = userAddressMapper.toDto(userAddress);
         var returnedUserAddressDTO = om.readValue(
@@ -184,13 +172,6 @@ class UserAddressResourceIT {
         var returnedUserAddress = userAddressMapper.toEntity(returnedUserAddressDTO);
         assertUserAddressUpdatableFieldsEquals(returnedUserAddress, getPersistedUserAddress(returnedUserAddress));
 
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(userAddressSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore + 1);
-            });
-
         insertedUserAddress = returnedUserAddress;
     }
 
@@ -202,7 +183,6 @@ class UserAddressResourceIT {
         UserAddressDTO userAddressDTO = userAddressMapper.toDto(userAddress);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(userAddressSearchRepository.findAll());
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restUserAddressMockMvc
@@ -211,15 +191,12 @@ class UserAddressResourceIT {
 
         // Validate the UserAddress in the database
         assertSameRepositoryCount(databaseSizeBeforeCreate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(userAddressSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkTypeIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(userAddressSearchRepository.findAll());
         // set the field null
         userAddress.setType(null);
 
@@ -231,9 +208,6 @@ class UserAddressResourceIT {
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
-
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(userAddressSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -301,8 +275,6 @@ class UserAddressResourceIT {
         insertedUserAddress = userAddressRepository.saveAndFlush(userAddress);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        userAddressSearchRepository.save(userAddress);
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(userAddressSearchRepository.findAll());
 
         // Update the userAddress
         UserAddress updatedUserAddress = userAddressRepository.findById(userAddress.getId()).orElseThrow();
@@ -322,24 +294,12 @@ class UserAddressResourceIT {
         // Validate the UserAddress in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
         assertPersistedUserAddressToMatchAllProperties(updatedUserAddress);
-
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(userAddressSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
-                List<UserAddress> userAddressSearchList = Streamable.of(userAddressSearchRepository.findAll()).toList();
-                UserAddress testUserAddressSearch = userAddressSearchList.get(searchDatabaseSizeAfter - 1);
-
-                assertUserAddressAllPropertiesEquals(testUserAddressSearch, updatedUserAddress);
-            });
     }
 
     @Test
     @Transactional
     void putNonExistingUserAddress() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(userAddressSearchRepository.findAll());
         userAddress.setId(UUID.randomUUID());
 
         // Create the UserAddress
@@ -356,15 +316,12 @@ class UserAddressResourceIT {
 
         // Validate the UserAddress in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(userAddressSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithIdMismatchUserAddress() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(userAddressSearchRepository.findAll());
         userAddress.setId(UUID.randomUUID());
 
         // Create the UserAddress
@@ -381,15 +338,12 @@ class UserAddressResourceIT {
 
         // Validate the UserAddress in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(userAddressSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithMissingIdPathParamUserAddress() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(userAddressSearchRepository.findAll());
         userAddress.setId(UUID.randomUUID());
 
         // Create the UserAddress
@@ -402,8 +356,6 @@ class UserAddressResourceIT {
 
         // Validate the UserAddress in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(userAddressSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -469,7 +421,6 @@ class UserAddressResourceIT {
     @Transactional
     void patchNonExistingUserAddress() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(userAddressSearchRepository.findAll());
         userAddress.setId(UUID.randomUUID());
 
         // Create the UserAddress
@@ -486,15 +437,12 @@ class UserAddressResourceIT {
 
         // Validate the UserAddress in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(userAddressSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithIdMismatchUserAddress() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(userAddressSearchRepository.findAll());
         userAddress.setId(UUID.randomUUID());
 
         // Create the UserAddress
@@ -511,15 +459,12 @@ class UserAddressResourceIT {
 
         // Validate the UserAddress in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(userAddressSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithMissingIdPathParamUserAddress() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(userAddressSearchRepository.findAll());
         userAddress.setId(UUID.randomUUID());
 
         // Create the UserAddress
@@ -532,8 +477,6 @@ class UserAddressResourceIT {
 
         // Validate the UserAddress in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(userAddressSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -541,12 +484,8 @@ class UserAddressResourceIT {
     void deleteUserAddress() throws Exception {
         // Initialize the database
         insertedUserAddress = userAddressRepository.saveAndFlush(userAddress);
-        userAddressRepository.save(userAddress);
-        userAddressSearchRepository.save(userAddress);
 
         long databaseSizeBeforeDelete = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(userAddressSearchRepository.findAll());
-        assertThat(searchDatabaseSizeBefore).isEqualTo(databaseSizeBeforeDelete);
 
         // Delete the userAddress
         restUserAddressMockMvc
@@ -555,26 +494,6 @@ class UserAddressResourceIT {
 
         // Validate the database contains one less item
         assertDecrementedRepositoryCount(databaseSizeBeforeDelete);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(userAddressSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore - 1);
-    }
-
-    @Test
-    @Transactional
-    void searchUserAddress() throws Exception {
-        // Initialize the database
-        insertedUserAddress = userAddressRepository.saveAndFlush(userAddress);
-        userAddressSearchRepository.save(userAddress);
-
-        // Search the userAddress
-        restUserAddressMockMvc
-            .perform(get(ENTITY_SEARCH_API_URL + "?query=id:" + userAddress.getId()))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(userAddress.getId().toString())))
-            .andExpect(jsonPath("$.[*].type").value(hasItem(DEFAULT_TYPE.toString())))
-            .andExpect(jsonPath("$.[*].friendlyName").value(hasItem(DEFAULT_FRIENDLY_NAME)))
-            .andExpect(jsonPath("$.[*].isDefault").value(hasItem(DEFAULT_IS_DEFAULT.booleanValue())));
     }
 
     protected long getRepositoryCount() {

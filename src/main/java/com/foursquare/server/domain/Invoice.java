@@ -22,7 +22,6 @@ import org.springframework.data.domain.Persistable;
 @Table(name = "invoice")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @JsonIgnoreProperties(value = { "new" })
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "invoice")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class Invoice extends AbstractAuditingEntity<UUID> implements Serializable, Persistable<UUID> {
 
@@ -41,17 +40,14 @@ public class Invoice extends AbstractAuditingEntity<UUID> implements Serializabl
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Keyword)
     private InvoiceType type;
 
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_method", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Keyword)
     private PaymentMethod paymentMethod;
 
     @Column(name = "note")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String note;
 
     // Inherited createdBy definition
@@ -63,7 +59,6 @@ public class Invoice extends AbstractAuditingEntity<UUID> implements Serializabl
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "invoice")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @org.springframework.data.annotation.Transient
     @JsonIgnoreProperties(value = { "assignments", "items", "status", "order", "invoice" }, allowSetters = true)
     private Set<Shipment> shipments = new HashSet<>();
 

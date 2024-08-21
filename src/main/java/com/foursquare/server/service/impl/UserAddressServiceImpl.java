@@ -2,7 +2,6 @@ package com.foursquare.server.service.impl;
 
 import com.foursquare.server.domain.UserAddress;
 import com.foursquare.server.repository.UserAddressRepository;
-import com.foursquare.server.repository.search.UserAddressSearchRepository;
 import com.foursquare.server.service.UserAddressService;
 import com.foursquare.server.service.dto.UserAddressDTO;
 import com.foursquare.server.service.mapper.UserAddressMapper;
@@ -11,7 +10,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -32,16 +30,9 @@ public class UserAddressServiceImpl implements UserAddressService {
 
     private final UserAddressMapper userAddressMapper;
 
-    private final UserAddressSearchRepository userAddressSearchRepository;
-
-    public UserAddressServiceImpl(
-        UserAddressRepository userAddressRepository,
-        UserAddressMapper userAddressMapper,
-        UserAddressSearchRepository userAddressSearchRepository
-    ) {
+    public UserAddressServiceImpl(UserAddressRepository userAddressRepository, UserAddressMapper userAddressMapper) {
         this.userAddressRepository = userAddressRepository;
         this.userAddressMapper = userAddressMapper;
-        this.userAddressSearchRepository = userAddressSearchRepository;
     }
 
     @Override
@@ -49,7 +40,6 @@ public class UserAddressServiceImpl implements UserAddressService {
         log.debug("Request to save UserAddress : {}", userAddressDTO);
         UserAddress userAddress = userAddressMapper.toEntity(userAddressDTO);
         userAddress = userAddressRepository.save(userAddress);
-        userAddressSearchRepository.index(userAddress);
         return userAddressMapper.toDto(userAddress);
     }
 
@@ -59,7 +49,6 @@ public class UserAddressServiceImpl implements UserAddressService {
         UserAddress userAddress = userAddressMapper.toEntity(userAddressDTO);
         userAddress.setIsPersisted();
         userAddress = userAddressRepository.save(userAddress);
-        userAddressSearchRepository.index(userAddress);
         return userAddressMapper.toDto(userAddress);
     }
 
@@ -75,10 +64,6 @@ public class UserAddressServiceImpl implements UserAddressService {
                 return existingUserAddress;
             })
             .map(userAddressRepository::save)
-            .map(savedUserAddress -> {
-                userAddressSearchRepository.index(savedUserAddress);
-                return savedUserAddress;
-            })
             .map(userAddressMapper::toDto);
     }
 
@@ -104,19 +89,5 @@ public class UserAddressServiceImpl implements UserAddressService {
     public void delete(UUID id) {
         log.debug("Request to delete UserAddress : {}", id);
         userAddressRepository.deleteById(id);
-        userAddressSearchRepository.deleteFromIndexById(id);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<UserAddressDTO> search(String query) {
-        log.debug("Request to search UserAddresses for query {}", query);
-        try {
-            return StreamSupport.stream(userAddressSearchRepository.search(query).spliterator(), false)
-                .map(userAddressMapper::toDto)
-                .toList();
-        } catch (RuntimeException e) {
-            throw e;
-        }
     }
 }

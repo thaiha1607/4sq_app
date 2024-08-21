@@ -2,7 +2,6 @@ package com.foursquare.server.service;
 
 import com.foursquare.server.domain.Shipment;
 import com.foursquare.server.repository.ShipmentRepository;
-import com.foursquare.server.repository.search.ShipmentSearchRepository;
 import com.foursquare.server.service.dto.ShipmentDTO;
 import com.foursquare.server.service.mapper.ShipmentMapper;
 import java.util.LinkedList;
@@ -10,7 +9,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -31,16 +29,9 @@ public class ShipmentService {
 
     private final ShipmentMapper shipmentMapper;
 
-    private final ShipmentSearchRepository shipmentSearchRepository;
-
-    public ShipmentService(
-        ShipmentRepository shipmentRepository,
-        ShipmentMapper shipmentMapper,
-        ShipmentSearchRepository shipmentSearchRepository
-    ) {
+    public ShipmentService(ShipmentRepository shipmentRepository, ShipmentMapper shipmentMapper) {
         this.shipmentRepository = shipmentRepository;
         this.shipmentMapper = shipmentMapper;
-        this.shipmentSearchRepository = shipmentSearchRepository;
     }
 
     /**
@@ -53,7 +44,6 @@ public class ShipmentService {
         log.debug("Request to save Shipment : {}", shipmentDTO);
         Shipment shipment = shipmentMapper.toEntity(shipmentDTO);
         shipment = shipmentRepository.save(shipment);
-        shipmentSearchRepository.index(shipment);
         return shipmentMapper.toDto(shipment);
     }
 
@@ -68,7 +58,6 @@ public class ShipmentService {
         Shipment shipment = shipmentMapper.toEntity(shipmentDTO);
         shipment.setIsPersisted();
         shipment = shipmentRepository.save(shipment);
-        shipmentSearchRepository.index(shipment);
         return shipmentMapper.toDto(shipment);
     }
 
@@ -89,10 +78,6 @@ public class ShipmentService {
                 return existingShipment;
             })
             .map(shipmentRepository::save)
-            .map(savedShipment -> {
-                shipmentSearchRepository.index(savedShipment);
-                return savedShipment;
-            })
             .map(shipmentMapper::toDto);
     }
 
@@ -136,22 +121,5 @@ public class ShipmentService {
     public void delete(UUID id) {
         log.debug("Request to delete Shipment : {}", id);
         shipmentRepository.deleteById(id);
-        shipmentSearchRepository.deleteFromIndexById(id);
-    }
-
-    /**
-     * Search for the shipment corresponding to the query.
-     *
-     * @param query the query of the search.
-     * @return the list of entities.
-     */
-    @Transactional(readOnly = true)
-    public List<ShipmentDTO> search(String query) {
-        log.debug("Request to search Shipments for query {}", query);
-        try {
-            return StreamSupport.stream(shipmentSearchRepository.search(query).spliterator(), false).map(shipmentMapper::toDto).toList();
-        } catch (RuntimeException e) {
-            throw e;
-        }
     }
 }

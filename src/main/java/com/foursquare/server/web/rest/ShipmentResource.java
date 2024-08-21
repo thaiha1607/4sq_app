@@ -4,7 +4,6 @@ import com.foursquare.server.repository.ShipmentRepository;
 import com.foursquare.server.service.ShipmentService;
 import com.foursquare.server.service.dto.ShipmentDTO;
 import com.foursquare.server.web.rest.errors.BadRequestAlertException;
-import com.foursquare.server.web.rest.errors.ElasticsearchExceptionMapper;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
@@ -170,22 +169,5 @@ public class ShipmentResource {
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
-    }
-
-    /**
-     * {@code SEARCH  /shipments/_search?query=:query} : search for the shipment corresponding
-     * to the query.
-     *
-     * @param query the query of the shipment search.
-     * @return the result of the search.
-     */
-    @GetMapping("/_search")
-    public List<ShipmentDTO> searchShipments(@RequestParam("query") String query) {
-        log.debug("REST request to search Shipments for query {}", query);
-        try {
-            return shipmentService.search(query);
-        } catch (RuntimeException e) {
-            throw ElasticsearchExceptionMapper.mapException(e);
-        }
     }
 }

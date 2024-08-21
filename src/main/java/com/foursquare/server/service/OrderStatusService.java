@@ -2,14 +2,12 @@ package com.foursquare.server.service;
 
 import com.foursquare.server.domain.OrderStatus;
 import com.foursquare.server.repository.OrderStatusRepository;
-import com.foursquare.server.repository.search.OrderStatusSearchRepository;
 import com.foursquare.server.service.dto.OrderStatusDTO;
 import com.foursquare.server.service.mapper.OrderStatusMapper;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -28,16 +26,9 @@ public class OrderStatusService {
 
     private final OrderStatusMapper orderStatusMapper;
 
-    private final OrderStatusSearchRepository orderStatusSearchRepository;
-
-    public OrderStatusService(
-        OrderStatusRepository orderStatusRepository,
-        OrderStatusMapper orderStatusMapper,
-        OrderStatusSearchRepository orderStatusSearchRepository
-    ) {
+    public OrderStatusService(OrderStatusRepository orderStatusRepository, OrderStatusMapper orderStatusMapper) {
         this.orderStatusRepository = orderStatusRepository;
         this.orderStatusMapper = orderStatusMapper;
-        this.orderStatusSearchRepository = orderStatusSearchRepository;
     }
 
     /**
@@ -50,7 +41,6 @@ public class OrderStatusService {
         log.debug("Request to save OrderStatus : {}", orderStatusDTO);
         OrderStatus orderStatus = orderStatusMapper.toEntity(orderStatusDTO);
         orderStatus = orderStatusRepository.save(orderStatus);
-        orderStatusSearchRepository.index(orderStatus);
         return orderStatusMapper.toDto(orderStatus);
     }
 
@@ -65,7 +55,6 @@ public class OrderStatusService {
         OrderStatus orderStatus = orderStatusMapper.toEntity(orderStatusDTO);
         orderStatus.setIsPersisted();
         orderStatus = orderStatusRepository.save(orderStatus);
-        orderStatusSearchRepository.index(orderStatus);
         return orderStatusMapper.toDto(orderStatus);
     }
 
@@ -86,10 +75,6 @@ public class OrderStatusService {
                 return existingOrderStatus;
             })
             .map(orderStatusRepository::save)
-            .map(savedOrderStatus -> {
-                orderStatusSearchRepository.index(savedOrderStatus);
-                return savedOrderStatus;
-            })
             .map(orderStatusMapper::toDto);
     }
 
@@ -124,24 +109,5 @@ public class OrderStatusService {
     public void delete(Long id) {
         log.debug("Request to delete OrderStatus : {}", id);
         orderStatusRepository.deleteById(id);
-        orderStatusSearchRepository.deleteFromIndexById(id);
-    }
-
-    /**
-     * Search for the orderStatus corresponding to the query.
-     *
-     * @param query the query of the search.
-     * @return the list of entities.
-     */
-    @Transactional(readOnly = true)
-    public List<OrderStatusDTO> search(String query) {
-        log.debug("Request to search OrderStatuses for query {}", query);
-        try {
-            return StreamSupport.stream(orderStatusSearchRepository.search(query).spliterator(), false)
-                .map(orderStatusMapper::toDto)
-                .toList();
-        } catch (RuntimeException e) {
-            throw e;
-        }
     }
 }

@@ -4,7 +4,6 @@ import static com.foursquare.server.domain.OrderItemAsserts.*;
 import static com.foursquare.server.web.rest.TestUtil.createUpdateProxyForBean;
 import static com.foursquare.server.web.rest.TestUtil.sameNumber;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -14,17 +13,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foursquare.server.IntegrationTest;
 import com.foursquare.server.domain.OrderItem;
 import com.foursquare.server.repository.OrderItemRepository;
-import com.foursquare.server.repository.search.OrderItemSearchRepository;
 import com.foursquare.server.service.OrderItemService;
 import com.foursquare.server.service.dto.OrderItemDTO;
 import com.foursquare.server.service.mapper.OrderItemMapper;
 import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-import org.assertj.core.util.IterableUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -36,7 +31,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.util.Streamable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -66,7 +60,6 @@ class OrderItemResourceIT {
 
     private static final String ENTITY_API_URL = "/api/order-items";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
-    private static final String ENTITY_SEARCH_API_URL = "/api/order-items/_search";
 
     @Autowired
     private ObjectMapper om;
@@ -82,9 +75,6 @@ class OrderItemResourceIT {
 
     @Mock
     private OrderItemService orderItemServiceMock;
-
-    @Autowired
-    private OrderItemSearchRepository orderItemSearchRepository;
 
     @Autowired
     private EntityManager em;
@@ -135,7 +125,6 @@ class OrderItemResourceIT {
     public void cleanup() {
         if (insertedOrderItem != null) {
             orderItemRepository.delete(insertedOrderItem);
-            orderItemSearchRepository.delete(insertedOrderItem);
             insertedOrderItem = null;
         }
     }
@@ -144,7 +133,6 @@ class OrderItemResourceIT {
     @Transactional
     void createOrderItem() throws Exception {
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(orderItemSearchRepository.findAll());
         // Create the OrderItem
         OrderItemDTO orderItemDTO = orderItemMapper.toDto(orderItem);
         var returnedOrderItemDTO = om.readValue(
@@ -162,13 +150,6 @@ class OrderItemResourceIT {
         var returnedOrderItem = orderItemMapper.toEntity(returnedOrderItemDTO);
         assertOrderItemUpdatableFieldsEquals(returnedOrderItem, getPersistedOrderItem(returnedOrderItem));
 
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(orderItemSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore + 1);
-            });
-
         insertedOrderItem = returnedOrderItem;
     }
 
@@ -180,7 +161,6 @@ class OrderItemResourceIT {
         OrderItemDTO orderItemDTO = orderItemMapper.toDto(orderItem);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(orderItemSearchRepository.findAll());
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restOrderItemMockMvc
@@ -189,15 +169,12 @@ class OrderItemResourceIT {
 
         // Validate the OrderItem in the database
         assertSameRepositoryCount(databaseSizeBeforeCreate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(orderItemSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkOrderedQtyIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(orderItemSearchRepository.findAll());
         // set the field null
         orderItem.setOrderedQty(null);
 
@@ -209,16 +186,12 @@ class OrderItemResourceIT {
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
-
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(orderItemSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkReceivedQtyIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(orderItemSearchRepository.findAll());
         // set the field null
         orderItem.setReceivedQty(null);
 
@@ -230,16 +203,12 @@ class OrderItemResourceIT {
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
-
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(orderItemSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkUnitPriceIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(orderItemSearchRepository.findAll());
         // set the field null
         orderItem.setUnitPrice(null);
 
@@ -251,9 +220,6 @@ class OrderItemResourceIT {
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
-
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(orderItemSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -323,8 +289,6 @@ class OrderItemResourceIT {
         insertedOrderItem = orderItemRepository.saveAndFlush(orderItem);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        orderItemSearchRepository.save(orderItem);
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(orderItemSearchRepository.findAll());
 
         // Update the orderItem
         OrderItem updatedOrderItem = orderItemRepository.findById(orderItem.getId()).orElseThrow();
@@ -344,24 +308,12 @@ class OrderItemResourceIT {
         // Validate the OrderItem in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
         assertPersistedOrderItemToMatchAllProperties(updatedOrderItem);
-
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(orderItemSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
-                List<OrderItem> orderItemSearchList = Streamable.of(orderItemSearchRepository.findAll()).toList();
-                OrderItem testOrderItemSearch = orderItemSearchList.get(searchDatabaseSizeAfter - 1);
-
-                assertOrderItemAllPropertiesEquals(testOrderItemSearch, updatedOrderItem);
-            });
     }
 
     @Test
     @Transactional
     void putNonExistingOrderItem() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(orderItemSearchRepository.findAll());
         orderItem.setId(UUID.randomUUID());
 
         // Create the OrderItem
@@ -378,15 +330,12 @@ class OrderItemResourceIT {
 
         // Validate the OrderItem in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(orderItemSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithIdMismatchOrderItem() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(orderItemSearchRepository.findAll());
         orderItem.setId(UUID.randomUUID());
 
         // Create the OrderItem
@@ -403,15 +352,12 @@ class OrderItemResourceIT {
 
         // Validate the OrderItem in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(orderItemSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithMissingIdPathParamOrderItem() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(orderItemSearchRepository.findAll());
         orderItem.setId(UUID.randomUUID());
 
         // Create the OrderItem
@@ -424,8 +370,6 @@ class OrderItemResourceIT {
 
         // Validate the OrderItem in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(orderItemSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -495,7 +439,6 @@ class OrderItemResourceIT {
     @Transactional
     void patchNonExistingOrderItem() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(orderItemSearchRepository.findAll());
         orderItem.setId(UUID.randomUUID());
 
         // Create the OrderItem
@@ -512,15 +455,12 @@ class OrderItemResourceIT {
 
         // Validate the OrderItem in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(orderItemSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithIdMismatchOrderItem() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(orderItemSearchRepository.findAll());
         orderItem.setId(UUID.randomUUID());
 
         // Create the OrderItem
@@ -537,15 +477,12 @@ class OrderItemResourceIT {
 
         // Validate the OrderItem in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(orderItemSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithMissingIdPathParamOrderItem() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(orderItemSearchRepository.findAll());
         orderItem.setId(UUID.randomUUID());
 
         // Create the OrderItem
@@ -558,8 +495,6 @@ class OrderItemResourceIT {
 
         // Validate the OrderItem in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(orderItemSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -567,12 +502,8 @@ class OrderItemResourceIT {
     void deleteOrderItem() throws Exception {
         // Initialize the database
         insertedOrderItem = orderItemRepository.saveAndFlush(orderItem);
-        orderItemRepository.save(orderItem);
-        orderItemSearchRepository.save(orderItem);
 
         long databaseSizeBeforeDelete = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(orderItemSearchRepository.findAll());
-        assertThat(searchDatabaseSizeBefore).isEqualTo(databaseSizeBeforeDelete);
 
         // Delete the orderItem
         restOrderItemMockMvc
@@ -581,27 +512,6 @@ class OrderItemResourceIT {
 
         // Validate the database contains one less item
         assertDecrementedRepositoryCount(databaseSizeBeforeDelete);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(orderItemSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore - 1);
-    }
-
-    @Test
-    @Transactional
-    void searchOrderItem() throws Exception {
-        // Initialize the database
-        insertedOrderItem = orderItemRepository.saveAndFlush(orderItem);
-        orderItemSearchRepository.save(orderItem);
-
-        // Search the orderItem
-        restOrderItemMockMvc
-            .perform(get(ENTITY_SEARCH_API_URL + "?query=id:" + orderItem.getId()))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(orderItem.getId().toString())))
-            .andExpect(jsonPath("$.[*].orderedQty").value(hasItem(DEFAULT_ORDERED_QTY)))
-            .andExpect(jsonPath("$.[*].receivedQty").value(hasItem(DEFAULT_RECEIVED_QTY)))
-            .andExpect(jsonPath("$.[*].unitPrice").value(hasItem(sameNumber(DEFAULT_UNIT_PRICE))))
-            .andExpect(jsonPath("$.[*].note").value(hasItem(DEFAULT_NOTE)));
     }
 
     protected long getRepositoryCount() {

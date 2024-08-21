@@ -7,6 +7,10 @@ const UserDetails = () => import('@/entities/user-details/user-details.vue');
 const UserDetailsUpdate = () => import('@/entities/user-details/user-details-update.vue');
 const UserDetailsDetails = () => import('@/entities/user-details/user-details-details.vue');
 
+const StaffInfo = () => import('@/entities/staff-info/staff-info.vue');
+const StaffInfoUpdate = () => import('@/entities/staff-info/staff-info-update.vue');
+const StaffInfoDetails = () => import('@/entities/staff-info/staff-info-details.vue');
+
 const Address = () => import('@/entities/address/address.vue');
 const AddressUpdate = () => import('@/entities/address/address-update.vue');
 const AddressDetails = () => import('@/entities/address/address-details.vue');
@@ -99,10 +103,6 @@ const Comment = () => import('@/entities/comment/comment.vue');
 const CommentUpdate = () => import('@/entities/comment/comment-update.vue');
 const CommentDetails = () => import('@/entities/comment/comment-details.vue');
 
-const StaffInfo = () => import('@/entities/staff-info/staff-info.vue');
-const StaffInfoUpdate = () => import('@/entities/staff-info/staff-info-update.vue');
-const StaffInfoDetails = () => import('@/entities/staff-info/staff-info-details.vue');
-
 // jhipster-needle-add-entity-to-router-import - JHipster will import entities to the router here
 
 export default {
@@ -131,6 +131,30 @@ export default {
       path: 'user-details/:userDetailsId/view',
       name: 'UserDetailsView',
       component: UserDetailsDetails,
+      meta: { authorities: [Authority.USER] },
+    },
+    {
+      path: 'staff-info',
+      name: 'StaffInfo',
+      component: StaffInfo,
+      meta: { authorities: [Authority.USER] },
+    },
+    {
+      path: 'staff-info/new',
+      name: 'StaffInfoCreate',
+      component: StaffInfoUpdate,
+      meta: { authorities: [Authority.USER] },
+    },
+    {
+      path: 'staff-info/:staffInfoId/edit',
+      name: 'StaffInfoEdit',
+      component: StaffInfoUpdate,
+      meta: { authorities: [Authority.USER] },
+    },
+    {
+      path: 'staff-info/:staffInfoId/view',
+      name: 'StaffInfoView',
+      component: StaffInfoDetails,
       meta: { authorities: [Authority.USER] },
     },
     {
@@ -683,30 +707,6 @@ export default {
       path: 'comment/:commentId/view',
       name: 'CommentView',
       component: CommentDetails,
-      meta: { authorities: [Authority.USER] },
-    },
-    {
-      path: 'staff-info',
-      name: 'StaffInfo',
-      component: StaffInfo,
-      meta: { authorities: [Authority.USER] },
-    },
-    {
-      path: 'staff-info/new',
-      name: 'StaffInfoCreate',
-      component: StaffInfoUpdate,
-      meta: { authorities: [Authority.USER] },
-    },
-    {
-      path: 'staff-info/:staffInfoId/edit',
-      name: 'StaffInfoEdit',
-      component: StaffInfoUpdate,
-      meta: { authorities: [Authority.USER] },
-    },
-    {
-      path: 'staff-info/:staffInfoId/view',
-      name: 'StaffInfoView',
-      component: StaffInfoDetails,
       meta: { authorities: [Authority.USER] },
     },
     // jhipster-needle-add-entity-to-router - JHipster will add entities to the router here

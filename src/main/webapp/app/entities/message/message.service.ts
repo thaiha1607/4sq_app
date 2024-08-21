@@ -3,22 +3,8 @@ import axios from 'axios';
 import { type IMessage } from '@/shared/model/message.model';
 
 const baseApiUrl = 'api/messages';
-const baseSearchApiUrl = 'api/messages/_search?query=';
 
 export default class MessageService {
-  public search(query): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      axios
-        .get(`${baseSearchApiUrl}${query}`)
-        .then(res => {
-          resolve(res.data);
-        })
-        .catch(err => {
-          reject(err);
-        });
-    });
-  }
-
   public find(id: string): Promise<IMessage> {
     return new Promise<IMessage>((resolve, reject) => {
       axios

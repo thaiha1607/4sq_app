@@ -3,22 +3,8 @@ import axios from 'axios';
 import { type ITag } from '@/shared/model/tag.model';
 
 const baseApiUrl = 'api/tags';
-const baseSearchApiUrl = 'api/tags/_search?query=';
 
 export default class TagService {
-  public search(query): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      axios
-        .get(`${baseSearchApiUrl}${query}`)
-        .then(res => {
-          resolve(res.data);
-        })
-        .catch(err => {
-          reject(err);
-        });
-    });
-  }
-
   public find(id: string): Promise<ITag> {
     return new Promise<ITag>((resolve, reject) => {
       axios

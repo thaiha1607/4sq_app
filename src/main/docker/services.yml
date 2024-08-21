@@ -5,19 +5,7 @@ services:
     extends:
       file: ./postgresql.yml
       service: postgresql
-  elasticsearch:
-    extends:
-      file: ./elasticsearch.yml
-      service: elasticsearch
   redis:
     extends:
       file: ./redis.yml
       service: redis
-  kafka:
-    extends:
-      file: ./kafka.yml
-      service: kafka
-  zookeeper:
-    extends:
-      file: ./kafka.yml
-      service: zookeeper

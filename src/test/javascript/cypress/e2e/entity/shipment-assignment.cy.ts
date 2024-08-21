@@ -30,7 +30,7 @@ describe('ShipmentAssignment e2e test', () => {
     cy.authenticatedRequest({
       method: 'POST',
       url: '/api/shipments',
-      body: {"type":"TRANSFER","shipmentDate":"2024-07-03T15:18:44.765Z","note":"define bah applaud"},
+      body: {"type":"TRANSFER","shipmentDate":"2024-08-20T12:18:51.765Z","note":"define bah applaud"},
     }).then(({ body }) => {
       shipment = body;
     });

@@ -13,22 +13,16 @@ export default defineComponent({
     const invoiceStatusService = inject('invoiceStatusService', () => new InvoiceStatusService());
     const alertService = inject('alertService', () => useAlertService(), true);
 
-    const currentSearch = ref('');
-
     const invoiceStatuses: Ref<IInvoiceStatus[]> = ref([]);
 
     const isFetching = ref(false);
 
-    const clear = () => {
-      currentSearch.value = '';
-    };
+    const clear = () => {};
 
     const retrieveInvoiceStatuss = async () => {
       isFetching.value = true;
       try {
-        const res = currentSearch.value
-          ? await invoiceStatusService().search(currentSearch.value)
-          : await invoiceStatusService().retrieve();
+        const res = await invoiceStatusService().retrieve();
         invoiceStatuses.value = res.data;
       } catch (err) {
         alertService.showHttpError(err.response);
@@ -44,14 +38,6 @@ export default defineComponent({
     onMounted(async () => {
       await retrieveInvoiceStatuss();
     });
-
-    const search = query => {
-      if (!query) {
-        return clear();
-      }
-      currentSearch.value = query;
-      retrieveInvoiceStatuss();
-    };
 
     const removeId: Ref<number> = ref(null);
     const removeEntity = ref<any>(null);
@@ -82,7 +68,6 @@ export default defineComponent({
       retrieveInvoiceStatuss,
       clear,
       ...dateFormat,
-      currentSearch,
       removeId,
       removeEntity,
       prepareRemove,

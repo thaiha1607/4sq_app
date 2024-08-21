@@ -19,7 +19,6 @@ import org.springframework.data.domain.Persistable;
 @Table(name = "participant")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @JsonIgnoreProperties(value = { "new" })
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "participant")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class Participant extends AbstractAuditingEntity<UUID> implements Serializable, Persistable<UUID> {
 
@@ -31,7 +30,6 @@ public class Participant extends AbstractAuditingEntity<UUID> implements Seriali
     private UUID id;
 
     @Column(name = "is_admin")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Boolean)
     private Boolean isAdmin;
 
     // Inherited createdBy definition
@@ -52,13 +50,11 @@ public class Participant extends AbstractAuditingEntity<UUID> implements Seriali
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "participant")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @org.springframework.data.annotation.Transient
     @JsonIgnoreProperties(value = { "participant", "seenParticipants" }, allowSetters = true)
     private Set<Message> messages = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "seenParticipants")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @org.springframework.data.annotation.Transient
     @JsonIgnoreProperties(value = { "participant", "seenParticipants" }, allowSetters = true)
     private Set<Message> seenMessages = new HashSet<>();
 

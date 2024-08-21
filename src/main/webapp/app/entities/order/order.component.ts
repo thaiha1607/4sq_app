@@ -13,20 +13,16 @@ export default defineComponent({
     const orderService = inject('orderService', () => new OrderService());
     const alertService = inject('alertService', () => useAlertService(), true);
 
-    const currentSearch = ref('');
-
     const orders: Ref<IOrder[]> = ref([]);
 
     const isFetching = ref(false);
 
-    const clear = () => {
-      currentSearch.value = '';
-    };
+    const clear = () => {};
 
     const retrieveOrders = async () => {
       isFetching.value = true;
       try {
-        const res = currentSearch.value ? await orderService().search(currentSearch.value) : await orderService().retrieve();
+        const res = await orderService().retrieve();
         orders.value = res.data;
       } catch (err) {
         alertService.showHttpError(err.response);
@@ -42,14 +38,6 @@ export default defineComponent({
     onMounted(async () => {
       await retrieveOrders();
     });
-
-    const search = query => {
-      if (!query) {
-        return clear();
-      }
-      currentSearch.value = query;
-      retrieveOrders();
-    };
 
     const removeId: Ref<string> = ref(null);
     const removeEntity = ref<any>(null);
@@ -80,7 +68,6 @@ export default defineComponent({
       retrieveOrders,
       clear,
       ...dateFormat,
-      currentSearch,
       removeId,
       removeEntity,
       prepareRemove,

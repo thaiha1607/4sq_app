@@ -2,7 +2,6 @@ package com.foursquare.server.service;
 
 import com.foursquare.server.domain.Order;
 import com.foursquare.server.repository.OrderRepository;
-import com.foursquare.server.repository.search.OrderSearchRepository;
 import com.foursquare.server.service.dto.OrderDTO;
 import com.foursquare.server.service.mapper.OrderMapper;
 import java.util.LinkedList;
@@ -10,7 +9,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -31,12 +29,9 @@ public class OrderService {
 
     private final OrderMapper orderMapper;
 
-    private final OrderSearchRepository orderSearchRepository;
-
-    public OrderService(OrderRepository orderRepository, OrderMapper orderMapper, OrderSearchRepository orderSearchRepository) {
+    public OrderService(OrderRepository orderRepository, OrderMapper orderMapper) {
         this.orderRepository = orderRepository;
         this.orderMapper = orderMapper;
-        this.orderSearchRepository = orderSearchRepository;
     }
 
     /**
@@ -49,7 +44,6 @@ public class OrderService {
         log.debug("Request to save Order : {}", orderDTO);
         Order order = orderMapper.toEntity(orderDTO);
         order = orderRepository.save(order);
-        orderSearchRepository.index(order);
         return orderMapper.toDto(order);
     }
 
@@ -64,7 +58,6 @@ public class OrderService {
         Order order = orderMapper.toEntity(orderDTO);
         order.setIsPersisted();
         order = orderRepository.save(order);
-        orderSearchRepository.index(order);
         return orderMapper.toDto(order);
     }
 
@@ -85,10 +78,6 @@ public class OrderService {
                 return existingOrder;
             })
             .map(orderRepository::save)
-            .map(savedOrder -> {
-                orderSearchRepository.index(savedOrder);
-                return savedOrder;
-            })
             .map(orderMapper::toDto);
     }
 
@@ -132,22 +121,5 @@ public class OrderService {
     public void delete(UUID id) {
         log.debug("Request to delete Order : {}", id);
         orderRepository.deleteById(id);
-        orderSearchRepository.deleteFromIndexById(id);
-    }
-
-    /**
-     * Search for the order corresponding to the query.
-     *
-     * @param query the query of the search.
-     * @return the list of entities.
-     */
-    @Transactional(readOnly = true)
-    public List<OrderDTO> search(String query) {
-        log.debug("Request to search Orders for query {}", query);
-        try {
-            return StreamSupport.stream(orderSearchRepository.search(query).spliterator(), false).map(orderMapper::toDto).toList();
-        } catch (RuntimeException e) {
-            throw e;
-        }
     }
 }

@@ -2,7 +2,6 @@ package com.foursquare.server.service;
 
 import com.foursquare.server.domain.Message;
 import com.foursquare.server.repository.MessageRepository;
-import com.foursquare.server.repository.search.MessageSearchRepository;
 import com.foursquare.server.service.dto.MessageDTO;
 import com.foursquare.server.service.mapper.MessageMapper;
 import java.util.LinkedList;
@@ -10,7 +9,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -31,16 +29,9 @@ public class MessageService {
 
     private final MessageMapper messageMapper;
 
-    private final MessageSearchRepository messageSearchRepository;
-
-    public MessageService(
-        MessageRepository messageRepository,
-        MessageMapper messageMapper,
-        MessageSearchRepository messageSearchRepository
-    ) {
+    public MessageService(MessageRepository messageRepository, MessageMapper messageMapper) {
         this.messageRepository = messageRepository;
         this.messageMapper = messageMapper;
-        this.messageSearchRepository = messageSearchRepository;
     }
 
     /**
@@ -53,7 +44,6 @@ public class MessageService {
         log.debug("Request to save Message : {}", messageDTO);
         Message message = messageMapper.toEntity(messageDTO);
         message = messageRepository.save(message);
-        messageSearchRepository.index(message);
         return messageMapper.toDto(message);
     }
 
@@ -68,7 +58,6 @@ public class MessageService {
         Message message = messageMapper.toEntity(messageDTO);
         message.setIsPersisted();
         message = messageRepository.save(message);
-        messageSearchRepository.index(message);
         return messageMapper.toDto(message);
     }
 
@@ -89,10 +78,6 @@ public class MessageService {
                 return existingMessage;
             })
             .map(messageRepository::save)
-            .map(savedMessage -> {
-                messageSearchRepository.index(savedMessage);
-                return savedMessage;
-            })
             .map(messageMapper::toDto);
     }
 
@@ -136,22 +121,5 @@ public class MessageService {
     public void delete(UUID id) {
         log.debug("Request to delete Message : {}", id);
         messageRepository.deleteById(id);
-        messageSearchRepository.deleteFromIndexById(id);
-    }
-
-    /**
-     * Search for the message corresponding to the query.
-     *
-     * @param query the query of the search.
-     * @return the list of entities.
-     */
-    @Transactional(readOnly = true)
-    public List<MessageDTO> search(String query) {
-        log.debug("Request to search Messages for query {}", query);
-        try {
-            return StreamSupport.stream(messageSearchRepository.search(query).spliterator(), false).map(messageMapper::toDto).toList();
-        } catch (RuntimeException e) {
-            throw e;
-        }
     }
 }

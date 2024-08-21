@@ -2,7 +2,6 @@ package com.foursquare.server.service;
 
 import com.foursquare.server.domain.Colour;
 import com.foursquare.server.repository.ColourRepository;
-import com.foursquare.server.repository.search.ColourSearchRepository;
 import com.foursquare.server.service.dto.ColourDTO;
 import com.foursquare.server.service.mapper.ColourMapper;
 import java.util.LinkedList;
@@ -10,7 +9,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -29,12 +27,9 @@ public class ColourService {
 
     private final ColourMapper colourMapper;
 
-    private final ColourSearchRepository colourSearchRepository;
-
-    public ColourService(ColourRepository colourRepository, ColourMapper colourMapper, ColourSearchRepository colourSearchRepository) {
+    public ColourService(ColourRepository colourRepository, ColourMapper colourMapper) {
         this.colourRepository = colourRepository;
         this.colourMapper = colourMapper;
-        this.colourSearchRepository = colourSearchRepository;
     }
 
     /**
@@ -47,7 +42,6 @@ public class ColourService {
         log.debug("Request to save Colour : {}", colourDTO);
         Colour colour = colourMapper.toEntity(colourDTO);
         colour = colourRepository.save(colour);
-        colourSearchRepository.index(colour);
         return colourMapper.toDto(colour);
     }
 
@@ -62,7 +56,6 @@ public class ColourService {
         Colour colour = colourMapper.toEntity(colourDTO);
         colour.setIsPersisted();
         colour = colourRepository.save(colour);
-        colourSearchRepository.index(colour);
         return colourMapper.toDto(colour);
     }
 
@@ -83,10 +76,6 @@ public class ColourService {
                 return existingColour;
             })
             .map(colourRepository::save)
-            .map(savedColour -> {
-                colourSearchRepository.index(savedColour);
-                return savedColour;
-            })
             .map(colourMapper::toDto);
     }
 
@@ -121,22 +110,5 @@ public class ColourService {
     public void delete(UUID id) {
         log.debug("Request to delete Colour : {}", id);
         colourRepository.deleteById(id);
-        colourSearchRepository.deleteFromIndexById(id);
-    }
-
-    /**
-     * Search for the colour corresponding to the query.
-     *
-     * @param query the query of the search.
-     * @return the list of entities.
-     */
-    @Transactional(readOnly = true)
-    public List<ColourDTO> search(String query) {
-        log.debug("Request to search Colours for query {}", query);
-        try {
-            return StreamSupport.stream(colourSearchRepository.search(query).spliterator(), false).map(colourMapper::toDto).toList();
-        } catch (RuntimeException e) {
-            throw e;
-        }
     }
 }

@@ -4,6 +4,10 @@
       <font-awesome-icon icon="asterisk" />
       <span>User Details</span>
     </b-dropdown-item>
+    <b-dropdown-item to="/staff-info">
+      <font-awesome-icon icon="asterisk" />
+      <span>Staff Info</span>
+    </b-dropdown-item>
     <b-dropdown-item to="/address">
       <font-awesome-icon icon="asterisk" />
       <span>Address</span>
@@ -95,10 +99,6 @@
     <b-dropdown-item to="/comment">
       <font-awesome-icon icon="asterisk" />
       <span>Comment</span>
-    </b-dropdown-item>
-    <b-dropdown-item to="/staff-info">
-      <font-awesome-icon icon="asterisk" />
-      <span>Staff Info</span>
     </b-dropdown-item>
     <!-- jhipster-needle-add-entity-to-menu - JHipster will add entities to the menu here -->
   </div>

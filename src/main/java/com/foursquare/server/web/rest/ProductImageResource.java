@@ -4,7 +4,6 @@ import com.foursquare.server.repository.ProductImageRepository;
 import com.foursquare.server.service.ProductImageService;
 import com.foursquare.server.service.dto.ProductImageDTO;
 import com.foursquare.server.web.rest.errors.BadRequestAlertException;
-import com.foursquare.server.web.rest.errors.ElasticsearchExceptionMapper;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
@@ -170,22 +169,5 @@ public class ProductImageResource {
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
-    }
-
-    /**
-     * {@code SEARCH  /product-images/_search?query=:query} : search for the productImage corresponding
-     * to the query.
-     *
-     * @param query the query of the productImage search.
-     * @return the result of the search.
-     */
-    @GetMapping("/_search")
-    public List<ProductImageDTO> searchProductImages(@RequestParam("query") String query) {
-        log.debug("REST request to search ProductImages for query {}", query);
-        try {
-            return productImageService.search(query);
-        } catch (RuntimeException e) {
-            throw ElasticsearchExceptionMapper.mapException(e);
-        }
     }
 }

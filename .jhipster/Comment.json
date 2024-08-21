@@ -1,10 +1,9 @@
 {
   "annotations": {
-    "changelogDate": "20240712115238",
+    "changelogDate": "20240821084832",
     "dto": "mapstruct",
     "filter": true,
     "paginate": "pagination",
-    "search": "elasticsearch",
     "service": "serviceClass"
   },
   "applications": ["foursquareApp"],
@@ -85,5 +84,6 @@
       "relationshipType": "many-to-one",
       "relationshipValidateRules": "required"
     }
-  ]
+  ],
+  "searchEngine": "no"
 }

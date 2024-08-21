@@ -1,6 +1,7 @@
 import { defineComponent, provide } from 'vue';
 
 import UserDetailsService from './user-details/user-details.service';
+import StaffInfoService from './staff-info/staff-info.service';
 import AddressService from './address/address.service';
 import ColourService from './colour/colour.service';
 import ConversationService from './conversation/conversation.service';
@@ -24,7 +25,6 @@ import UserAddressService from './user-address/user-address.service';
 import WarehouseAssignmentService from './warehouse-assignment/warehouse-assignment.service';
 import WorkingUnitService from './working-unit/working-unit.service';
 import CommentService from './comment/comment.service';
-import StaffInfoService from './staff-info/staff-info.service';
 import UserService from '@/entities/user/user.service';
 // jhipster-needle-add-entity-service-to-entities-component-import - JHipster will import entities services here
 
@@ -34,6 +34,7 @@ export default defineComponent({
   setup() {
     provide('userService', () => new UserService());
     provide('userDetailsService', () => new UserDetailsService());
+    provide('staffInfoService', () => new StaffInfoService());
     provide('addressService', () => new AddressService());
     provide('colourService', () => new ColourService());
     provide('conversationService', () => new ConversationService());
@@ -57,7 +58,6 @@ export default defineComponent({
     provide('warehouseAssignmentService', () => new WarehouseAssignmentService());
     provide('workingUnitService', () => new WorkingUnitService());
     provide('commentService', () => new CommentService());
-    provide('staffInfoService', () => new StaffInfoService());
     // jhipster-needle-add-entity-service-to-entities-component - JHipster will import entities services here
   },
 });

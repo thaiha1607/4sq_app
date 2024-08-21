@@ -2,7 +2,6 @@ package com.foursquare.server.service;
 
 import com.foursquare.server.domain.Conversation;
 import com.foursquare.server.repository.ConversationRepository;
-import com.foursquare.server.repository.search.ConversationSearchRepository;
 import com.foursquare.server.service.dto.ConversationDTO;
 import com.foursquare.server.service.mapper.ConversationMapper;
 import java.util.LinkedList;
@@ -10,7 +9,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -29,16 +27,9 @@ public class ConversationService {
 
     private final ConversationMapper conversationMapper;
 
-    private final ConversationSearchRepository conversationSearchRepository;
-
-    public ConversationService(
-        ConversationRepository conversationRepository,
-        ConversationMapper conversationMapper,
-        ConversationSearchRepository conversationSearchRepository
-    ) {
+    public ConversationService(ConversationRepository conversationRepository, ConversationMapper conversationMapper) {
         this.conversationRepository = conversationRepository;
         this.conversationMapper = conversationMapper;
-        this.conversationSearchRepository = conversationSearchRepository;
     }
 
     /**
@@ -51,7 +42,6 @@ public class ConversationService {
         log.debug("Request to save Conversation : {}", conversationDTO);
         Conversation conversation = conversationMapper.toEntity(conversationDTO);
         conversation = conversationRepository.save(conversation);
-        conversationSearchRepository.index(conversation);
         return conversationMapper.toDto(conversation);
     }
 
@@ -66,7 +56,6 @@ public class ConversationService {
         Conversation conversation = conversationMapper.toEntity(conversationDTO);
         conversation.setIsPersisted();
         conversation = conversationRepository.save(conversation);
-        conversationSearchRepository.index(conversation);
         return conversationMapper.toDto(conversation);
     }
 
@@ -87,10 +76,6 @@ public class ConversationService {
                 return existingConversation;
             })
             .map(conversationRepository::save)
-            .map(savedConversation -> {
-                conversationSearchRepository.index(savedConversation);
-                return savedConversation;
-            })
             .map(conversationMapper::toDto);
     }
 
@@ -125,24 +110,5 @@ public class ConversationService {
     public void delete(UUID id) {
         log.debug("Request to delete Conversation : {}", id);
         conversationRepository.deleteById(id);
-        conversationSearchRepository.deleteFromIndexById(id);
-    }
-
-    /**
-     * Search for the conversation corresponding to the query.
-     *
-     * @param query the query of the search.
-     * @return the list of entities.
-     */
-    @Transactional(readOnly = true)
-    public List<ConversationDTO> search(String query) {
-        log.debug("Request to search Conversations for query {}", query);
-        try {
-            return StreamSupport.stream(conversationSearchRepository.search(query).spliterator(), false)
-                .map(conversationMapper::toDto)
-                .toList();
-        } catch (RuntimeException e) {
-            throw e;
-        }
     }
 }

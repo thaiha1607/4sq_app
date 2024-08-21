@@ -54,12 +54,4 @@ public interface ProductImageService {
      * @param id the id of the entity.
      */
     void delete(UUID id);
-
-    /**
-     * Search for the productImage corresponding to the query.
-     *
-     * @param query the query of the search.
-     * @return the list of entities.
-     */
-    List<ProductImageDTO> search(String query);
 }

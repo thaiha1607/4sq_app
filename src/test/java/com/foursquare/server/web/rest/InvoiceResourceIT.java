@@ -4,7 +4,6 @@ import static com.foursquare.server.domain.InvoiceAsserts.*;
 import static com.foursquare.server.web.rest.TestUtil.createUpdateProxyForBean;
 import static com.foursquare.server.web.rest.TestUtil.sameNumber;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -17,17 +16,13 @@ import com.foursquare.server.domain.InvoiceStatus;
 import com.foursquare.server.domain.enumeration.InvoiceType;
 import com.foursquare.server.domain.enumeration.PaymentMethod;
 import com.foursquare.server.repository.InvoiceRepository;
-import com.foursquare.server.repository.search.InvoiceSearchRepository;
 import com.foursquare.server.service.InvoiceService;
 import com.foursquare.server.service.dto.InvoiceDTO;
 import com.foursquare.server.service.mapper.InvoiceMapper;
 import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-import org.assertj.core.util.IterableUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -39,7 +34,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.util.Streamable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -69,7 +63,6 @@ class InvoiceResourceIT {
 
     private static final String ENTITY_API_URL = "/api/invoices";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
-    private static final String ENTITY_SEARCH_API_URL = "/api/invoices/_search";
 
     @Autowired
     private ObjectMapper om;
@@ -85,9 +78,6 @@ class InvoiceResourceIT {
 
     @Mock
     private InvoiceService invoiceServiceMock;
-
-    @Autowired
-    private InvoiceSearchRepository invoiceSearchRepository;
 
     @Autowired
     private EntityManager em;
@@ -158,7 +148,6 @@ class InvoiceResourceIT {
     public void cleanup() {
         if (insertedInvoice != null) {
             invoiceRepository.delete(insertedInvoice);
-            invoiceSearchRepository.delete(insertedInvoice);
             insertedInvoice = null;
         }
     }
@@ -167,7 +156,6 @@ class InvoiceResourceIT {
     @Transactional
     void createInvoice() throws Exception {
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(invoiceSearchRepository.findAll());
         // Create the Invoice
         InvoiceDTO invoiceDTO = invoiceMapper.toDto(invoice);
         var returnedInvoiceDTO = om.readValue(
@@ -185,13 +173,6 @@ class InvoiceResourceIT {
         var returnedInvoice = invoiceMapper.toEntity(returnedInvoiceDTO);
         assertInvoiceUpdatableFieldsEquals(returnedInvoice, getPersistedInvoice(returnedInvoice));
 
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(invoiceSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore + 1);
-            });
-
         insertedInvoice = returnedInvoice;
     }
 
@@ -203,7 +184,6 @@ class InvoiceResourceIT {
         InvoiceDTO invoiceDTO = invoiceMapper.toDto(invoice);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(invoiceSearchRepository.findAll());
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restInvoiceMockMvc
@@ -212,15 +192,12 @@ class InvoiceResourceIT {
 
         // Validate the Invoice in the database
         assertSameRepositoryCount(databaseSizeBeforeCreate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(invoiceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkTotalAmountIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(invoiceSearchRepository.findAll());
         // set the field null
         invoice.setTotalAmount(null);
 
@@ -232,16 +209,12 @@ class InvoiceResourceIT {
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
-
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(invoiceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkTypeIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(invoiceSearchRepository.findAll());
         // set the field null
         invoice.setType(null);
 
@@ -253,16 +226,12 @@ class InvoiceResourceIT {
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
-
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(invoiceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkPaymentMethodIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(invoiceSearchRepository.findAll());
         // set the field null
         invoice.setPaymentMethod(null);
 
@@ -274,9 +243,6 @@ class InvoiceResourceIT {
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
-
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(invoiceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -346,8 +312,6 @@ class InvoiceResourceIT {
         insertedInvoice = invoiceRepository.saveAndFlush(invoice);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        invoiceSearchRepository.save(invoice);
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(invoiceSearchRepository.findAll());
 
         // Update the invoice
         Invoice updatedInvoice = invoiceRepository.findById(invoice.getId()).orElseThrow();
@@ -365,24 +329,12 @@ class InvoiceResourceIT {
         // Validate the Invoice in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
         assertPersistedInvoiceToMatchAllProperties(updatedInvoice);
-
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(invoiceSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
-                List<Invoice> invoiceSearchList = Streamable.of(invoiceSearchRepository.findAll()).toList();
-                Invoice testInvoiceSearch = invoiceSearchList.get(searchDatabaseSizeAfter - 1);
-
-                assertInvoiceAllPropertiesEquals(testInvoiceSearch, updatedInvoice);
-            });
     }
 
     @Test
     @Transactional
     void putNonExistingInvoice() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(invoiceSearchRepository.findAll());
         invoice.setId(UUID.randomUUID());
 
         // Create the Invoice
@@ -397,15 +349,12 @@ class InvoiceResourceIT {
 
         // Validate the Invoice in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(invoiceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithIdMismatchInvoice() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(invoiceSearchRepository.findAll());
         invoice.setId(UUID.randomUUID());
 
         // Create the Invoice
@@ -420,15 +369,12 @@ class InvoiceResourceIT {
 
         // Validate the Invoice in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(invoiceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithMissingIdPathParamInvoice() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(invoiceSearchRepository.findAll());
         invoice.setId(UUID.randomUUID());
 
         // Create the Invoice
@@ -441,8 +387,6 @@ class InvoiceResourceIT {
 
         // Validate the Invoice in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(invoiceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -505,7 +449,6 @@ class InvoiceResourceIT {
     @Transactional
     void patchNonExistingInvoice() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(invoiceSearchRepository.findAll());
         invoice.setId(UUID.randomUUID());
 
         // Create the Invoice
@@ -522,15 +465,12 @@ class InvoiceResourceIT {
 
         // Validate the Invoice in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(invoiceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithIdMismatchInvoice() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(invoiceSearchRepository.findAll());
         invoice.setId(UUID.randomUUID());
 
         // Create the Invoice
@@ -547,15 +487,12 @@ class InvoiceResourceIT {
 
         // Validate the Invoice in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(invoiceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithMissingIdPathParamInvoice() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(invoiceSearchRepository.findAll());
         invoice.setId(UUID.randomUUID());
 
         // Create the Invoice
@@ -568,8 +505,6 @@ class InvoiceResourceIT {
 
         // Validate the Invoice in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(invoiceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -577,12 +512,8 @@ class InvoiceResourceIT {
     void deleteInvoice() throws Exception {
         // Initialize the database
         insertedInvoice = invoiceRepository.saveAndFlush(invoice);
-        invoiceRepository.save(invoice);
-        invoiceSearchRepository.save(invoice);
 
         long databaseSizeBeforeDelete = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(invoiceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeBefore).isEqualTo(databaseSizeBeforeDelete);
 
         // Delete the invoice
         restInvoiceMockMvc
@@ -591,27 +522,6 @@ class InvoiceResourceIT {
 
         // Validate the database contains one less item
         assertDecrementedRepositoryCount(databaseSizeBeforeDelete);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(invoiceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore - 1);
-    }
-
-    @Test
-    @Transactional
-    void searchInvoice() throws Exception {
-        // Initialize the database
-        insertedInvoice = invoiceRepository.saveAndFlush(invoice);
-        invoiceSearchRepository.save(invoice);
-
-        // Search the invoice
-        restInvoiceMockMvc
-            .perform(get(ENTITY_SEARCH_API_URL + "?query=id:" + invoice.getId()))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(invoice.getId().toString())))
-            .andExpect(jsonPath("$.[*].totalAmount").value(hasItem(sameNumber(DEFAULT_TOTAL_AMOUNT))))
-            .andExpect(jsonPath("$.[*].type").value(hasItem(DEFAULT_TYPE.toString())))
-            .andExpect(jsonPath("$.[*].paymentMethod").value(hasItem(DEFAULT_PAYMENT_METHOD.toString())))
-            .andExpect(jsonPath("$.[*].note").value(hasItem(DEFAULT_NOTE)));
     }
 
     protected long getRepositoryCount() {

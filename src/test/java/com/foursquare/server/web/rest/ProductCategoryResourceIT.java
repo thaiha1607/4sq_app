@@ -3,7 +3,6 @@ package com.foursquare.server.web.rest;
 import static com.foursquare.server.domain.ProductCategoryAsserts.*;
 import static com.foursquare.server.web.rest.TestUtil.createUpdateProxyForBean;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -14,16 +13,12 @@ import com.foursquare.server.IntegrationTest;
 import com.foursquare.server.domain.Colour;
 import com.foursquare.server.domain.ProductCategory;
 import com.foursquare.server.repository.ProductCategoryRepository;
-import com.foursquare.server.repository.search.ProductCategorySearchRepository;
 import com.foursquare.server.service.ProductCategoryService;
 import com.foursquare.server.service.dto.ProductCategoryDTO;
 import com.foursquare.server.service.mapper.ProductCategoryMapper;
 import jakarta.persistence.EntityManager;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-import org.assertj.core.util.IterableUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -35,7 +30,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.util.Streamable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -59,7 +53,6 @@ class ProductCategoryResourceIT {
 
     private static final String ENTITY_API_URL = "/api/product-categories";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
-    private static final String ENTITY_SEARCH_API_URL = "/api/product-categories/_search";
 
     @Autowired
     private ObjectMapper om;
@@ -75,9 +68,6 @@ class ProductCategoryResourceIT {
 
     @Mock
     private ProductCategoryService productCategoryServiceMock;
-
-    @Autowired
-    private ProductCategorySearchRepository productCategorySearchRepository;
 
     @Autowired
     private EntityManager em;
@@ -140,7 +130,6 @@ class ProductCategoryResourceIT {
     public void cleanup() {
         if (insertedProductCategory != null) {
             productCategoryRepository.delete(insertedProductCategory);
-            productCategorySearchRepository.delete(insertedProductCategory);
             insertedProductCategory = null;
         }
     }
@@ -149,7 +138,6 @@ class ProductCategoryResourceIT {
     @Transactional
     void createProductCategory() throws Exception {
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(productCategorySearchRepository.findAll());
         // Create the ProductCategory
         ProductCategoryDTO productCategoryDTO = productCategoryMapper.toDto(productCategory);
         var returnedProductCategoryDTO = om.readValue(
@@ -167,13 +155,6 @@ class ProductCategoryResourceIT {
         var returnedProductCategory = productCategoryMapper.toEntity(returnedProductCategoryDTO);
         assertProductCategoryUpdatableFieldsEquals(returnedProductCategory, getPersistedProductCategory(returnedProductCategory));
 
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(productCategorySearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore + 1);
-            });
-
         insertedProductCategory = returnedProductCategory;
     }
 
@@ -185,7 +166,6 @@ class ProductCategoryResourceIT {
         ProductCategoryDTO productCategoryDTO = productCategoryMapper.toDto(productCategory);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(productCategorySearchRepository.findAll());
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restProductCategoryMockMvc
@@ -194,8 +174,6 @@ class ProductCategoryResourceIT {
 
         // Validate the ProductCategory in the database
         assertSameRepositoryCount(databaseSizeBeforeCreate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(productCategorySearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -261,8 +239,6 @@ class ProductCategoryResourceIT {
         insertedProductCategory = productCategoryRepository.saveAndFlush(productCategory);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        productCategorySearchRepository.save(productCategory);
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(productCategorySearchRepository.findAll());
 
         // Update the productCategory
         ProductCategory updatedProductCategory = productCategoryRepository.findById(productCategory.getId()).orElseThrow();
@@ -282,24 +258,12 @@ class ProductCategoryResourceIT {
         // Validate the ProductCategory in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
         assertPersistedProductCategoryToMatchAllProperties(updatedProductCategory);
-
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(productCategorySearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
-                List<ProductCategory> productCategorySearchList = Streamable.of(productCategorySearchRepository.findAll()).toList();
-                ProductCategory testProductCategorySearch = productCategorySearchList.get(searchDatabaseSizeAfter - 1);
-
-                assertProductCategoryAllPropertiesEquals(testProductCategorySearch, updatedProductCategory);
-            });
     }
 
     @Test
     @Transactional
     void putNonExistingProductCategory() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(productCategorySearchRepository.findAll());
         productCategory.setId(UUID.randomUUID());
 
         // Create the ProductCategory
@@ -316,15 +280,12 @@ class ProductCategoryResourceIT {
 
         // Validate the ProductCategory in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(productCategorySearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithIdMismatchProductCategory() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(productCategorySearchRepository.findAll());
         productCategory.setId(UUID.randomUUID());
 
         // Create the ProductCategory
@@ -341,15 +302,12 @@ class ProductCategoryResourceIT {
 
         // Validate the ProductCategory in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(productCategorySearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithMissingIdPathParamProductCategory() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(productCategorySearchRepository.findAll());
         productCategory.setId(UUID.randomUUID());
 
         // Create the ProductCategory
@@ -362,8 +320,6 @@ class ProductCategoryResourceIT {
 
         // Validate the ProductCategory in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(productCategorySearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -432,7 +388,6 @@ class ProductCategoryResourceIT {
     @Transactional
     void patchNonExistingProductCategory() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(productCategorySearchRepository.findAll());
         productCategory.setId(UUID.randomUUID());
 
         // Create the ProductCategory
@@ -449,15 +404,12 @@ class ProductCategoryResourceIT {
 
         // Validate the ProductCategory in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(productCategorySearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithIdMismatchProductCategory() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(productCategorySearchRepository.findAll());
         productCategory.setId(UUID.randomUUID());
 
         // Create the ProductCategory
@@ -474,15 +426,12 @@ class ProductCategoryResourceIT {
 
         // Validate the ProductCategory in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(productCategorySearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithMissingIdPathParamProductCategory() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(productCategorySearchRepository.findAll());
         productCategory.setId(UUID.randomUUID());
 
         // Create the ProductCategory
@@ -495,8 +444,6 @@ class ProductCategoryResourceIT {
 
         // Validate the ProductCategory in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(productCategorySearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -504,12 +451,8 @@ class ProductCategoryResourceIT {
     void deleteProductCategory() throws Exception {
         // Initialize the database
         insertedProductCategory = productCategoryRepository.saveAndFlush(productCategory);
-        productCategoryRepository.save(productCategory);
-        productCategorySearchRepository.save(productCategory);
 
         long databaseSizeBeforeDelete = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(productCategorySearchRepository.findAll());
-        assertThat(searchDatabaseSizeBefore).isEqualTo(databaseSizeBeforeDelete);
 
         // Delete the productCategory
         restProductCategoryMockMvc
@@ -518,25 +461,6 @@ class ProductCategoryResourceIT {
 
         // Validate the database contains one less item
         assertDecrementedRepositoryCount(databaseSizeBeforeDelete);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(productCategorySearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore - 1);
-    }
-
-    @Test
-    @Transactional
-    void searchProductCategory() throws Exception {
-        // Initialize the database
-        insertedProductCategory = productCategoryRepository.saveAndFlush(productCategory);
-        productCategorySearchRepository.save(productCategory);
-
-        // Search the productCategory
-        restProductCategoryMockMvc
-            .perform(get(ENTITY_SEARCH_API_URL + "?query=id:" + productCategory.getId()))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(productCategory.getId().toString())))
-            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
-            .andExpect(jsonPath("$.[*].imageUri").value(hasItem(DEFAULT_IMAGE_URI)));
     }
 
     protected long getRepositoryCount() {

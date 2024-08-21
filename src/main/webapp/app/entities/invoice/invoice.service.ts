@@ -3,22 +3,8 @@ import axios from 'axios';
 import { type IInvoice } from '@/shared/model/invoice.model';
 
 const baseApiUrl = 'api/invoices';
-const baseSearchApiUrl = 'api/invoices/_search?query=';
 
 export default class InvoiceService {
-  public search(query): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      axios
-        .get(`${baseSearchApiUrl}${query}`)
-        .then(res => {
-          resolve(res.data);
-        })
-        .catch(err => {
-          reject(err);
-        });
-    });
-  }
-
   public find(id: string): Promise<IInvoice> {
     return new Promise<IInvoice>((resolve, reject) => {
       axios

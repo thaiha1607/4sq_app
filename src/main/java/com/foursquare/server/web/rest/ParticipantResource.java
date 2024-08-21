@@ -4,7 +4,6 @@ import com.foursquare.server.repository.ParticipantRepository;
 import com.foursquare.server.service.ParticipantService;
 import com.foursquare.server.service.dto.ParticipantDTO;
 import com.foursquare.server.web.rest.errors.BadRequestAlertException;
-import com.foursquare.server.web.rest.errors.ElasticsearchExceptionMapper;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
@@ -172,22 +171,5 @@ public class ParticipantResource {
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
-    }
-
-    /**
-     * {@code SEARCH  /participants/_search?query=:query} : search for the participant corresponding
-     * to the query.
-     *
-     * @param query the query of the participant search.
-     * @return the result of the search.
-     */
-    @GetMapping("/_search")
-    public List<ParticipantDTO> searchParticipants(@RequestParam("query") String query) {
-        log.debug("REST request to search Participants for query {}", query);
-        try {
-            return participantService.search(query);
-        } catch (RuntimeException e) {
-            throw ElasticsearchExceptionMapper.mapException(e);
-        }
     }
 }

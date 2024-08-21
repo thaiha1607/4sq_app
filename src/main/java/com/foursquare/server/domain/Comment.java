@@ -17,7 +17,6 @@ import org.springframework.data.domain.Persistable;
 @Table(name = "comment")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @JsonIgnoreProperties(value = { "new" })
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "comment")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class Comment extends AbstractAuditingEntity<UUID> implements Serializable, Persistable<UUID> {
 
@@ -32,11 +31,9 @@ public class Comment extends AbstractAuditingEntity<UUID> implements Serializabl
     @Min(value = 1)
     @Max(value = 5)
     @Column(name = "rating", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer rating;
 
     @Column(name = "content")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String content;
 
     // Inherited createdBy definition

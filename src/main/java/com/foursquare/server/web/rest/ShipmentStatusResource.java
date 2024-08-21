@@ -4,7 +4,6 @@ import com.foursquare.server.repository.ShipmentStatusRepository;
 import com.foursquare.server.service.ShipmentStatusService;
 import com.foursquare.server.service.dto.ShipmentStatusDTO;
 import com.foursquare.server.web.rest.errors.BadRequestAlertException;
-import com.foursquare.server.web.rest.errors.ElasticsearchExceptionMapper;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
@@ -169,22 +168,5 @@ public class ShipmentStatusResource {
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
-    }
-
-    /**
-     * {@code SEARCH  /shipment-statuses/_search?query=:query} : search for the shipmentStatus corresponding
-     * to the query.
-     *
-     * @param query the query of the shipmentStatus search.
-     * @return the result of the search.
-     */
-    @GetMapping("/_search")
-    public List<ShipmentStatusDTO> searchShipmentStatuses(@RequestParam("query") String query) {
-        log.debug("REST request to search ShipmentStatuses for query {}", query);
-        try {
-            return shipmentStatusService.search(query);
-        } catch (RuntimeException e) {
-            throw ElasticsearchExceptionMapper.mapException(e);
-        }
     }
 }

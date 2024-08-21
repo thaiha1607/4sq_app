@@ -13,20 +13,16 @@ export default defineComponent({
     const workingUnitService = inject('workingUnitService', () => new WorkingUnitService());
     const alertService = inject('alertService', () => useAlertService(), true);
 
-    const currentSearch = ref('');
-
     const workingUnits: Ref<IWorkingUnit[]> = ref([]);
 
     const isFetching = ref(false);
 
-    const clear = () => {
-      currentSearch.value = '';
-    };
+    const clear = () => {};
 
     const retrieveWorkingUnits = async () => {
       isFetching.value = true;
       try {
-        const res = currentSearch.value ? await workingUnitService().search(currentSearch.value) : await workingUnitService().retrieve();
+        const res = await workingUnitService().retrieve();
         workingUnits.value = res.data;
       } catch (err) {
         alertService.showHttpError(err.response);
@@ -42,14 +38,6 @@ export default defineComponent({
     onMounted(async () => {
       await retrieveWorkingUnits();
     });
-
-    const search = query => {
-      if (!query) {
-        return clear();
-      }
-      currentSearch.value = query;
-      retrieveWorkingUnits();
-    };
 
     const removeId: Ref<string> = ref(null);
     const removeEntity = ref<any>(null);
@@ -80,7 +68,6 @@ export default defineComponent({
       retrieveWorkingUnits,
       clear,
       ...dateFormat,
-      currentSearch,
       removeId,
       removeEntity,
       prepareRemove,

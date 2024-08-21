@@ -3,22 +3,8 @@ import axios from 'axios';
 import { type IShipmentItem } from '@/shared/model/shipment-item.model';
 
 const baseApiUrl = 'api/shipment-items';
-const baseSearchApiUrl = 'api/shipment-items/_search?query=';
 
 export default class ShipmentItemService {
-  public search(query): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      axios
-        .get(`${baseSearchApiUrl}${query}`)
-        .then(res => {
-          resolve(res.data);
-        })
-        .catch(err => {
-          reject(err);
-        });
-    });
-  }
-
   public find(id: string): Promise<IShipmentItem> {
     return new Promise<IShipmentItem>((resolve, reject) => {
       axios

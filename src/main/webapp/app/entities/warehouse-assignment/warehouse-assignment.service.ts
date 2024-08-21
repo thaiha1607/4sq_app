@@ -3,22 +3,8 @@ import axios from 'axios';
 import { type IWarehouseAssignment } from '@/shared/model/warehouse-assignment.model';
 
 const baseApiUrl = 'api/warehouse-assignments';
-const baseSearchApiUrl = 'api/warehouse-assignments/_search?query=';
 
 export default class WarehouseAssignmentService {
-  public search(query): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      axios
-        .get(`${baseSearchApiUrl}${query}`)
-        .then(res => {
-          resolve(res.data);
-        })
-        .catch(err => {
-          reject(err);
-        });
-    });
-  }
-
   public find(id: string): Promise<IWarehouseAssignment> {
     return new Promise<IWarehouseAssignment>((resolve, reject) => {
       axios

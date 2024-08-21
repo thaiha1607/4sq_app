@@ -4,7 +4,6 @@ import com.foursquare.server.repository.ProductCategoryRepository;
 import com.foursquare.server.service.ProductCategoryService;
 import com.foursquare.server.service.dto.ProductCategoryDTO;
 import com.foursquare.server.web.rest.errors.BadRequestAlertException;
-import com.foursquare.server.web.rest.errors.ElasticsearchExceptionMapper;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
@@ -173,22 +172,5 @@ public class ProductCategoryResource {
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
-    }
-
-    /**
-     * {@code SEARCH  /product-categories/_search?query=:query} : search for the productCategory corresponding
-     * to the query.
-     *
-     * @param query the query of the productCategory search.
-     * @return the result of the search.
-     */
-    @GetMapping("/_search")
-    public List<ProductCategoryDTO> searchProductCategories(@RequestParam("query") String query) {
-        log.debug("REST request to search ProductCategories for query {}", query);
-        try {
-            return productCategoryService.search(query);
-        } catch (RuntimeException e) {
-            throw ElasticsearchExceptionMapper.mapException(e);
-        }
     }
 }

@@ -3,9 +3,7 @@ package com.foursquare.server.web.rest;
 import static com.foursquare.server.domain.ProductImageAsserts.*;
 import static com.foursquare.server.web.rest.TestUtil.createUpdateProxyForBean;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.hasItem;
-import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -13,21 +11,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foursquare.server.IntegrationTest;
 import com.foursquare.server.domain.ProductImage;
 import com.foursquare.server.repository.ProductImageRepository;
-import com.foursquare.server.repository.search.ProductImageSearchRepository;
 import com.foursquare.server.service.dto.ProductImageDTO;
 import com.foursquare.server.service.mapper.ProductImageMapper;
 import jakarta.persistence.EntityManager;
-import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-import org.assertj.core.util.IterableUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.data.util.Streamable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -50,7 +43,6 @@ class ProductImageResourceIT {
 
     private static final String ENTITY_API_URL = "/api/product-images";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
-    private static final String ENTITY_SEARCH_API_URL = "/api/product-images/_search";
 
     @Autowired
     private ObjectMapper om;
@@ -60,9 +52,6 @@ class ProductImageResourceIT {
 
     @Autowired
     private ProductImageMapper productImageMapper;
-
-    @Autowired
-    private ProductImageSearchRepository productImageSearchRepository;
 
     @Autowired
     private EntityManager em;
@@ -105,7 +94,6 @@ class ProductImageResourceIT {
     public void cleanup() {
         if (insertedProductImage != null) {
             productImageRepository.delete(insertedProductImage);
-            productImageSearchRepository.delete(insertedProductImage);
             insertedProductImage = null;
         }
     }
@@ -114,7 +102,6 @@ class ProductImageResourceIT {
     @Transactional
     void createProductImage() throws Exception {
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(productImageSearchRepository.findAll());
         // Create the ProductImage
         ProductImageDTO productImageDTO = productImageMapper.toDto(productImage);
         var returnedProductImageDTO = om.readValue(
@@ -132,13 +119,6 @@ class ProductImageResourceIT {
         var returnedProductImage = productImageMapper.toEntity(returnedProductImageDTO);
         assertProductImageUpdatableFieldsEquals(returnedProductImage, getPersistedProductImage(returnedProductImage));
 
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(productImageSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore + 1);
-            });
-
         insertedProductImage = returnedProductImage;
     }
 
@@ -150,7 +130,6 @@ class ProductImageResourceIT {
         ProductImageDTO productImageDTO = productImageMapper.toDto(productImage);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(productImageSearchRepository.findAll());
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restProductImageMockMvc
@@ -159,15 +138,12 @@ class ProductImageResourceIT {
 
         // Validate the ProductImage in the database
         assertSameRepositoryCount(databaseSizeBeforeCreate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(productImageSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkImageUriIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(productImageSearchRepository.findAll());
         // set the field null
         productImage.setImageUri(null);
 
@@ -179,9 +155,6 @@ class ProductImageResourceIT {
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
-
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(productImageSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -230,8 +203,6 @@ class ProductImageResourceIT {
         insertedProductImage = productImageRepository.saveAndFlush(productImage);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        productImageSearchRepository.save(productImage);
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(productImageSearchRepository.findAll());
 
         // Update the productImage
         ProductImage updatedProductImage = productImageRepository.findById(productImage.getId()).orElseThrow();
@@ -251,24 +222,12 @@ class ProductImageResourceIT {
         // Validate the ProductImage in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
         assertPersistedProductImageToMatchAllProperties(updatedProductImage);
-
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(productImageSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
-                List<ProductImage> productImageSearchList = Streamable.of(productImageSearchRepository.findAll()).toList();
-                ProductImage testProductImageSearch = productImageSearchList.get(searchDatabaseSizeAfter - 1);
-
-                assertProductImageAllPropertiesEquals(testProductImageSearch, updatedProductImage);
-            });
     }
 
     @Test
     @Transactional
     void putNonExistingProductImage() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(productImageSearchRepository.findAll());
         productImage.setId(UUID.randomUUID());
 
         // Create the ProductImage
@@ -285,15 +244,12 @@ class ProductImageResourceIT {
 
         // Validate the ProductImage in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(productImageSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithIdMismatchProductImage() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(productImageSearchRepository.findAll());
         productImage.setId(UUID.randomUUID());
 
         // Create the ProductImage
@@ -310,15 +266,12 @@ class ProductImageResourceIT {
 
         // Validate the ProductImage in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(productImageSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithMissingIdPathParamProductImage() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(productImageSearchRepository.findAll());
         productImage.setId(UUID.randomUUID());
 
         // Create the ProductImage
@@ -331,8 +284,6 @@ class ProductImageResourceIT {
 
         // Validate the ProductImage in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(productImageSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -398,7 +349,6 @@ class ProductImageResourceIT {
     @Transactional
     void patchNonExistingProductImage() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(productImageSearchRepository.findAll());
         productImage.setId(UUID.randomUUID());
 
         // Create the ProductImage
@@ -415,15 +365,12 @@ class ProductImageResourceIT {
 
         // Validate the ProductImage in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(productImageSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithIdMismatchProductImage() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(productImageSearchRepository.findAll());
         productImage.setId(UUID.randomUUID());
 
         // Create the ProductImage
@@ -440,15 +387,12 @@ class ProductImageResourceIT {
 
         // Validate the ProductImage in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(productImageSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithMissingIdPathParamProductImage() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(productImageSearchRepository.findAll());
         productImage.setId(UUID.randomUUID());
 
         // Create the ProductImage
@@ -461,8 +405,6 @@ class ProductImageResourceIT {
 
         // Validate the ProductImage in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(productImageSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -470,12 +412,8 @@ class ProductImageResourceIT {
     void deleteProductImage() throws Exception {
         // Initialize the database
         insertedProductImage = productImageRepository.saveAndFlush(productImage);
-        productImageRepository.save(productImage);
-        productImageSearchRepository.save(productImage);
 
         long databaseSizeBeforeDelete = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(productImageSearchRepository.findAll());
-        assertThat(searchDatabaseSizeBefore).isEqualTo(databaseSizeBeforeDelete);
 
         // Delete the productImage
         restProductImageMockMvc
@@ -484,25 +422,6 @@ class ProductImageResourceIT {
 
         // Validate the database contains one less item
         assertDecrementedRepositoryCount(databaseSizeBeforeDelete);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(productImageSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore - 1);
-    }
-
-    @Test
-    @Transactional
-    void searchProductImage() throws Exception {
-        // Initialize the database
-        insertedProductImage = productImageRepository.saveAndFlush(productImage);
-        productImageSearchRepository.save(productImage);
-
-        // Search the productImage
-        restProductImageMockMvc
-            .perform(get(ENTITY_SEARCH_API_URL + "?query=id:" + productImage.getId()))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(productImage.getId().toString())))
-            .andExpect(jsonPath("$.[*].imageUri").value(hasItem(DEFAULT_IMAGE_URI)))
-            .andExpect(jsonPath("$.[*].altText").value(hasItem(DEFAULT_ALT_TEXT)));
     }
 
     protected long getRepositoryCount() {

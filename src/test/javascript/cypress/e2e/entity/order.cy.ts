@@ -40,7 +40,7 @@ describe('Order e2e test', () => {
     cy.authenticatedRequest({
       method: 'POST',
       url: '/api/users',
-      body: {"login":"Z@KtRWuX\\PY0Cxl\\`sp70\\<TqgIPs\\`con3\\G6xpW","firstName":"Earline","lastName":"Bailey","email":"Easton.Bogan80@gmail.com","imageUrl":"geez misfile"},
+      body: {"login":"5_@3YS\\9Wpel\\!xfXZh","firstName":"Lauriane","lastName":"Stanton","email":"Margaretta.Hauck31@hotmail.com","imageUrl":"certainly excepting"},
     }).then(({ body }) => {
       user = body;
     });

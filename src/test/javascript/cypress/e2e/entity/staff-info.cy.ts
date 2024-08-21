@@ -30,7 +30,7 @@ describe('StaffInfo e2e test', () => {
     cy.authenticatedRequest({
       method: 'POST',
       url: '/api/users',
-      body: {"login":"kfTBC","firstName":"Tomas","lastName":"Prohaska","email":"Neal10@yahoo.com","imageUrl":"yum"},
+      body: {"login":"5","firstName":"Dimitri","lastName":"Lockman","email":"Buddy.Kihn76@hotmail.com","imageUrl":"phooey"},
     }).then(({ body }) => {
       user = body;
     });

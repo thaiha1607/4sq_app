@@ -19,28 +19,6 @@
         </router-link>
       </div>
     </h2>
-    <div class="row">
-      <div class="col-sm-12">
-        <form name="searchForm" class="form-inline" v-on:submit.prevent="search(currentSearch)">
-          <div class="input-group w-100 mt-3">
-            <input
-              type="text"
-              class="form-control"
-              name="currentSearch"
-              id="currentSearch"
-              placeholder="Search for Order Item"
-              v-model="currentSearch"
-            />
-            <button type="button" id="launch-search" class="btn btn-primary" v-on:click="search(currentSearch)">
-              <font-awesome-icon icon="search"></font-awesome-icon>
-            </button>
-            <button type="button" id="clear-search" class="btn btn-secondary" v-on:click="clear()" v-if="currentSearch">
-              <font-awesome-icon icon="trash"></font-awesome-icon>
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
     <br />
     <div class="alert alert-warning" v-if="!isFetching && orderItems && orderItems.length === 0">
       <span>No Order Items found</span>

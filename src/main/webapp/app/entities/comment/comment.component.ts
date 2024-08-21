@@ -13,20 +13,16 @@ export default defineComponent({
     const commentService = inject('commentService', () => new CommentService());
     const alertService = inject('alertService', () => useAlertService(), true);
 
-    const currentSearch = ref('');
-
     const comments: Ref<IComment[]> = ref([]);
 
     const isFetching = ref(false);
 
-    const clear = () => {
-      currentSearch.value = '';
-    };
+    const clear = () => {};
 
     const retrieveComments = async () => {
       isFetching.value = true;
       try {
-        const res = currentSearch.value ? await commentService().search(currentSearch.value) : await commentService().retrieve();
+        const res = await commentService().retrieve();
         comments.value = res.data;
       } catch (err) {
         alertService.showHttpError(err.response);
@@ -42,14 +38,6 @@ export default defineComponent({
     onMounted(async () => {
       await retrieveComments();
     });
-
-    const search = query => {
-      if (!query) {
-        return clear();
-      }
-      currentSearch.value = query;
-      retrieveComments();
-    };
 
     const removeId: Ref<string> = ref(null);
     const removeEntity = ref<any>(null);
@@ -80,7 +68,6 @@ export default defineComponent({
       retrieveComments,
       clear,
       ...dateFormat,
-      currentSearch,
       removeId,
       removeEntity,
       prepareRemove,

@@ -3,7 +3,6 @@ package com.foursquare.server.web.rest;
 import static com.foursquare.server.domain.CommentAsserts.*;
 import static com.foursquare.server.web.rest.TestUtil.createUpdateProxyForBean;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -15,16 +14,12 @@ import com.foursquare.server.domain.Comment;
 import com.foursquare.server.domain.User;
 import com.foursquare.server.repository.CommentRepository;
 import com.foursquare.server.repository.UserRepository;
-import com.foursquare.server.repository.search.CommentSearchRepository;
 import com.foursquare.server.service.CommentService;
 import com.foursquare.server.service.dto.CommentDTO;
 import com.foursquare.server.service.mapper.CommentMapper;
 import jakarta.persistence.EntityManager;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-import org.assertj.core.util.IterableUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -36,7 +31,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.util.Streamable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -60,7 +54,6 @@ class CommentResourceIT {
 
     private static final String ENTITY_API_URL = "/api/comments";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
-    private static final String ENTITY_SEARCH_API_URL = "/api/comments/_search";
 
     @Autowired
     private ObjectMapper om;
@@ -79,9 +72,6 @@ class CommentResourceIT {
 
     @Mock
     private CommentService commentServiceMock;
-
-    @Autowired
-    private CommentSearchRepository commentSearchRepository;
 
     @Autowired
     private EntityManager em;
@@ -134,7 +124,6 @@ class CommentResourceIT {
     public void cleanup() {
         if (insertedComment != null) {
             commentRepository.delete(insertedComment);
-            commentSearchRepository.delete(insertedComment);
             insertedComment = null;
         }
     }
@@ -143,7 +132,6 @@ class CommentResourceIT {
     @Transactional
     void createComment() throws Exception {
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(commentSearchRepository.findAll());
         // Create the Comment
         CommentDTO commentDTO = commentMapper.toDto(comment);
         var returnedCommentDTO = om.readValue(
@@ -161,13 +149,6 @@ class CommentResourceIT {
         var returnedComment = commentMapper.toEntity(returnedCommentDTO);
         assertCommentUpdatableFieldsEquals(returnedComment, getPersistedComment(returnedComment));
 
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(commentSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore + 1);
-            });
-
         insertedComment = returnedComment;
     }
 
@@ -179,7 +160,6 @@ class CommentResourceIT {
         CommentDTO commentDTO = commentMapper.toDto(comment);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(commentSearchRepository.findAll());
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restCommentMockMvc
@@ -188,15 +168,12 @@ class CommentResourceIT {
 
         // Validate the Comment in the database
         assertSameRepositoryCount(databaseSizeBeforeCreate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(commentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkRatingIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(commentSearchRepository.findAll());
         // set the field null
         comment.setRating(null);
 
@@ -208,9 +185,6 @@ class CommentResourceIT {
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
-
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(commentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -276,8 +250,6 @@ class CommentResourceIT {
         insertedComment = commentRepository.saveAndFlush(comment);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        commentSearchRepository.save(comment);
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(commentSearchRepository.findAll());
 
         // Update the comment
         Comment updatedComment = commentRepository.findById(comment.getId()).orElseThrow();
@@ -295,24 +267,12 @@ class CommentResourceIT {
         // Validate the Comment in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
         assertPersistedCommentToMatchAllProperties(updatedComment);
-
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(commentSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
-                List<Comment> commentSearchList = Streamable.of(commentSearchRepository.findAll()).toList();
-                Comment testCommentSearch = commentSearchList.get(searchDatabaseSizeAfter - 1);
-
-                assertCommentAllPropertiesEquals(testCommentSearch, updatedComment);
-            });
     }
 
     @Test
     @Transactional
     void putNonExistingComment() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(commentSearchRepository.findAll());
         comment.setId(UUID.randomUUID());
 
         // Create the Comment
@@ -327,15 +287,12 @@ class CommentResourceIT {
 
         // Validate the Comment in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(commentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithIdMismatchComment() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(commentSearchRepository.findAll());
         comment.setId(UUID.randomUUID());
 
         // Create the Comment
@@ -350,15 +307,12 @@ class CommentResourceIT {
 
         // Validate the Comment in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(commentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithMissingIdPathParamComment() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(commentSearchRepository.findAll());
         comment.setId(UUID.randomUUID());
 
         // Create the Comment
@@ -371,8 +325,6 @@ class CommentResourceIT {
 
         // Validate the Comment in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(commentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -435,7 +387,6 @@ class CommentResourceIT {
     @Transactional
     void patchNonExistingComment() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(commentSearchRepository.findAll());
         comment.setId(UUID.randomUUID());
 
         // Create the Comment
@@ -452,15 +403,12 @@ class CommentResourceIT {
 
         // Validate the Comment in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(commentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithIdMismatchComment() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(commentSearchRepository.findAll());
         comment.setId(UUID.randomUUID());
 
         // Create the Comment
@@ -477,15 +425,12 @@ class CommentResourceIT {
 
         // Validate the Comment in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(commentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithMissingIdPathParamComment() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(commentSearchRepository.findAll());
         comment.setId(UUID.randomUUID());
 
         // Create the Comment
@@ -498,8 +443,6 @@ class CommentResourceIT {
 
         // Validate the Comment in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(commentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -507,12 +450,8 @@ class CommentResourceIT {
     void deleteComment() throws Exception {
         // Initialize the database
         insertedComment = commentRepository.saveAndFlush(comment);
-        commentRepository.save(comment);
-        commentSearchRepository.save(comment);
 
         long databaseSizeBeforeDelete = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(commentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeBefore).isEqualTo(databaseSizeBeforeDelete);
 
         // Delete the comment
         restCommentMockMvc
@@ -521,25 +460,6 @@ class CommentResourceIT {
 
         // Validate the database contains one less item
         assertDecrementedRepositoryCount(databaseSizeBeforeDelete);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(commentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore - 1);
-    }
-
-    @Test
-    @Transactional
-    void searchComment() throws Exception {
-        // Initialize the database
-        insertedComment = commentRepository.saveAndFlush(comment);
-        commentSearchRepository.save(comment);
-
-        // Search the comment
-        restCommentMockMvc
-            .perform(get(ENTITY_SEARCH_API_URL + "?query=id:" + comment.getId()))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(comment.getId().toString())))
-            .andExpect(jsonPath("$.[*].rating").value(hasItem(DEFAULT_RATING)))
-            .andExpect(jsonPath("$.[*].content").value(hasItem(DEFAULT_CONTENT)));
     }
 
     protected long getRepositoryCount() {

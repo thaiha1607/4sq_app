@@ -15,7 +15,7 @@ describe('Shipment e2e test', () => {
   const shipmentPageUrlPattern = new RegExp('/shipment(\\?.*)?$');
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
-  // const shipmentSample = {"type":"TRANSFER","shipmentDate":"2024-07-04T07:18:00.533Z"};
+  // const shipmentSample = {"type":"TRANSFER","shipmentDate":"2024-08-21T04:18:07.533Z"};
 
   let shipment;
   // let shipmentItem;
@@ -286,9 +286,9 @@ describe('Shipment e2e test', () => {
     it.skip('should create an instance of Shipment', () => {
       cy.get(`[data-cy="type"]`).select('OUTBOUND');
 
-      cy.get(`[data-cy="shipmentDate"]`).type('2024-07-03T19:37');
+      cy.get(`[data-cy="shipmentDate"]`).type('2024-08-20T16:38');
       cy.get(`[data-cy="shipmentDate"]`).blur();
-      cy.get(`[data-cy="shipmentDate"]`).should('have.value', '2024-07-03T19:37');
+      cy.get(`[data-cy="shipmentDate"]`).should('have.value', '2024-08-20T16:38');
 
       cy.get(`[data-cy="note"]`).type('bottling mmm neatly');
       cy.get(`[data-cy="note"]`).should('have.value', 'bottling mmm neatly');

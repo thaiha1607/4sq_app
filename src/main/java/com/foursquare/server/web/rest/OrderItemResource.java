@@ -4,7 +4,6 @@ import com.foursquare.server.repository.OrderItemRepository;
 import com.foursquare.server.service.OrderItemService;
 import com.foursquare.server.service.dto.OrderItemDTO;
 import com.foursquare.server.web.rest.errors.BadRequestAlertException;
-import com.foursquare.server.web.rest.errors.ElasticsearchExceptionMapper;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
@@ -172,22 +171,5 @@ public class OrderItemResource {
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
-    }
-
-    /**
-     * {@code SEARCH  /order-items/_search?query=:query} : search for the orderItem corresponding
-     * to the query.
-     *
-     * @param query the query of the orderItem search.
-     * @return the result of the search.
-     */
-    @GetMapping("/_search")
-    public List<OrderItemDTO> searchOrderItems(@RequestParam("query") String query) {
-        log.debug("REST request to search OrderItems for query {}", query);
-        try {
-            return orderItemService.search(query);
-        } catch (RuntimeException e) {
-            throw ElasticsearchExceptionMapper.mapException(e);
-        }
     }
 }

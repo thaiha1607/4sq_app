@@ -4,7 +4,6 @@ import com.foursquare.server.repository.InvoiceRepository;
 import com.foursquare.server.service.InvoiceService;
 import com.foursquare.server.service.dto.InvoiceDTO;
 import com.foursquare.server.web.rest.errors.BadRequestAlertException;
-import com.foursquare.server.web.rest.errors.ElasticsearchExceptionMapper;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
@@ -170,22 +169,5 @@ public class InvoiceResource {
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
-    }
-
-    /**
-     * {@code SEARCH  /invoices/_search?query=:query} : search for the invoice corresponding
-     * to the query.
-     *
-     * @param query the query of the invoice search.
-     * @return the result of the search.
-     */
-    @GetMapping("/_search")
-    public List<InvoiceDTO> searchInvoices(@RequestParam("query") String query) {
-        log.debug("REST request to search Invoices for query {}", query);
-        try {
-            return invoiceService.search(query);
-        } catch (RuntimeException e) {
-            throw ElasticsearchExceptionMapper.mapException(e);
-        }
     }
 }

@@ -3,22 +3,8 @@ import axios from 'axios';
 import { type IOrder } from '@/shared/model/order.model';
 
 const baseApiUrl = 'api/orders';
-const baseSearchApiUrl = 'api/orders/_search?query=';
 
 export default class OrderService {
-  public search(query): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      axios
-        .get(`${baseSearchApiUrl}${query}`)
-        .then(res => {
-          resolve(res.data);
-        })
-        .catch(err => {
-          reject(err);
-        });
-    });
-  }
-
   public find(id: string): Promise<IOrder> {
     return new Promise<IOrder>((resolve, reject) => {
       axios

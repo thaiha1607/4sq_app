@@ -3,22 +3,8 @@ import axios from 'axios';
 import { type IComment } from '@/shared/model/comment.model';
 
 const baseApiUrl = 'api/comments';
-const baseSearchApiUrl = 'api/comments/_search?query=';
 
 export default class CommentService {
-  public search(query): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      axios
-        .get(`${baseSearchApiUrl}${query}`)
-        .then(res => {
-          resolve(res.data);
-        })
-        .catch(err => {
-          reject(err);
-        });
-    });
-  }
-
   public find(id: string): Promise<IComment> {
     return new Promise<IComment>((resolve, reject) => {
       axios

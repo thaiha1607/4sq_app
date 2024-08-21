@@ -2,7 +2,6 @@ package com.foursquare.server.service;
 
 import com.foursquare.server.domain.ProductCategory;
 import com.foursquare.server.repository.ProductCategoryRepository;
-import com.foursquare.server.repository.search.ProductCategorySearchRepository;
 import com.foursquare.server.service.dto.ProductCategoryDTO;
 import com.foursquare.server.service.mapper.ProductCategoryMapper;
 import java.util.LinkedList;
@@ -10,7 +9,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -31,16 +29,9 @@ public class ProductCategoryService {
 
     private final ProductCategoryMapper productCategoryMapper;
 
-    private final ProductCategorySearchRepository productCategorySearchRepository;
-
-    public ProductCategoryService(
-        ProductCategoryRepository productCategoryRepository,
-        ProductCategoryMapper productCategoryMapper,
-        ProductCategorySearchRepository productCategorySearchRepository
-    ) {
+    public ProductCategoryService(ProductCategoryRepository productCategoryRepository, ProductCategoryMapper productCategoryMapper) {
         this.productCategoryRepository = productCategoryRepository;
         this.productCategoryMapper = productCategoryMapper;
-        this.productCategorySearchRepository = productCategorySearchRepository;
     }
 
     /**
@@ -53,7 +44,6 @@ public class ProductCategoryService {
         log.debug("Request to save ProductCategory : {}", productCategoryDTO);
         ProductCategory productCategory = productCategoryMapper.toEntity(productCategoryDTO);
         productCategory = productCategoryRepository.save(productCategory);
-        productCategorySearchRepository.index(productCategory);
         return productCategoryMapper.toDto(productCategory);
     }
 
@@ -68,7 +58,6 @@ public class ProductCategoryService {
         ProductCategory productCategory = productCategoryMapper.toEntity(productCategoryDTO);
         productCategory.setIsPersisted();
         productCategory = productCategoryRepository.save(productCategory);
-        productCategorySearchRepository.index(productCategory);
         return productCategoryMapper.toDto(productCategory);
     }
 
@@ -89,10 +78,6 @@ public class ProductCategoryService {
                 return existingProductCategory;
             })
             .map(productCategoryRepository::save)
-            .map(savedProductCategory -> {
-                productCategorySearchRepository.index(savedProductCategory);
-                return savedProductCategory;
-            })
             .map(productCategoryMapper::toDto);
     }
 
@@ -140,24 +125,5 @@ public class ProductCategoryService {
     public void delete(UUID id) {
         log.debug("Request to delete ProductCategory : {}", id);
         productCategoryRepository.deleteById(id);
-        productCategorySearchRepository.deleteFromIndexById(id);
-    }
-
-    /**
-     * Search for the productCategory corresponding to the query.
-     *
-     * @param query the query of the search.
-     * @return the list of entities.
-     */
-    @Transactional(readOnly = true)
-    public List<ProductCategoryDTO> search(String query) {
-        log.debug("Request to search ProductCategories for query {}", query);
-        try {
-            return StreamSupport.stream(productCategorySearchRepository.search(query).spliterator(), false)
-                .map(productCategoryMapper::toDto)
-                .toList();
-        } catch (RuntimeException e) {
-            throw e;
-        }
     }
 }

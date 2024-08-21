@@ -4,7 +4,6 @@ import com.foursquare.server.repository.ShipmentAssignmentRepository;
 import com.foursquare.server.service.ShipmentAssignmentService;
 import com.foursquare.server.service.dto.ShipmentAssignmentDTO;
 import com.foursquare.server.web.rest.errors.BadRequestAlertException;
-import com.foursquare.server.web.rest.errors.ElasticsearchExceptionMapper;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
@@ -176,22 +175,5 @@ public class ShipmentAssignmentResource {
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
-    }
-
-    /**
-     * {@code SEARCH  /shipment-assignments/_search?query=:query} : search for the shipmentAssignment corresponding
-     * to the query.
-     *
-     * @param query the query of the shipmentAssignment search.
-     * @return the result of the search.
-     */
-    @GetMapping("/_search")
-    public List<ShipmentAssignmentDTO> searchShipmentAssignments(@RequestParam("query") String query) {
-        log.debug("REST request to search ShipmentAssignments for query {}", query);
-        try {
-            return shipmentAssignmentService.search(query);
-        } catch (RuntimeException e) {
-            throw ElasticsearchExceptionMapper.mapException(e);
-        }
     }
 }

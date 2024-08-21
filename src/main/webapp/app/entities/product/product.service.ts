@@ -3,22 +3,8 @@ import axios from 'axios';
 import { type IProduct } from '@/shared/model/product.model';
 
 const baseApiUrl = 'api/products';
-const baseSearchApiUrl = 'api/products/_search?query=';
 
 export default class ProductService {
-  public search(query): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      axios
-        .get(`${baseSearchApiUrl}${query}`)
-        .then(res => {
-          resolve(res.data);
-        })
-        .catch(err => {
-          reject(err);
-        });
-    });
-  }
-
   public find(id: string): Promise<IProduct> {
     return new Promise<IProduct>((resolve, reject) => {
       axios

@@ -2,7 +2,6 @@ package com.foursquare.server.service;
 
 import com.foursquare.server.domain.ShipmentAssignment;
 import com.foursquare.server.repository.ShipmentAssignmentRepository;
-import com.foursquare.server.repository.search.ShipmentAssignmentSearchRepository;
 import com.foursquare.server.service.dto.ShipmentAssignmentDTO;
 import com.foursquare.server.service.mapper.ShipmentAssignmentMapper;
 import java.util.LinkedList;
@@ -10,7 +9,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -31,16 +29,12 @@ public class ShipmentAssignmentService {
 
     private final ShipmentAssignmentMapper shipmentAssignmentMapper;
 
-    private final ShipmentAssignmentSearchRepository shipmentAssignmentSearchRepository;
-
     public ShipmentAssignmentService(
         ShipmentAssignmentRepository shipmentAssignmentRepository,
-        ShipmentAssignmentMapper shipmentAssignmentMapper,
-        ShipmentAssignmentSearchRepository shipmentAssignmentSearchRepository
+        ShipmentAssignmentMapper shipmentAssignmentMapper
     ) {
         this.shipmentAssignmentRepository = shipmentAssignmentRepository;
         this.shipmentAssignmentMapper = shipmentAssignmentMapper;
-        this.shipmentAssignmentSearchRepository = shipmentAssignmentSearchRepository;
     }
 
     /**
@@ -53,7 +47,6 @@ public class ShipmentAssignmentService {
         log.debug("Request to save ShipmentAssignment : {}", shipmentAssignmentDTO);
         ShipmentAssignment shipmentAssignment = shipmentAssignmentMapper.toEntity(shipmentAssignmentDTO);
         shipmentAssignment = shipmentAssignmentRepository.save(shipmentAssignment);
-        shipmentAssignmentSearchRepository.index(shipmentAssignment);
         return shipmentAssignmentMapper.toDto(shipmentAssignment);
     }
 
@@ -68,7 +61,6 @@ public class ShipmentAssignmentService {
         ShipmentAssignment shipmentAssignment = shipmentAssignmentMapper.toEntity(shipmentAssignmentDTO);
         shipmentAssignment.setIsPersisted();
         shipmentAssignment = shipmentAssignmentRepository.save(shipmentAssignment);
-        shipmentAssignmentSearchRepository.index(shipmentAssignment);
         return shipmentAssignmentMapper.toDto(shipmentAssignment);
     }
 
@@ -89,10 +81,6 @@ public class ShipmentAssignmentService {
                 return existingShipmentAssignment;
             })
             .map(shipmentAssignmentRepository::save)
-            .map(savedShipmentAssignment -> {
-                shipmentAssignmentSearchRepository.index(savedShipmentAssignment);
-                return savedShipmentAssignment;
-            })
             .map(shipmentAssignmentMapper::toDto);
     }
 
@@ -140,24 +128,5 @@ public class ShipmentAssignmentService {
     public void delete(UUID id) {
         log.debug("Request to delete ShipmentAssignment : {}", id);
         shipmentAssignmentRepository.deleteById(id);
-        shipmentAssignmentSearchRepository.deleteFromIndexById(id);
-    }
-
-    /**
-     * Search for the shipmentAssignment corresponding to the query.
-     *
-     * @param query the query of the search.
-     * @return the list of entities.
-     */
-    @Transactional(readOnly = true)
-    public List<ShipmentAssignmentDTO> search(String query) {
-        log.debug("Request to search ShipmentAssignments for query {}", query);
-        try {
-            return StreamSupport.stream(shipmentAssignmentSearchRepository.search(query).spliterator(), false)
-                .map(shipmentAssignmentMapper::toDto)
-                .toList();
-        } catch (RuntimeException e) {
-            throw e;
-        }
     }
 }

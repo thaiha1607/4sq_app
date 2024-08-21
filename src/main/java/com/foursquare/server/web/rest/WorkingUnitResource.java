@@ -4,7 +4,6 @@ import com.foursquare.server.repository.WorkingUnitRepository;
 import com.foursquare.server.service.WorkingUnitService;
 import com.foursquare.server.service.dto.WorkingUnitDTO;
 import com.foursquare.server.web.rest.errors.BadRequestAlertException;
-import com.foursquare.server.web.rest.errors.ElasticsearchExceptionMapper;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
@@ -169,22 +168,5 @@ public class WorkingUnitResource {
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
-    }
-
-    /**
-     * {@code SEARCH  /working-units/_search?query=:query} : search for the workingUnit corresponding
-     * to the query.
-     *
-     * @param query the query of the workingUnit search.
-     * @return the result of the search.
-     */
-    @GetMapping("/_search")
-    public List<WorkingUnitDTO> searchWorkingUnits(@RequestParam("query") String query) {
-        log.debug("REST request to search WorkingUnits for query {}", query);
-        try {
-            return workingUnitService.search(query);
-        } catch (RuntimeException e) {
-            throw ElasticsearchExceptionMapper.mapException(e);
-        }
     }
 }

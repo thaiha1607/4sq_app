@@ -16,7 +16,6 @@ import org.springframework.data.domain.Persistable;
 @Table(name = "user_details")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @JsonIgnoreProperties(value = { "new" })
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "userdetails")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class UserDetails extends AbstractAuditingEntity<Long> implements Serializable, Persistable<Long> {
 
@@ -33,7 +32,6 @@ public class UserDetails extends AbstractAuditingEntity<Long> implements Seriali
      */
     @Pattern(regexp = "^\\+[0-9]\\d{1,14}$")
     @Column(name = "phone")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String phone;
 
     // Inherited createdBy definition

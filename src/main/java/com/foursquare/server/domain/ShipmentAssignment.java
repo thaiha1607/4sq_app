@@ -18,7 +18,6 @@ import org.springframework.data.domain.Persistable;
 @Table(name = "shipment_assignment")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @JsonIgnoreProperties(value = { "new" })
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "shipmentassignment")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class ShipmentAssignment extends AbstractAuditingEntity<UUID> implements Serializable, Persistable<UUID> {
 
@@ -32,15 +31,12 @@ public class ShipmentAssignment extends AbstractAuditingEntity<UUID> implements 
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Keyword)
     private AssignmentStatus status;
 
     @Column(name = "note")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String note;
 
     @Column(name = "other_info")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String otherInfo;
 
     // Inherited createdBy definition

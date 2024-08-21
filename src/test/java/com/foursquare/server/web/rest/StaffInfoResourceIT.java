@@ -3,7 +3,6 @@ package com.foursquare.server.web.rest;
 import static com.foursquare.server.domain.StaffInfoAsserts.*;
 import static com.foursquare.server.web.rest.TestUtil.createUpdateProxyForBean;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -16,17 +15,13 @@ import com.foursquare.server.domain.User;
 import com.foursquare.server.domain.enumeration.StaffStatus;
 import com.foursquare.server.repository.StaffInfoRepository;
 import com.foursquare.server.repository.UserRepository;
-import com.foursquare.server.repository.search.StaffInfoSearchRepository;
 import com.foursquare.server.service.StaffInfoService;
 import com.foursquare.server.service.dto.StaffInfoDTO;
 import com.foursquare.server.service.mapper.StaffInfoMapper;
 import jakarta.persistence.EntityManager;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-import org.assertj.core.util.IterableUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,7 +32,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.util.Streamable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -57,7 +51,6 @@ class StaffInfoResourceIT {
 
     private static final String ENTITY_API_URL = "/api/staff-infos";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
-    private static final String ENTITY_SEARCH_API_URL = "/api/staff-infos/_search";
 
     private static Random random = new Random();
     private static AtomicLong longCount = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
@@ -79,9 +72,6 @@ class StaffInfoResourceIT {
 
     @Mock
     private StaffInfoService staffInfoServiceMock;
-
-    @Autowired
-    private StaffInfoSearchRepository staffInfoSearchRepository;
 
     @Autowired
     private EntityManager em;
@@ -134,7 +124,6 @@ class StaffInfoResourceIT {
     public void cleanup() {
         if (insertedStaffInfo != null) {
             staffInfoRepository.delete(insertedStaffInfo);
-            staffInfoSearchRepository.delete(insertedStaffInfo);
             insertedStaffInfo = null;
         }
     }
@@ -143,7 +132,6 @@ class StaffInfoResourceIT {
     @Transactional
     void createStaffInfo() throws Exception {
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(staffInfoSearchRepository.findAll());
         // Create the StaffInfo
         StaffInfoDTO staffInfoDTO = staffInfoMapper.toDto(staffInfo);
         var returnedStaffInfoDTO = om.readValue(
@@ -161,13 +149,6 @@ class StaffInfoResourceIT {
         var returnedStaffInfo = staffInfoMapper.toEntity(returnedStaffInfoDTO);
         assertStaffInfoUpdatableFieldsEquals(returnedStaffInfo, getPersistedStaffInfo(returnedStaffInfo));
 
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(staffInfoSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore + 1);
-            });
-
         insertedStaffInfo = returnedStaffInfo;
     }
 
@@ -179,7 +160,6 @@ class StaffInfoResourceIT {
         StaffInfoDTO staffInfoDTO = staffInfoMapper.toDto(staffInfo);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(staffInfoSearchRepository.findAll());
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restStaffInfoMockMvc
@@ -188,15 +168,12 @@ class StaffInfoResourceIT {
 
         // Validate the StaffInfo in the database
         assertSameRepositoryCount(databaseSizeBeforeCreate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(staffInfoSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkStatusIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(staffInfoSearchRepository.findAll());
         // set the field null
         staffInfo.setStatus(null);
 
@@ -208,9 +185,6 @@ class StaffInfoResourceIT {
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
-
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(staffInfoSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -274,8 +248,6 @@ class StaffInfoResourceIT {
         insertedStaffInfo = staffInfoRepository.saveAndFlush(staffInfo);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        staffInfoSearchRepository.save(staffInfo);
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(staffInfoSearchRepository.findAll());
 
         // Update the staffInfo
         StaffInfo updatedStaffInfo = staffInfoRepository.findById(staffInfo.getId()).orElseThrow();
@@ -295,24 +267,12 @@ class StaffInfoResourceIT {
         // Validate the StaffInfo in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
         assertPersistedStaffInfoToMatchAllProperties(updatedStaffInfo);
-
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(staffInfoSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
-                List<StaffInfo> staffInfoSearchList = Streamable.of(staffInfoSearchRepository.findAll()).toList();
-                StaffInfo testStaffInfoSearch = staffInfoSearchList.get(searchDatabaseSizeAfter - 1);
-
-                assertStaffInfoAllPropertiesEquals(testStaffInfoSearch, updatedStaffInfo);
-            });
     }
 
     @Test
     @Transactional
     void putNonExistingStaffInfo() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(staffInfoSearchRepository.findAll());
         staffInfo.setId(longCount.incrementAndGet());
 
         // Create the StaffInfo
@@ -329,15 +289,12 @@ class StaffInfoResourceIT {
 
         // Validate the StaffInfo in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(staffInfoSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithIdMismatchStaffInfo() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(staffInfoSearchRepository.findAll());
         staffInfo.setId(longCount.incrementAndGet());
 
         // Create the StaffInfo
@@ -354,15 +311,12 @@ class StaffInfoResourceIT {
 
         // Validate the StaffInfo in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(staffInfoSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithMissingIdPathParamStaffInfo() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(staffInfoSearchRepository.findAll());
         staffInfo.setId(longCount.incrementAndGet());
 
         // Create the StaffInfo
@@ -375,8 +329,6 @@ class StaffInfoResourceIT {
 
         // Validate the StaffInfo in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(staffInfoSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -442,7 +394,6 @@ class StaffInfoResourceIT {
     @Transactional
     void patchNonExistingStaffInfo() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(staffInfoSearchRepository.findAll());
         staffInfo.setId(longCount.incrementAndGet());
 
         // Create the StaffInfo
@@ -459,15 +410,12 @@ class StaffInfoResourceIT {
 
         // Validate the StaffInfo in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(staffInfoSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithIdMismatchStaffInfo() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(staffInfoSearchRepository.findAll());
         staffInfo.setId(longCount.incrementAndGet());
 
         // Create the StaffInfo
@@ -484,15 +432,12 @@ class StaffInfoResourceIT {
 
         // Validate the StaffInfo in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(staffInfoSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithMissingIdPathParamStaffInfo() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(staffInfoSearchRepository.findAll());
         staffInfo.setId(longCount.incrementAndGet());
 
         // Create the StaffInfo
@@ -505,8 +450,6 @@ class StaffInfoResourceIT {
 
         // Validate the StaffInfo in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(staffInfoSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -514,12 +457,8 @@ class StaffInfoResourceIT {
     void deleteStaffInfo() throws Exception {
         // Initialize the database
         insertedStaffInfo = staffInfoRepository.saveAndFlush(staffInfo);
-        staffInfoRepository.save(staffInfo);
-        staffInfoSearchRepository.save(staffInfo);
 
         long databaseSizeBeforeDelete = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(staffInfoSearchRepository.findAll());
-        assertThat(searchDatabaseSizeBefore).isEqualTo(databaseSizeBeforeDelete);
 
         // Delete the staffInfo
         restStaffInfoMockMvc
@@ -528,24 +467,6 @@ class StaffInfoResourceIT {
 
         // Validate the database contains one less item
         assertDecrementedRepositoryCount(databaseSizeBeforeDelete);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(staffInfoSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore - 1);
-    }
-
-    @Test
-    @Transactional
-    void searchStaffInfo() throws Exception {
-        // Initialize the database
-        insertedStaffInfo = staffInfoRepository.saveAndFlush(staffInfo);
-        staffInfoSearchRepository.save(staffInfo);
-
-        // Search the staffInfo
-        restStaffInfoMockMvc
-            .perform(get(ENTITY_SEARCH_API_URL + "?query=id:" + staffInfo.getId()))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(staffInfo.getId().intValue())))
-            .andExpect(jsonPath("$.[*].status").value(hasItem(DEFAULT_STATUS.toString())));
     }
 
     protected long getRepositoryCount() {

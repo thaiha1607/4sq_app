@@ -3,22 +3,8 @@ import axios from 'axios';
 import { type IConversation } from '@/shared/model/conversation.model';
 
 const baseApiUrl = 'api/conversations';
-const baseSearchApiUrl = 'api/conversations/_search?query=';
 
 export default class ConversationService {
-  public search(query): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      axios
-        .get(`${baseSearchApiUrl}${query}`)
-        .then(res => {
-          resolve(res.data);
-        })
-        .catch(err => {
-          reject(err);
-        });
-    });
-  }
-
   public find(id: string): Promise<IConversation> {
     return new Promise<IConversation>((resolve, reject) => {
       axios

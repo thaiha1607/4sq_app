@@ -18,7 +18,6 @@ import org.springframework.data.domain.Persistable;
 @Table(name = "working_unit")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @JsonIgnoreProperties(value = { "new" })
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "workingunit")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class WorkingUnit extends AbstractAuditingEntity<UUID> implements Serializable, Persistable<UUID> {
 
@@ -31,17 +30,14 @@ public class WorkingUnit extends AbstractAuditingEntity<UUID> implements Seriali
 
     @NotNull
     @Column(name = "name", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String name;
 
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Keyword)
     private WorkingUnitType type;
 
     @Column(name = "image_uri")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String imageUri;
 
     // Inherited createdBy definition

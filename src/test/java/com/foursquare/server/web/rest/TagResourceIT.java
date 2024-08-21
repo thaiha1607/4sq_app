@@ -3,9 +3,7 @@ package com.foursquare.server.web.rest;
 import static com.foursquare.server.domain.TagAsserts.*;
 import static com.foursquare.server.web.rest.TestUtil.createUpdateProxyForBean;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.hasItem;
-import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -13,20 +11,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foursquare.server.IntegrationTest;
 import com.foursquare.server.domain.Tag;
 import com.foursquare.server.repository.TagRepository;
-import com.foursquare.server.repository.search.TagSearchRepository;
 import com.foursquare.server.service.dto.TagDTO;
 import com.foursquare.server.service.mapper.TagMapper;
 import jakarta.persistence.EntityManager;
-import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-import org.assertj.core.util.IterableUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.data.util.Streamable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -45,7 +38,6 @@ class TagResourceIT {
 
     private static final String ENTITY_API_URL = "/api/tags";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
-    private static final String ENTITY_SEARCH_API_URL = "/api/tags/_search";
 
     @Autowired
     private ObjectMapper om;
@@ -55,9 +47,6 @@ class TagResourceIT {
 
     @Autowired
     private TagMapper tagMapper;
-
-    @Autowired
-    private TagSearchRepository tagSearchRepository;
 
     @Autowired
     private EntityManager em;
@@ -100,7 +89,6 @@ class TagResourceIT {
     public void cleanup() {
         if (insertedTag != null) {
             tagRepository.delete(insertedTag);
-            tagSearchRepository.delete(insertedTag);
             insertedTag = null;
         }
     }
@@ -109,7 +97,6 @@ class TagResourceIT {
     @Transactional
     void createTag() throws Exception {
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(tagSearchRepository.findAll());
         // Create the Tag
         TagDTO tagDTO = tagMapper.toDto(tag);
         var returnedTagDTO = om.readValue(
@@ -127,13 +114,6 @@ class TagResourceIT {
         var returnedTag = tagMapper.toEntity(returnedTagDTO);
         assertTagUpdatableFieldsEquals(returnedTag, getPersistedTag(returnedTag));
 
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(tagSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore + 1);
-            });
-
         insertedTag = returnedTag;
     }
 
@@ -145,7 +125,6 @@ class TagResourceIT {
         TagDTO tagDTO = tagMapper.toDto(tag);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(tagSearchRepository.findAll());
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restTagMockMvc
@@ -154,15 +133,12 @@ class TagResourceIT {
 
         // Validate the Tag in the database
         assertSameRepositoryCount(databaseSizeBeforeCreate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(tagSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkNameIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(tagSearchRepository.findAll());
         // set the field null
         tag.setName(null);
 
@@ -174,9 +150,6 @@ class TagResourceIT {
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
-
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(tagSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -223,8 +196,6 @@ class TagResourceIT {
         insertedTag = tagRepository.saveAndFlush(tag);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        tagSearchRepository.save(tag);
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(tagSearchRepository.findAll());
 
         // Update the tag
         Tag updatedTag = tagRepository.findById(tag.getId()).orElseThrow();
@@ -240,24 +211,12 @@ class TagResourceIT {
         // Validate the Tag in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
         assertPersistedTagToMatchAllProperties(updatedTag);
-
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(tagSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
-                List<Tag> tagSearchList = Streamable.of(tagSearchRepository.findAll()).toList();
-                Tag testTagSearch = tagSearchList.get(searchDatabaseSizeAfter - 1);
-
-                assertTagAllPropertiesEquals(testTagSearch, updatedTag);
-            });
     }
 
     @Test
     @Transactional
     void putNonExistingTag() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(tagSearchRepository.findAll());
         tag.setId(UUID.randomUUID());
 
         // Create the Tag
@@ -270,15 +229,12 @@ class TagResourceIT {
 
         // Validate the Tag in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(tagSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithIdMismatchTag() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(tagSearchRepository.findAll());
         tag.setId(UUID.randomUUID());
 
         // Create the Tag
@@ -293,15 +249,12 @@ class TagResourceIT {
 
         // Validate the Tag in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(tagSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithMissingIdPathParamTag() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(tagSearchRepository.findAll());
         tag.setId(UUID.randomUUID());
 
         // Create the Tag
@@ -314,8 +267,6 @@ class TagResourceIT {
 
         // Validate the Tag in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(tagSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -376,7 +327,6 @@ class TagResourceIT {
     @Transactional
     void patchNonExistingTag() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(tagSearchRepository.findAll());
         tag.setId(UUID.randomUUID());
 
         // Create the Tag
@@ -391,15 +341,12 @@ class TagResourceIT {
 
         // Validate the Tag in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(tagSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithIdMismatchTag() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(tagSearchRepository.findAll());
         tag.setId(UUID.randomUUID());
 
         // Create the Tag
@@ -416,15 +363,12 @@ class TagResourceIT {
 
         // Validate the Tag in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(tagSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithMissingIdPathParamTag() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(tagSearchRepository.findAll());
         tag.setId(UUID.randomUUID());
 
         // Create the Tag
@@ -437,8 +381,6 @@ class TagResourceIT {
 
         // Validate the Tag in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(tagSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -446,12 +388,8 @@ class TagResourceIT {
     void deleteTag() throws Exception {
         // Initialize the database
         insertedTag = tagRepository.saveAndFlush(tag);
-        tagRepository.save(tag);
-        tagSearchRepository.save(tag);
 
         long databaseSizeBeforeDelete = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(tagSearchRepository.findAll());
-        assertThat(searchDatabaseSizeBefore).isEqualTo(databaseSizeBeforeDelete);
 
         // Delete the tag
         restTagMockMvc
@@ -460,24 +398,6 @@ class TagResourceIT {
 
         // Validate the database contains one less item
         assertDecrementedRepositoryCount(databaseSizeBeforeDelete);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(tagSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore - 1);
-    }
-
-    @Test
-    @Transactional
-    void searchTag() throws Exception {
-        // Initialize the database
-        insertedTag = tagRepository.saveAndFlush(tag);
-        tagSearchRepository.save(tag);
-
-        // Search the tag
-        restTagMockMvc
-            .perform(get(ENTITY_SEARCH_API_URL + "?query=id:" + tag.getId()))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(tag.getId().toString())))
-            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)));
     }
 
     protected long getRepositoryCount() {

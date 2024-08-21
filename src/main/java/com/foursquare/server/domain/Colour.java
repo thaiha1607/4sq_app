@@ -17,7 +17,6 @@ import org.springframework.data.domain.Persistable;
 @Table(name = "colour")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @JsonIgnoreProperties(value = { "new" })
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "colour")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class Colour extends AbstractAuditingEntity<UUID> implements Serializable, Persistable<UUID> {
 
@@ -33,7 +32,6 @@ public class Colour extends AbstractAuditingEntity<UUID> implements Serializable
      */
     @NotNull
     @Column(name = "name", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String name;
 
     /**
@@ -42,7 +40,6 @@ public class Colour extends AbstractAuditingEntity<UUID> implements Serializable
     @NotNull
     @Pattern(regexp = "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$")
     @Column(name = "hex_code", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String hexCode;
 
     // Inherited createdBy definition

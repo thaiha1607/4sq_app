@@ -3,9 +3,7 @@ package com.foursquare.server.web.rest;
 import static com.foursquare.server.domain.WorkingUnitAsserts.*;
 import static com.foursquare.server.web.rest.TestUtil.createUpdateProxyForBean;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.hasItem;
-import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -14,20 +12,15 @@ import com.foursquare.server.IntegrationTest;
 import com.foursquare.server.domain.WorkingUnit;
 import com.foursquare.server.domain.enumeration.WorkingUnitType;
 import com.foursquare.server.repository.WorkingUnitRepository;
-import com.foursquare.server.repository.search.WorkingUnitSearchRepository;
 import com.foursquare.server.service.dto.WorkingUnitDTO;
 import com.foursquare.server.service.mapper.WorkingUnitMapper;
 import jakarta.persistence.EntityManager;
-import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-import org.assertj.core.util.IterableUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.data.util.Streamable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -52,7 +45,6 @@ class WorkingUnitResourceIT {
 
     private static final String ENTITY_API_URL = "/api/working-units";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
-    private static final String ENTITY_SEARCH_API_URL = "/api/working-units/_search";
 
     @Autowired
     private ObjectMapper om;
@@ -62,9 +54,6 @@ class WorkingUnitResourceIT {
 
     @Autowired
     private WorkingUnitMapper workingUnitMapper;
-
-    @Autowired
-    private WorkingUnitSearchRepository workingUnitSearchRepository;
 
     @Autowired
     private EntityManager em;
@@ -107,7 +96,6 @@ class WorkingUnitResourceIT {
     public void cleanup() {
         if (insertedWorkingUnit != null) {
             workingUnitRepository.delete(insertedWorkingUnit);
-            workingUnitSearchRepository.delete(insertedWorkingUnit);
             insertedWorkingUnit = null;
         }
     }
@@ -116,7 +104,6 @@ class WorkingUnitResourceIT {
     @Transactional
     void createWorkingUnit() throws Exception {
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(workingUnitSearchRepository.findAll());
         // Create the WorkingUnit
         WorkingUnitDTO workingUnitDTO = workingUnitMapper.toDto(workingUnit);
         var returnedWorkingUnitDTO = om.readValue(
@@ -134,13 +121,6 @@ class WorkingUnitResourceIT {
         var returnedWorkingUnit = workingUnitMapper.toEntity(returnedWorkingUnitDTO);
         assertWorkingUnitUpdatableFieldsEquals(returnedWorkingUnit, getPersistedWorkingUnit(returnedWorkingUnit));
 
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(workingUnitSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore + 1);
-            });
-
         insertedWorkingUnit = returnedWorkingUnit;
     }
 
@@ -152,7 +132,6 @@ class WorkingUnitResourceIT {
         WorkingUnitDTO workingUnitDTO = workingUnitMapper.toDto(workingUnit);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(workingUnitSearchRepository.findAll());
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restWorkingUnitMockMvc
@@ -161,15 +140,12 @@ class WorkingUnitResourceIT {
 
         // Validate the WorkingUnit in the database
         assertSameRepositoryCount(databaseSizeBeforeCreate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(workingUnitSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkNameIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(workingUnitSearchRepository.findAll());
         // set the field null
         workingUnit.setName(null);
 
@@ -181,16 +157,12 @@ class WorkingUnitResourceIT {
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
-
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(workingUnitSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkTypeIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(workingUnitSearchRepository.findAll());
         // set the field null
         workingUnit.setType(null);
 
@@ -202,9 +174,6 @@ class WorkingUnitResourceIT {
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
-
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(workingUnitSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -255,8 +224,6 @@ class WorkingUnitResourceIT {
         insertedWorkingUnit = workingUnitRepository.saveAndFlush(workingUnit);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        workingUnitSearchRepository.save(workingUnit);
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(workingUnitSearchRepository.findAll());
 
         // Update the workingUnit
         WorkingUnit updatedWorkingUnit = workingUnitRepository.findById(workingUnit.getId()).orElseThrow();
@@ -276,24 +243,12 @@ class WorkingUnitResourceIT {
         // Validate the WorkingUnit in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
         assertPersistedWorkingUnitToMatchAllProperties(updatedWorkingUnit);
-
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(workingUnitSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
-                List<WorkingUnit> workingUnitSearchList = Streamable.of(workingUnitSearchRepository.findAll()).toList();
-                WorkingUnit testWorkingUnitSearch = workingUnitSearchList.get(searchDatabaseSizeAfter - 1);
-
-                assertWorkingUnitAllPropertiesEquals(testWorkingUnitSearch, updatedWorkingUnit);
-            });
     }
 
     @Test
     @Transactional
     void putNonExistingWorkingUnit() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(workingUnitSearchRepository.findAll());
         workingUnit.setId(UUID.randomUUID());
 
         // Create the WorkingUnit
@@ -310,15 +265,12 @@ class WorkingUnitResourceIT {
 
         // Validate the WorkingUnit in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(workingUnitSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithIdMismatchWorkingUnit() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(workingUnitSearchRepository.findAll());
         workingUnit.setId(UUID.randomUUID());
 
         // Create the WorkingUnit
@@ -335,15 +287,12 @@ class WorkingUnitResourceIT {
 
         // Validate the WorkingUnit in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(workingUnitSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithMissingIdPathParamWorkingUnit() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(workingUnitSearchRepository.findAll());
         workingUnit.setId(UUID.randomUUID());
 
         // Create the WorkingUnit
@@ -356,8 +305,6 @@ class WorkingUnitResourceIT {
 
         // Validate the WorkingUnit in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(workingUnitSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -423,7 +370,6 @@ class WorkingUnitResourceIT {
     @Transactional
     void patchNonExistingWorkingUnit() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(workingUnitSearchRepository.findAll());
         workingUnit.setId(UUID.randomUUID());
 
         // Create the WorkingUnit
@@ -440,15 +386,12 @@ class WorkingUnitResourceIT {
 
         // Validate the WorkingUnit in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(workingUnitSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithIdMismatchWorkingUnit() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(workingUnitSearchRepository.findAll());
         workingUnit.setId(UUID.randomUUID());
 
         // Create the WorkingUnit
@@ -465,15 +408,12 @@ class WorkingUnitResourceIT {
 
         // Validate the WorkingUnit in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(workingUnitSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithMissingIdPathParamWorkingUnit() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(workingUnitSearchRepository.findAll());
         workingUnit.setId(UUID.randomUUID());
 
         // Create the WorkingUnit
@@ -486,8 +426,6 @@ class WorkingUnitResourceIT {
 
         // Validate the WorkingUnit in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(workingUnitSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -495,12 +433,8 @@ class WorkingUnitResourceIT {
     void deleteWorkingUnit() throws Exception {
         // Initialize the database
         insertedWorkingUnit = workingUnitRepository.saveAndFlush(workingUnit);
-        workingUnitRepository.save(workingUnit);
-        workingUnitSearchRepository.save(workingUnit);
 
         long databaseSizeBeforeDelete = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(workingUnitSearchRepository.findAll());
-        assertThat(searchDatabaseSizeBefore).isEqualTo(databaseSizeBeforeDelete);
 
         // Delete the workingUnit
         restWorkingUnitMockMvc
@@ -509,26 +443,6 @@ class WorkingUnitResourceIT {
 
         // Validate the database contains one less item
         assertDecrementedRepositoryCount(databaseSizeBeforeDelete);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(workingUnitSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore - 1);
-    }
-
-    @Test
-    @Transactional
-    void searchWorkingUnit() throws Exception {
-        // Initialize the database
-        insertedWorkingUnit = workingUnitRepository.saveAndFlush(workingUnit);
-        workingUnitSearchRepository.save(workingUnit);
-
-        // Search the workingUnit
-        restWorkingUnitMockMvc
-            .perform(get(ENTITY_SEARCH_API_URL + "?query=id:" + workingUnit.getId()))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(workingUnit.getId().toString())))
-            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
-            .andExpect(jsonPath("$.[*].type").value(hasItem(DEFAULT_TYPE.toString())))
-            .andExpect(jsonPath("$.[*].imageUri").value(hasItem(DEFAULT_IMAGE_URI)));
     }
 
     protected long getRepositoryCount() {

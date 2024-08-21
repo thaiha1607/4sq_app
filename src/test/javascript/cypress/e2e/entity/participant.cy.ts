@@ -31,7 +31,7 @@ describe('Participant e2e test', () => {
     cy.authenticatedRequest({
       method: 'POST',
       url: '/api/users',
-      body: {"login":"5","firstName":"Dimitri","lastName":"Lockman","email":"Buddy.Kihn76@hotmail.com","imageUrl":"phooey"},
+      body: {"login":"Z@KtRWuX\\PY0Cxl\\`sp70\\<TqgIPs\\`con3\\G6xpW","firstName":"Earline","lastName":"Bailey","email":"Easton.Bogan80@gmail.com","imageUrl":"geez misfile"},
     }).then(({ body }) => {
       user = body;
     });

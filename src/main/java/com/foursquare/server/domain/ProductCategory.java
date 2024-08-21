@@ -17,7 +17,6 @@ import org.springframework.data.domain.Persistable;
 @Table(name = "product_category")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @JsonIgnoreProperties(value = { "new" })
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "productcategory")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class ProductCategory extends AbstractAuditingEntity<UUID> implements Serializable, Persistable<UUID> {
 
@@ -29,11 +28,9 @@ public class ProductCategory extends AbstractAuditingEntity<UUID> implements Ser
     private UUID id;
 
     @Column(name = "name")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String name;
 
     @Column(name = "image_uri")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String imageUri;
 
     // Inherited createdBy definition

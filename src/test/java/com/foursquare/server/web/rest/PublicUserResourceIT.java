@@ -7,7 +7,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.foursquare.server.IntegrationTest;
 import com.foursquare.server.domain.User;
 import com.foursquare.server.repository.UserRepository;
-import com.foursquare.server.repository.search.UserSearchRepository;
 import com.foursquare.server.security.AuthoritiesConstants;
 import com.foursquare.server.service.UserService;
 import jakarta.persistence.EntityManager;
@@ -40,14 +39,6 @@ class PublicUserResourceIT {
 
     @Autowired
     private UserService userService;
-
-    /**
-     * This repository is mocked in the com.foursquare.server.repository.search test package.
-     *
-     * @see com.foursquare.server.repository.search.UserSearchRepositoryMockConfiguration
-     */
-    @Autowired
-    private UserSearchRepository mockUserSearchRepository;
 
     @Autowired
     private EntityManager em;

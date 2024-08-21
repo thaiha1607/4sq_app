@@ -2,7 +2,6 @@ package com.foursquare.server.service;
 
 import com.foursquare.server.domain.WorkingUnit;
 import com.foursquare.server.repository.WorkingUnitRepository;
-import com.foursquare.server.repository.search.WorkingUnitSearchRepository;
 import com.foursquare.server.service.dto.WorkingUnitDTO;
 import com.foursquare.server.service.mapper.WorkingUnitMapper;
 import java.util.LinkedList;
@@ -10,7 +9,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -29,16 +27,9 @@ public class WorkingUnitService {
 
     private final WorkingUnitMapper workingUnitMapper;
 
-    private final WorkingUnitSearchRepository workingUnitSearchRepository;
-
-    public WorkingUnitService(
-        WorkingUnitRepository workingUnitRepository,
-        WorkingUnitMapper workingUnitMapper,
-        WorkingUnitSearchRepository workingUnitSearchRepository
-    ) {
+    public WorkingUnitService(WorkingUnitRepository workingUnitRepository, WorkingUnitMapper workingUnitMapper) {
         this.workingUnitRepository = workingUnitRepository;
         this.workingUnitMapper = workingUnitMapper;
-        this.workingUnitSearchRepository = workingUnitSearchRepository;
     }
 
     /**
@@ -51,7 +42,6 @@ public class WorkingUnitService {
         log.debug("Request to save WorkingUnit : {}", workingUnitDTO);
         WorkingUnit workingUnit = workingUnitMapper.toEntity(workingUnitDTO);
         workingUnit = workingUnitRepository.save(workingUnit);
-        workingUnitSearchRepository.index(workingUnit);
         return workingUnitMapper.toDto(workingUnit);
     }
 
@@ -66,7 +56,6 @@ public class WorkingUnitService {
         WorkingUnit workingUnit = workingUnitMapper.toEntity(workingUnitDTO);
         workingUnit.setIsPersisted();
         workingUnit = workingUnitRepository.save(workingUnit);
-        workingUnitSearchRepository.index(workingUnit);
         return workingUnitMapper.toDto(workingUnit);
     }
 
@@ -87,10 +76,6 @@ public class WorkingUnitService {
                 return existingWorkingUnit;
             })
             .map(workingUnitRepository::save)
-            .map(savedWorkingUnit -> {
-                workingUnitSearchRepository.index(savedWorkingUnit);
-                return savedWorkingUnit;
-            })
             .map(workingUnitMapper::toDto);
     }
 
@@ -125,24 +110,5 @@ public class WorkingUnitService {
     public void delete(UUID id) {
         log.debug("Request to delete WorkingUnit : {}", id);
         workingUnitRepository.deleteById(id);
-        workingUnitSearchRepository.deleteFromIndexById(id);
-    }
-
-    /**
-     * Search for the workingUnit corresponding to the query.
-     *
-     * @param query the query of the search.
-     * @return the list of entities.
-     */
-    @Transactional(readOnly = true)
-    public List<WorkingUnitDTO> search(String query) {
-        log.debug("Request to search WorkingUnits for query {}", query);
-        try {
-            return StreamSupport.stream(workingUnitSearchRepository.search(query).spliterator(), false)
-                .map(workingUnitMapper::toDto)
-                .toList();
-        } catch (RuntimeException e) {
-            throw e;
-        }
     }
 }

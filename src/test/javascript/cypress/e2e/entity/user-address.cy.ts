@@ -31,7 +31,7 @@ describe('UserAddress e2e test', () => {
     cy.authenticatedRequest({
       method: 'POST',
       url: '/api/users',
-      body: {"login":"5_@3YS\\9Wpel\\!xfXZh","firstName":"Lauriane","lastName":"Stanton","email":"Margaretta.Hauck31@hotmail.com","imageUrl":"certainly excepting"},
+      body: {"login":"KLDi-","firstName":"Jaleel","lastName":"Kohler","email":"Stacy.Bailey@yahoo.com","imageUrl":"dressing"},
     }).then(({ body }) => {
       user = body;
     });

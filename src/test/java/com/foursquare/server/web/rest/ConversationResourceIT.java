@@ -3,9 +3,7 @@ package com.foursquare.server.web.rest;
 import static com.foursquare.server.domain.ConversationAsserts.*;
 import static com.foursquare.server.web.rest.TestUtil.createUpdateProxyForBean;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.hasItem;
-import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -13,20 +11,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foursquare.server.IntegrationTest;
 import com.foursquare.server.domain.Conversation;
 import com.foursquare.server.repository.ConversationRepository;
-import com.foursquare.server.repository.search.ConversationSearchRepository;
 import com.foursquare.server.service.dto.ConversationDTO;
 import com.foursquare.server.service.mapper.ConversationMapper;
 import jakarta.persistence.EntityManager;
-import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-import org.assertj.core.util.IterableUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.data.util.Streamable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -45,7 +38,6 @@ class ConversationResourceIT {
 
     private static final String ENTITY_API_URL = "/api/conversations";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
-    private static final String ENTITY_SEARCH_API_URL = "/api/conversations/_search";
 
     @Autowired
     private ObjectMapper om;
@@ -55,9 +47,6 @@ class ConversationResourceIT {
 
     @Autowired
     private ConversationMapper conversationMapper;
-
-    @Autowired
-    private ConversationSearchRepository conversationSearchRepository;
 
     @Autowired
     private EntityManager em;
@@ -100,7 +89,6 @@ class ConversationResourceIT {
     public void cleanup() {
         if (insertedConversation != null) {
             conversationRepository.delete(insertedConversation);
-            conversationSearchRepository.delete(insertedConversation);
             insertedConversation = null;
         }
     }
@@ -109,7 +97,6 @@ class ConversationResourceIT {
     @Transactional
     void createConversation() throws Exception {
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(conversationSearchRepository.findAll());
         // Create the Conversation
         ConversationDTO conversationDTO = conversationMapper.toDto(conversation);
         var returnedConversationDTO = om.readValue(
@@ -127,13 +114,6 @@ class ConversationResourceIT {
         var returnedConversation = conversationMapper.toEntity(returnedConversationDTO);
         assertConversationUpdatableFieldsEquals(returnedConversation, getPersistedConversation(returnedConversation));
 
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(conversationSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore + 1);
-            });
-
         insertedConversation = returnedConversation;
     }
 
@@ -145,7 +125,6 @@ class ConversationResourceIT {
         ConversationDTO conversationDTO = conversationMapper.toDto(conversation);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(conversationSearchRepository.findAll());
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restConversationMockMvc
@@ -154,15 +133,12 @@ class ConversationResourceIT {
 
         // Validate the Conversation in the database
         assertSameRepositoryCount(databaseSizeBeforeCreate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(conversationSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkTitleIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(conversationSearchRepository.findAll());
         // set the field null
         conversation.setTitle(null);
 
@@ -174,9 +150,6 @@ class ConversationResourceIT {
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
-
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(conversationSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -223,8 +196,6 @@ class ConversationResourceIT {
         insertedConversation = conversationRepository.saveAndFlush(conversation);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        conversationSearchRepository.save(conversation);
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(conversationSearchRepository.findAll());
 
         // Update the conversation
         Conversation updatedConversation = conversationRepository.findById(conversation.getId()).orElseThrow();
@@ -244,24 +215,12 @@ class ConversationResourceIT {
         // Validate the Conversation in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
         assertPersistedConversationToMatchAllProperties(updatedConversation);
-
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(conversationSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
-                List<Conversation> conversationSearchList = Streamable.of(conversationSearchRepository.findAll()).toList();
-                Conversation testConversationSearch = conversationSearchList.get(searchDatabaseSizeAfter - 1);
-
-                assertConversationAllPropertiesEquals(testConversationSearch, updatedConversation);
-            });
     }
 
     @Test
     @Transactional
     void putNonExistingConversation() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(conversationSearchRepository.findAll());
         conversation.setId(UUID.randomUUID());
 
         // Create the Conversation
@@ -278,15 +237,12 @@ class ConversationResourceIT {
 
         // Validate the Conversation in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(conversationSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithIdMismatchConversation() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(conversationSearchRepository.findAll());
         conversation.setId(UUID.randomUUID());
 
         // Create the Conversation
@@ -303,15 +259,12 @@ class ConversationResourceIT {
 
         // Validate the Conversation in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(conversationSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithMissingIdPathParamConversation() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(conversationSearchRepository.findAll());
         conversation.setId(UUID.randomUUID());
 
         // Create the Conversation
@@ -324,8 +277,6 @@ class ConversationResourceIT {
 
         // Validate the Conversation in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(conversationSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -391,7 +342,6 @@ class ConversationResourceIT {
     @Transactional
     void patchNonExistingConversation() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(conversationSearchRepository.findAll());
         conversation.setId(UUID.randomUUID());
 
         // Create the Conversation
@@ -408,15 +358,12 @@ class ConversationResourceIT {
 
         // Validate the Conversation in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(conversationSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithIdMismatchConversation() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(conversationSearchRepository.findAll());
         conversation.setId(UUID.randomUUID());
 
         // Create the Conversation
@@ -433,15 +380,12 @@ class ConversationResourceIT {
 
         // Validate the Conversation in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(conversationSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithMissingIdPathParamConversation() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(conversationSearchRepository.findAll());
         conversation.setId(UUID.randomUUID());
 
         // Create the Conversation
@@ -454,8 +398,6 @@ class ConversationResourceIT {
 
         // Validate the Conversation in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(conversationSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -463,12 +405,8 @@ class ConversationResourceIT {
     void deleteConversation() throws Exception {
         // Initialize the database
         insertedConversation = conversationRepository.saveAndFlush(conversation);
-        conversationRepository.save(conversation);
-        conversationSearchRepository.save(conversation);
 
         long databaseSizeBeforeDelete = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(conversationSearchRepository.findAll());
-        assertThat(searchDatabaseSizeBefore).isEqualTo(databaseSizeBeforeDelete);
 
         // Delete the conversation
         restConversationMockMvc
@@ -477,24 +415,6 @@ class ConversationResourceIT {
 
         // Validate the database contains one less item
         assertDecrementedRepositoryCount(databaseSizeBeforeDelete);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(conversationSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore - 1);
-    }
-
-    @Test
-    @Transactional
-    void searchConversation() throws Exception {
-        // Initialize the database
-        insertedConversation = conversationRepository.saveAndFlush(conversation);
-        conversationSearchRepository.save(conversation);
-
-        // Search the conversation
-        restConversationMockMvc
-            .perform(get(ENTITY_SEARCH_API_URL + "?query=id:" + conversation.getId()))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(conversation.getId().toString())))
-            .andExpect(jsonPath("$.[*].title").value(hasItem(DEFAULT_TITLE)));
     }
 
     protected long getRepositoryCount() {

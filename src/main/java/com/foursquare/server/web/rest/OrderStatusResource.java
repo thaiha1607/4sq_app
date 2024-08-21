@@ -4,7 +4,6 @@ import com.foursquare.server.repository.OrderStatusRepository;
 import com.foursquare.server.service.OrderStatusService;
 import com.foursquare.server.service.dto.OrderStatusDTO;
 import com.foursquare.server.web.rest.errors.BadRequestAlertException;
-import com.foursquare.server.web.rest.errors.ElasticsearchExceptionMapper;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
@@ -168,22 +167,5 @@ public class OrderStatusResource {
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
-    }
-
-    /**
-     * {@code SEARCH  /order-statuses/_search?query=:query} : search for the orderStatus corresponding
-     * to the query.
-     *
-     * @param query the query of the orderStatus search.
-     * @return the result of the search.
-     */
-    @GetMapping("/_search")
-    public List<OrderStatusDTO> searchOrderStatuses(@RequestParam("query") String query) {
-        log.debug("REST request to search OrderStatuses for query {}", query);
-        try {
-            return orderStatusService.search(query);
-        } catch (RuntimeException e) {
-            throw ElasticsearchExceptionMapper.mapException(e);
-        }
     }
 }

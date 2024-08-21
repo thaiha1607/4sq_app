@@ -17,7 +17,6 @@ import org.springframework.data.domain.Persistable;
 @Table(name = "product_image")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @JsonIgnoreProperties(value = { "new" })
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "productimage")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class ProductImage extends AbstractAuditingEntity<UUID> implements Serializable, Persistable<UUID> {
 
@@ -30,11 +29,9 @@ public class ProductImage extends AbstractAuditingEntity<UUID> implements Serial
 
     @NotNull
     @Column(name = "image_uri", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String imageUri;
 
     @Column(name = "alt_text")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String altText;
 
     // Inherited createdBy definition

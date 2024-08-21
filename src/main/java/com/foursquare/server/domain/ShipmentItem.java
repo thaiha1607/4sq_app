@@ -18,7 +18,6 @@ import org.springframework.data.domain.Persistable;
 @Table(name = "shipment_item")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @JsonIgnoreProperties(value = { "new" })
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "shipmentitem")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class ShipmentItem extends AbstractAuditingEntity<UUID> implements Serializable, Persistable<UUID> {
 
@@ -32,7 +31,6 @@ public class ShipmentItem extends AbstractAuditingEntity<UUID> implements Serial
     @NotNull
     @Min(value = 0)
     @Column(name = "qty", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer qty;
 
     @NotNull
@@ -43,7 +41,6 @@ public class ShipmentItem extends AbstractAuditingEntity<UUID> implements Serial
     @NotNull
     @Min(value = 0)
     @Column(name = "roll_qty", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer rollQty;
 
     // Inherited createdBy definition

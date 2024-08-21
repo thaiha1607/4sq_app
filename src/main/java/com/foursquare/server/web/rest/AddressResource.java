@@ -4,7 +4,6 @@ import com.foursquare.server.repository.AddressRepository;
 import com.foursquare.server.service.AddressService;
 import com.foursquare.server.service.dto.AddressDTO;
 import com.foursquare.server.web.rest.errors.BadRequestAlertException;
-import com.foursquare.server.web.rest.errors.ElasticsearchExceptionMapper;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
@@ -169,22 +168,5 @@ public class AddressResource {
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
-    }
-
-    /**
-     * {@code SEARCH  /addresses/_search?query=:query} : search for the address corresponding
-     * to the query.
-     *
-     * @param query the query of the address search.
-     * @return the result of the search.
-     */
-    @GetMapping("/_search")
-    public List<AddressDTO> searchAddresses(@RequestParam("query") String query) {
-        log.debug("REST request to search Addresses for query {}", query);
-        try {
-            return addressService.search(query);
-        } catch (RuntimeException e) {
-            throw ElasticsearchExceptionMapper.mapException(e);
-        }
     }
 }

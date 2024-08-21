@@ -19,7 +19,6 @@ import org.springframework.data.domain.Persistable;
 @Table(name = "conversation")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @JsonIgnoreProperties(value = { "new" })
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "conversation")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class Conversation extends AbstractAuditingEntity<UUID> implements Serializable, Persistable<UUID> {
 
@@ -33,7 +32,6 @@ public class Conversation extends AbstractAuditingEntity<UUID> implements Serial
     @NotNull
     @Size(max = 100)
     @Column(name = "title", length = 100, nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String title;
 
     // Inherited createdBy definition
@@ -45,7 +43,6 @@ public class Conversation extends AbstractAuditingEntity<UUID> implements Serial
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "conversation")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @org.springframework.data.annotation.Transient
     @JsonIgnoreProperties(value = { "user", "conversation", "messages", "seenMessages" }, allowSetters = true)
     private Set<Participant> participants = new HashSet<>();
 

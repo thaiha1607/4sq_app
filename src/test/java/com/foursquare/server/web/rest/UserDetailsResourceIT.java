@@ -3,7 +3,6 @@ package com.foursquare.server.web.rest;
 import static com.foursquare.server.domain.UserDetailsAsserts.*;
 import static com.foursquare.server.web.rest.TestUtil.createUpdateProxyForBean;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -15,17 +14,13 @@ import com.foursquare.server.domain.User;
 import com.foursquare.server.domain.UserDetails;
 import com.foursquare.server.repository.UserDetailsRepository;
 import com.foursquare.server.repository.UserRepository;
-import com.foursquare.server.repository.search.UserDetailsSearchRepository;
 import com.foursquare.server.service.UserDetailsService;
 import com.foursquare.server.service.dto.UserDetailsDTO;
 import com.foursquare.server.service.mapper.UserDetailsMapper;
 import jakarta.persistence.EntityManager;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-import org.assertj.core.util.IterableUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,7 +31,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.util.Streamable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -56,7 +50,6 @@ class UserDetailsResourceIT {
 
     private static final String ENTITY_API_URL = "/api/user-details";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
-    private static final String ENTITY_SEARCH_API_URL = "/api/user-details/_search";
 
     private static Random random = new Random();
     private static AtomicLong longCount = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
@@ -78,9 +71,6 @@ class UserDetailsResourceIT {
 
     @Mock
     private UserDetailsService userDetailsServiceMock;
-
-    @Autowired
-    private UserDetailsSearchRepository userDetailsSearchRepository;
 
     @Autowired
     private EntityManager em;
@@ -133,7 +123,6 @@ class UserDetailsResourceIT {
     public void cleanup() {
         if (insertedUserDetails != null) {
             userDetailsRepository.delete(insertedUserDetails);
-            userDetailsSearchRepository.delete(insertedUserDetails);
             insertedUserDetails = null;
         }
     }
@@ -142,7 +131,6 @@ class UserDetailsResourceIT {
     @Transactional
     void createUserDetails() throws Exception {
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(userDetailsSearchRepository.findAll());
         // Create the UserDetails
         UserDetailsDTO userDetailsDTO = userDetailsMapper.toDto(userDetails);
         var returnedUserDetailsDTO = om.readValue(
@@ -160,13 +148,6 @@ class UserDetailsResourceIT {
         var returnedUserDetails = userDetailsMapper.toEntity(returnedUserDetailsDTO);
         assertUserDetailsUpdatableFieldsEquals(returnedUserDetails, getPersistedUserDetails(returnedUserDetails));
 
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(userDetailsSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore + 1);
-            });
-
         insertedUserDetails = returnedUserDetails;
     }
 
@@ -178,7 +159,6 @@ class UserDetailsResourceIT {
         UserDetailsDTO userDetailsDTO = userDetailsMapper.toDto(userDetails);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(userDetailsSearchRepository.findAll());
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restUserDetailsMockMvc
@@ -187,8 +167,6 @@ class UserDetailsResourceIT {
 
         // Validate the UserDetails in the database
         assertSameRepositoryCount(databaseSizeBeforeCreate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(userDetailsSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -252,8 +230,6 @@ class UserDetailsResourceIT {
         insertedUserDetails = userDetailsRepository.saveAndFlush(userDetails);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        userDetailsSearchRepository.save(userDetails);
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(userDetailsSearchRepository.findAll());
 
         // Update the userDetails
         UserDetails updatedUserDetails = userDetailsRepository.findById(userDetails.getId()).orElseThrow();
@@ -273,24 +249,12 @@ class UserDetailsResourceIT {
         // Validate the UserDetails in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
         assertPersistedUserDetailsToMatchAllProperties(updatedUserDetails);
-
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(userDetailsSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
-                List<UserDetails> userDetailsSearchList = Streamable.of(userDetailsSearchRepository.findAll()).toList();
-                UserDetails testUserDetailsSearch = userDetailsSearchList.get(searchDatabaseSizeAfter - 1);
-
-                assertUserDetailsAllPropertiesEquals(testUserDetailsSearch, updatedUserDetails);
-            });
     }
 
     @Test
     @Transactional
     void putNonExistingUserDetails() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(userDetailsSearchRepository.findAll());
         userDetails.setId(longCount.incrementAndGet());
 
         // Create the UserDetails
@@ -307,15 +271,12 @@ class UserDetailsResourceIT {
 
         // Validate the UserDetails in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(userDetailsSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithIdMismatchUserDetails() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(userDetailsSearchRepository.findAll());
         userDetails.setId(longCount.incrementAndGet());
 
         // Create the UserDetails
@@ -332,15 +293,12 @@ class UserDetailsResourceIT {
 
         // Validate the UserDetails in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(userDetailsSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithMissingIdPathParamUserDetails() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(userDetailsSearchRepository.findAll());
         userDetails.setId(longCount.incrementAndGet());
 
         // Create the UserDetails
@@ -353,8 +311,6 @@ class UserDetailsResourceIT {
 
         // Validate the UserDetails in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(userDetailsSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -418,7 +374,6 @@ class UserDetailsResourceIT {
     @Transactional
     void patchNonExistingUserDetails() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(userDetailsSearchRepository.findAll());
         userDetails.setId(longCount.incrementAndGet());
 
         // Create the UserDetails
@@ -435,15 +390,12 @@ class UserDetailsResourceIT {
 
         // Validate the UserDetails in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(userDetailsSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithIdMismatchUserDetails() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(userDetailsSearchRepository.findAll());
         userDetails.setId(longCount.incrementAndGet());
 
         // Create the UserDetails
@@ -460,15 +412,12 @@ class UserDetailsResourceIT {
 
         // Validate the UserDetails in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(userDetailsSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithMissingIdPathParamUserDetails() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(userDetailsSearchRepository.findAll());
         userDetails.setId(longCount.incrementAndGet());
 
         // Create the UserDetails
@@ -481,8 +430,6 @@ class UserDetailsResourceIT {
 
         // Validate the UserDetails in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(userDetailsSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -490,12 +437,8 @@ class UserDetailsResourceIT {
     void deleteUserDetails() throws Exception {
         // Initialize the database
         insertedUserDetails = userDetailsRepository.saveAndFlush(userDetails);
-        userDetailsRepository.save(userDetails);
-        userDetailsSearchRepository.save(userDetails);
 
         long databaseSizeBeforeDelete = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(userDetailsSearchRepository.findAll());
-        assertThat(searchDatabaseSizeBefore).isEqualTo(databaseSizeBeforeDelete);
 
         // Delete the userDetails
         restUserDetailsMockMvc
@@ -504,24 +447,6 @@ class UserDetailsResourceIT {
 
         // Validate the database contains one less item
         assertDecrementedRepositoryCount(databaseSizeBeforeDelete);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(userDetailsSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore - 1);
-    }
-
-    @Test
-    @Transactional
-    void searchUserDetails() throws Exception {
-        // Initialize the database
-        insertedUserDetails = userDetailsRepository.saveAndFlush(userDetails);
-        userDetailsSearchRepository.save(userDetails);
-
-        // Search the userDetails
-        restUserDetailsMockMvc
-            .perform(get(ENTITY_SEARCH_API_URL + "?query=id:" + userDetails.getId()))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(userDetails.getId().intValue())))
-            .andExpect(jsonPath("$.[*].phone").value(hasItem(DEFAULT_PHONE)));
     }
 
     protected long getRepositoryCount() {

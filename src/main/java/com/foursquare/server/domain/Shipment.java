@@ -20,7 +20,6 @@ import org.springframework.data.domain.Persistable;
 @Table(name = "shipment")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @JsonIgnoreProperties(value = { "new" })
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "shipment")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class Shipment extends AbstractAuditingEntity<UUID> implements Serializable, Persistable<UUID> {
 
@@ -34,7 +33,6 @@ public class Shipment extends AbstractAuditingEntity<UUID> implements Serializab
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Keyword)
     private ShipmentType type;
 
     @NotNull
@@ -42,7 +40,6 @@ public class Shipment extends AbstractAuditingEntity<UUID> implements Serializab
     private Instant shipmentDate;
 
     @Column(name = "note")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String note;
 
     // Inherited createdBy definition
@@ -54,13 +51,11 @@ public class Shipment extends AbstractAuditingEntity<UUID> implements Serializab
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "shipment")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @org.springframework.data.annotation.Transient
     @JsonIgnoreProperties(value = { "user", "shipment" }, allowSetters = true)
     private Set<ShipmentAssignment> assignments = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "shipment")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @org.springframework.data.annotation.Transient
     @JsonIgnoreProperties(value = { "orderItem", "shipment" }, allowSetters = true)
     private Set<ShipmentItem> items = new HashSet<>();
 

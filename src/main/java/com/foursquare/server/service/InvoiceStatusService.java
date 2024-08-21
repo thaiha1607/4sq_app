@@ -2,14 +2,12 @@ package com.foursquare.server.service;
 
 import com.foursquare.server.domain.InvoiceStatus;
 import com.foursquare.server.repository.InvoiceStatusRepository;
-import com.foursquare.server.repository.search.InvoiceStatusSearchRepository;
 import com.foursquare.server.service.dto.InvoiceStatusDTO;
 import com.foursquare.server.service.mapper.InvoiceStatusMapper;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -28,16 +26,9 @@ public class InvoiceStatusService {
 
     private final InvoiceStatusMapper invoiceStatusMapper;
 
-    private final InvoiceStatusSearchRepository invoiceStatusSearchRepository;
-
-    public InvoiceStatusService(
-        InvoiceStatusRepository invoiceStatusRepository,
-        InvoiceStatusMapper invoiceStatusMapper,
-        InvoiceStatusSearchRepository invoiceStatusSearchRepository
-    ) {
+    public InvoiceStatusService(InvoiceStatusRepository invoiceStatusRepository, InvoiceStatusMapper invoiceStatusMapper) {
         this.invoiceStatusRepository = invoiceStatusRepository;
         this.invoiceStatusMapper = invoiceStatusMapper;
-        this.invoiceStatusSearchRepository = invoiceStatusSearchRepository;
     }
 
     /**
@@ -50,7 +41,6 @@ public class InvoiceStatusService {
         log.debug("Request to save InvoiceStatus : {}", invoiceStatusDTO);
         InvoiceStatus invoiceStatus = invoiceStatusMapper.toEntity(invoiceStatusDTO);
         invoiceStatus = invoiceStatusRepository.save(invoiceStatus);
-        invoiceStatusSearchRepository.index(invoiceStatus);
         return invoiceStatusMapper.toDto(invoiceStatus);
     }
 
@@ -65,7 +55,6 @@ public class InvoiceStatusService {
         InvoiceStatus invoiceStatus = invoiceStatusMapper.toEntity(invoiceStatusDTO);
         invoiceStatus.setIsPersisted();
         invoiceStatus = invoiceStatusRepository.save(invoiceStatus);
-        invoiceStatusSearchRepository.index(invoiceStatus);
         return invoiceStatusMapper.toDto(invoiceStatus);
     }
 
@@ -86,10 +75,6 @@ public class InvoiceStatusService {
                 return existingInvoiceStatus;
             })
             .map(invoiceStatusRepository::save)
-            .map(savedInvoiceStatus -> {
-                invoiceStatusSearchRepository.index(savedInvoiceStatus);
-                return savedInvoiceStatus;
-            })
             .map(invoiceStatusMapper::toDto);
     }
 
@@ -124,24 +109,5 @@ public class InvoiceStatusService {
     public void delete(Long id) {
         log.debug("Request to delete InvoiceStatus : {}", id);
         invoiceStatusRepository.deleteById(id);
-        invoiceStatusSearchRepository.deleteFromIndexById(id);
-    }
-
-    /**
-     * Search for the invoiceStatus corresponding to the query.
-     *
-     * @param query the query of the search.
-     * @return the list of entities.
-     */
-    @Transactional(readOnly = true)
-    public List<InvoiceStatusDTO> search(String query) {
-        log.debug("Request to search InvoiceStatuses for query {}", query);
-        try {
-            return StreamSupport.stream(invoiceStatusSearchRepository.search(query).spliterator(), false)
-                .map(invoiceStatusMapper::toDto)
-                .toList();
-        } catch (RuntimeException e) {
-            throw e;
-        }
     }
 }

@@ -3,22 +3,8 @@ import axios from 'axios';
 import { type IOrderStatus } from '@/shared/model/order-status.model';
 
 const baseApiUrl = 'api/order-statuses';
-const baseSearchApiUrl = 'api/order-statuses/_search?query=';
 
 export default class OrderStatusService {
-  public search(query): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      axios
-        .get(`${baseSearchApiUrl}${query}`)
-        .then(res => {
-          resolve(res.data);
-        })
-        .catch(err => {
-          reject(err);
-        });
-    });
-  }
-
   public find(id: number): Promise<IOrderStatus> {
     return new Promise<IOrderStatus>((resolve, reject) => {
       axios

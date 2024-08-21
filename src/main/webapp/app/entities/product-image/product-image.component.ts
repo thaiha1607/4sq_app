@@ -13,20 +13,16 @@ export default defineComponent({
     const productImageService = inject('productImageService', () => new ProductImageService());
     const alertService = inject('alertService', () => useAlertService(), true);
 
-    const currentSearch = ref('');
-
     const productImages: Ref<IProductImage[]> = ref([]);
 
     const isFetching = ref(false);
 
-    const clear = () => {
-      currentSearch.value = '';
-    };
+    const clear = () => {};
 
     const retrieveProductImages = async () => {
       isFetching.value = true;
       try {
-        const res = currentSearch.value ? await productImageService().search(currentSearch.value) : await productImageService().retrieve();
+        const res = await productImageService().retrieve();
         productImages.value = res.data;
       } catch (err) {
         alertService.showHttpError(err.response);
@@ -42,14 +38,6 @@ export default defineComponent({
     onMounted(async () => {
       await retrieveProductImages();
     });
-
-    const search = query => {
-      if (!query) {
-        return clear();
-      }
-      currentSearch.value = query;
-      retrieveProductImages();
-    };
 
     const removeId: Ref<string> = ref(null);
     const removeEntity = ref<any>(null);
@@ -80,7 +68,6 @@ export default defineComponent({
       retrieveProductImages,
       clear,
       ...dateFormat,
-      currentSearch,
       removeId,
       removeEntity,
       prepareRemove,

@@ -2,7 +2,6 @@ package com.foursquare.server.service;
 
 import com.foursquare.server.domain.ProductQuantity;
 import com.foursquare.server.repository.ProductQuantityRepository;
-import com.foursquare.server.repository.search.ProductQuantitySearchRepository;
 import com.foursquare.server.service.dto.ProductQuantityDTO;
 import com.foursquare.server.service.mapper.ProductQuantityMapper;
 import java.util.LinkedList;
@@ -10,7 +9,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -31,16 +29,9 @@ public class ProductQuantityService {
 
     private final ProductQuantityMapper productQuantityMapper;
 
-    private final ProductQuantitySearchRepository productQuantitySearchRepository;
-
-    public ProductQuantityService(
-        ProductQuantityRepository productQuantityRepository,
-        ProductQuantityMapper productQuantityMapper,
-        ProductQuantitySearchRepository productQuantitySearchRepository
-    ) {
+    public ProductQuantityService(ProductQuantityRepository productQuantityRepository, ProductQuantityMapper productQuantityMapper) {
         this.productQuantityRepository = productQuantityRepository;
         this.productQuantityMapper = productQuantityMapper;
-        this.productQuantitySearchRepository = productQuantitySearchRepository;
     }
 
     /**
@@ -53,7 +44,6 @@ public class ProductQuantityService {
         log.debug("Request to save ProductQuantity : {}", productQuantityDTO);
         ProductQuantity productQuantity = productQuantityMapper.toEntity(productQuantityDTO);
         productQuantity = productQuantityRepository.save(productQuantity);
-        productQuantitySearchRepository.index(productQuantity);
         return productQuantityMapper.toDto(productQuantity);
     }
 
@@ -68,7 +58,6 @@ public class ProductQuantityService {
         ProductQuantity productQuantity = productQuantityMapper.toEntity(productQuantityDTO);
         productQuantity.setIsPersisted();
         productQuantity = productQuantityRepository.save(productQuantity);
-        productQuantitySearchRepository.index(productQuantity);
         return productQuantityMapper.toDto(productQuantity);
     }
 
@@ -89,10 +78,6 @@ public class ProductQuantityService {
                 return existingProductQuantity;
             })
             .map(productQuantityRepository::save)
-            .map(savedProductQuantity -> {
-                productQuantitySearchRepository.index(savedProductQuantity);
-                return savedProductQuantity;
-            })
             .map(productQuantityMapper::toDto);
     }
 
@@ -140,24 +125,5 @@ public class ProductQuantityService {
     public void delete(UUID id) {
         log.debug("Request to delete ProductQuantity : {}", id);
         productQuantityRepository.deleteById(id);
-        productQuantitySearchRepository.deleteFromIndexById(id);
-    }
-
-    /**
-     * Search for the productQuantity corresponding to the query.
-     *
-     * @param query the query of the search.
-     * @return the list of entities.
-     */
-    @Transactional(readOnly = true)
-    public List<ProductQuantityDTO> search(String query) {
-        log.debug("Request to search ProductQuantities for query {}", query);
-        try {
-            return StreamSupport.stream(productQuantitySearchRepository.search(query).spliterator(), false)
-                .map(productQuantityMapper::toDto)
-                .toList();
-        } catch (RuntimeException e) {
-            throw e;
-        }
     }
 }

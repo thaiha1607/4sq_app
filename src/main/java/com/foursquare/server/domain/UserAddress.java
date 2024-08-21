@@ -18,7 +18,6 @@ import org.springframework.data.domain.Persistable;
 @Table(name = "user_address")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @JsonIgnoreProperties(value = { "new" })
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "useraddress")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class UserAddress extends AbstractAuditingEntity<UUID> implements Serializable, Persistable<UUID> {
 
@@ -32,15 +31,12 @@ public class UserAddress extends AbstractAuditingEntity<UUID> implements Seriali
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Keyword)
     private AddressType type;
 
     @Column(name = "friendly_name")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String friendlyName;
 
     @Column(name = "is_default")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Boolean)
     private Boolean isDefault;
 
     // Inherited createdBy definition

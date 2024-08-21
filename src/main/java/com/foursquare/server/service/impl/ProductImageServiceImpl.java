@@ -2,7 +2,6 @@ package com.foursquare.server.service.impl;
 
 import com.foursquare.server.domain.ProductImage;
 import com.foursquare.server.repository.ProductImageRepository;
-import com.foursquare.server.repository.search.ProductImageSearchRepository;
 import com.foursquare.server.service.ProductImageService;
 import com.foursquare.server.service.dto.ProductImageDTO;
 import com.foursquare.server.service.mapper.ProductImageMapper;
@@ -11,7 +10,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -30,16 +28,9 @@ public class ProductImageServiceImpl implements ProductImageService {
 
     private final ProductImageMapper productImageMapper;
 
-    private final ProductImageSearchRepository productImageSearchRepository;
-
-    public ProductImageServiceImpl(
-        ProductImageRepository productImageRepository,
-        ProductImageMapper productImageMapper,
-        ProductImageSearchRepository productImageSearchRepository
-    ) {
+    public ProductImageServiceImpl(ProductImageRepository productImageRepository, ProductImageMapper productImageMapper) {
         this.productImageRepository = productImageRepository;
         this.productImageMapper = productImageMapper;
-        this.productImageSearchRepository = productImageSearchRepository;
     }
 
     @Override
@@ -47,7 +38,6 @@ public class ProductImageServiceImpl implements ProductImageService {
         log.debug("Request to save ProductImage : {}", productImageDTO);
         ProductImage productImage = productImageMapper.toEntity(productImageDTO);
         productImage = productImageRepository.save(productImage);
-        productImageSearchRepository.index(productImage);
         return productImageMapper.toDto(productImage);
     }
 
@@ -57,7 +47,6 @@ public class ProductImageServiceImpl implements ProductImageService {
         ProductImage productImage = productImageMapper.toEntity(productImageDTO);
         productImage.setIsPersisted();
         productImage = productImageRepository.save(productImage);
-        productImageSearchRepository.index(productImage);
         return productImageMapper.toDto(productImage);
     }
 
@@ -73,10 +62,6 @@ public class ProductImageServiceImpl implements ProductImageService {
                 return existingProductImage;
             })
             .map(productImageRepository::save)
-            .map(savedProductImage -> {
-                productImageSearchRepository.index(savedProductImage);
-                return savedProductImage;
-            })
             .map(productImageMapper::toDto);
     }
 
@@ -98,19 +83,5 @@ public class ProductImageServiceImpl implements ProductImageService {
     public void delete(UUID id) {
         log.debug("Request to delete ProductImage : {}", id);
         productImageRepository.deleteById(id);
-        productImageSearchRepository.deleteFromIndexById(id);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<ProductImageDTO> search(String query) {
-        log.debug("Request to search ProductImages for query {}", query);
-        try {
-            return StreamSupport.stream(productImageSearchRepository.search(query).spliterator(), false)
-                .map(productImageMapper::toDto)
-                .toList();
-        } catch (RuntimeException e) {
-            throw e;
-        }
     }
 }

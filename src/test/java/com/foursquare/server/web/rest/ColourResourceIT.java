@@ -3,9 +3,7 @@ package com.foursquare.server.web.rest;
 import static com.foursquare.server.domain.ColourAsserts.*;
 import static com.foursquare.server.web.rest.TestUtil.createUpdateProxyForBean;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.hasItem;
-import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -13,20 +11,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foursquare.server.IntegrationTest;
 import com.foursquare.server.domain.Colour;
 import com.foursquare.server.repository.ColourRepository;
-import com.foursquare.server.repository.search.ColourSearchRepository;
 import com.foursquare.server.service.dto.ColourDTO;
 import com.foursquare.server.service.mapper.ColourMapper;
 import jakarta.persistence.EntityManager;
-import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-import org.assertj.core.util.IterableUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.data.util.Streamable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -48,7 +41,6 @@ class ColourResourceIT {
 
     private static final String ENTITY_API_URL = "/api/colours";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
-    private static final String ENTITY_SEARCH_API_URL = "/api/colours/_search";
 
     @Autowired
     private ObjectMapper om;
@@ -58,9 +50,6 @@ class ColourResourceIT {
 
     @Autowired
     private ColourMapper colourMapper;
-
-    @Autowired
-    private ColourSearchRepository colourSearchRepository;
 
     @Autowired
     private EntityManager em;
@@ -103,7 +92,6 @@ class ColourResourceIT {
     public void cleanup() {
         if (insertedColour != null) {
             colourRepository.delete(insertedColour);
-            colourSearchRepository.delete(insertedColour);
             insertedColour = null;
         }
     }
@@ -112,7 +100,6 @@ class ColourResourceIT {
     @Transactional
     void createColour() throws Exception {
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(colourSearchRepository.findAll());
         // Create the Colour
         ColourDTO colourDTO = colourMapper.toDto(colour);
         var returnedColourDTO = om.readValue(
@@ -130,13 +117,6 @@ class ColourResourceIT {
         var returnedColour = colourMapper.toEntity(returnedColourDTO);
         assertColourUpdatableFieldsEquals(returnedColour, getPersistedColour(returnedColour));
 
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(colourSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore + 1);
-            });
-
         insertedColour = returnedColour;
     }
 
@@ -148,7 +128,6 @@ class ColourResourceIT {
         ColourDTO colourDTO = colourMapper.toDto(colour);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(colourSearchRepository.findAll());
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restColourMockMvc
@@ -157,15 +136,12 @@ class ColourResourceIT {
 
         // Validate the Colour in the database
         assertSameRepositoryCount(databaseSizeBeforeCreate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(colourSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkNameIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(colourSearchRepository.findAll());
         // set the field null
         colour.setName(null);
 
@@ -177,16 +153,12 @@ class ColourResourceIT {
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
-
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(colourSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkHexCodeIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(colourSearchRepository.findAll());
         // set the field null
         colour.setHexCode(null);
 
@@ -198,9 +170,6 @@ class ColourResourceIT {
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
-
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(colourSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -249,8 +218,6 @@ class ColourResourceIT {
         insertedColour = colourRepository.saveAndFlush(colour);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        colourSearchRepository.save(colour);
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(colourSearchRepository.findAll());
 
         // Update the colour
         Colour updatedColour = colourRepository.findById(colour.getId()).orElseThrow();
@@ -268,24 +235,12 @@ class ColourResourceIT {
         // Validate the Colour in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
         assertPersistedColourToMatchAllProperties(updatedColour);
-
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(colourSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
-                List<Colour> colourSearchList = Streamable.of(colourSearchRepository.findAll()).toList();
-                Colour testColourSearch = colourSearchList.get(searchDatabaseSizeAfter - 1);
-
-                assertColourAllPropertiesEquals(testColourSearch, updatedColour);
-            });
     }
 
     @Test
     @Transactional
     void putNonExistingColour() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(colourSearchRepository.findAll());
         colour.setId(UUID.randomUUID());
 
         // Create the Colour
@@ -300,15 +255,12 @@ class ColourResourceIT {
 
         // Validate the Colour in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(colourSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithIdMismatchColour() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(colourSearchRepository.findAll());
         colour.setId(UUID.randomUUID());
 
         // Create the Colour
@@ -323,15 +275,12 @@ class ColourResourceIT {
 
         // Validate the Colour in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(colourSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithMissingIdPathParamColour() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(colourSearchRepository.findAll());
         colour.setId(UUID.randomUUID());
 
         // Create the Colour
@@ -344,8 +293,6 @@ class ColourResourceIT {
 
         // Validate the Colour in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(colourSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -406,7 +353,6 @@ class ColourResourceIT {
     @Transactional
     void patchNonExistingColour() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(colourSearchRepository.findAll());
         colour.setId(UUID.randomUUID());
 
         // Create the Colour
@@ -423,15 +369,12 @@ class ColourResourceIT {
 
         // Validate the Colour in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(colourSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithIdMismatchColour() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(colourSearchRepository.findAll());
         colour.setId(UUID.randomUUID());
 
         // Create the Colour
@@ -448,15 +391,12 @@ class ColourResourceIT {
 
         // Validate the Colour in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(colourSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithMissingIdPathParamColour() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(colourSearchRepository.findAll());
         colour.setId(UUID.randomUUID());
 
         // Create the Colour
@@ -469,8 +409,6 @@ class ColourResourceIT {
 
         // Validate the Colour in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(colourSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -478,12 +416,8 @@ class ColourResourceIT {
     void deleteColour() throws Exception {
         // Initialize the database
         insertedColour = colourRepository.saveAndFlush(colour);
-        colourRepository.save(colour);
-        colourSearchRepository.save(colour);
 
         long databaseSizeBeforeDelete = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(colourSearchRepository.findAll());
-        assertThat(searchDatabaseSizeBefore).isEqualTo(databaseSizeBeforeDelete);
 
         // Delete the colour
         restColourMockMvc
@@ -492,25 +426,6 @@ class ColourResourceIT {
 
         // Validate the database contains one less item
         assertDecrementedRepositoryCount(databaseSizeBeforeDelete);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(colourSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore - 1);
-    }
-
-    @Test
-    @Transactional
-    void searchColour() throws Exception {
-        // Initialize the database
-        insertedColour = colourRepository.saveAndFlush(colour);
-        colourSearchRepository.save(colour);
-
-        // Search the colour
-        restColourMockMvc
-            .perform(get(ENTITY_SEARCH_API_URL + "?query=id:" + colour.getId()))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(colour.getId().toString())))
-            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
-            .andExpect(jsonPath("$.[*].hexCode").value(hasItem(DEFAULT_HEX_CODE)));
     }
 
     protected long getRepositoryCount() {

@@ -20,7 +20,6 @@ import org.springframework.data.domain.Persistable;
 @Table(name = "jhi_order")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @JsonIgnoreProperties(value = { "new" })
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "order")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class Order extends AbstractAuditingEntity<UUID> implements Serializable, Persistable<UUID> {
 
@@ -34,25 +33,20 @@ public class Order extends AbstractAuditingEntity<UUID> implements Serializable,
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Keyword)
     private OrderType type;
 
     @Min(value = 0)
     @Max(value = 100)
     @Column(name = "priority")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer priority;
 
     @Column(name = "is_internal")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Boolean)
     private Boolean isInternal;
 
     @Column(name = "note")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String note;
 
     @Column(name = "other_info")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String otherInfo;
 
     // Inherited createdBy definition
@@ -64,19 +58,16 @@ public class Order extends AbstractAuditingEntity<UUID> implements Serializable,
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "order")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @org.springframework.data.annotation.Transient
     @JsonIgnoreProperties(value = { "shipments", "status", "order" }, allowSetters = true)
     private Set<Invoice> invoices = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "order")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @org.springframework.data.annotation.Transient
     @JsonIgnoreProperties(value = { "productCategory", "order" }, allowSetters = true)
     private Set<OrderItem> orderItems = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "parentOrder")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @org.springframework.data.annotation.Transient
     @JsonIgnoreProperties(
         value = { "invoices", "orderItems", "childOrders", "shipments", "customer", "status", "address", "parentOrder" },
         allowSetters = true
@@ -85,7 +76,6 @@ public class Order extends AbstractAuditingEntity<UUID> implements Serializable,
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "order")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @org.springframework.data.annotation.Transient
     @JsonIgnoreProperties(value = { "assignments", "items", "status", "order", "invoice" }, allowSetters = true)
     private Set<Shipment> shipments = new HashSet<>();
 

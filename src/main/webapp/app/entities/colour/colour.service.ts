@@ -3,22 +3,8 @@ import axios from 'axios';
 import { type IColour } from '@/shared/model/colour.model';
 
 const baseApiUrl = 'api/colours';
-const baseSearchApiUrl = 'api/colours/_search?query=';
 
 export default class ColourService {
-  public search(query): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      axios
-        .get(`${baseSearchApiUrl}${query}`)
-        .then(res => {
-          resolve(res.data);
-        })
-        .catch(err => {
-          reject(err);
-        });
-    });
-  }
-
   public find(id: string): Promise<IColour> {
     return new Promise<IColour>((resolve, reject) => {
       axios

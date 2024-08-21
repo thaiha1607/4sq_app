@@ -4,7 +4,6 @@ import com.foursquare.server.repository.WarehouseAssignmentRepository;
 import com.foursquare.server.service.WarehouseAssignmentService;
 import com.foursquare.server.service.dto.WarehouseAssignmentDTO;
 import com.foursquare.server.web.rest.errors.BadRequestAlertException;
-import com.foursquare.server.web.rest.errors.ElasticsearchExceptionMapper;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
@@ -177,22 +176,5 @@ public class WarehouseAssignmentResource {
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
-    }
-
-    /**
-     * {@code SEARCH  /warehouse-assignments/_search?query=:query} : search for the warehouseAssignment corresponding
-     * to the query.
-     *
-     * @param query the query of the warehouseAssignment search.
-     * @return the result of the search.
-     */
-    @GetMapping("/_search")
-    public List<WarehouseAssignmentDTO> searchWarehouseAssignments(@RequestParam("query") String query) {
-        log.debug("REST request to search WarehouseAssignments for query {}", query);
-        try {
-            return warehouseAssignmentService.search(query);
-        } catch (RuntimeException e) {
-            throw ElasticsearchExceptionMapper.mapException(e);
-        }
     }
 }

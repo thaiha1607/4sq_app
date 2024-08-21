@@ -13,22 +13,16 @@ export default defineComponent({
     const productCategoryService = inject('productCategoryService', () => new ProductCategoryService());
     const alertService = inject('alertService', () => useAlertService(), true);
 
-    const currentSearch = ref('');
-
     const productCategories: Ref<IProductCategory[]> = ref([]);
 
     const isFetching = ref(false);
 
-    const clear = () => {
-      currentSearch.value = '';
-    };
+    const clear = () => {};
 
     const retrieveProductCategorys = async () => {
       isFetching.value = true;
       try {
-        const res = currentSearch.value
-          ? await productCategoryService().search(currentSearch.value)
-          : await productCategoryService().retrieve();
+        const res = await productCategoryService().retrieve();
         productCategories.value = res.data;
       } catch (err) {
         alertService.showHttpError(err.response);
@@ -44,14 +38,6 @@ export default defineComponent({
     onMounted(async () => {
       await retrieveProductCategorys();
     });
-
-    const search = query => {
-      if (!query) {
-        return clear();
-      }
-      currentSearch.value = query;
-      retrieveProductCategorys();
-    };
 
     const removeId: Ref<string> = ref(null);
     const removeEntity = ref<any>(null);
@@ -82,7 +68,6 @@ export default defineComponent({
       retrieveProductCategorys,
       clear,
       ...dateFormat,
-      currentSearch,
       removeId,
       removeEntity,
       prepareRemove,

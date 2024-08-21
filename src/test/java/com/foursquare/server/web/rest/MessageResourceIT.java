@@ -3,7 +3,6 @@ package com.foursquare.server.web.rest;
 import static com.foursquare.server.domain.MessageAsserts.*;
 import static com.foursquare.server.web.rest.TestUtil.createUpdateProxyForBean;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -14,16 +13,12 @@ import com.foursquare.server.IntegrationTest;
 import com.foursquare.server.domain.Message;
 import com.foursquare.server.domain.enumeration.MessageType;
 import com.foursquare.server.repository.MessageRepository;
-import com.foursquare.server.repository.search.MessageSearchRepository;
 import com.foursquare.server.service.MessageService;
 import com.foursquare.server.service.dto.MessageDTO;
 import com.foursquare.server.service.mapper.MessageMapper;
 import jakarta.persistence.EntityManager;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-import org.assertj.core.util.IterableUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,7 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.util.Streamable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -57,7 +51,6 @@ class MessageResourceIT {
 
     private static final String ENTITY_API_URL = "/api/messages";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
-    private static final String ENTITY_SEARCH_API_URL = "/api/messages/_search";
 
     @Autowired
     private ObjectMapper om;
@@ -73,9 +66,6 @@ class MessageResourceIT {
 
     @Mock
     private MessageService messageServiceMock;
-
-    @Autowired
-    private MessageSearchRepository messageSearchRepository;
 
     @Autowired
     private EntityManager em;
@@ -118,7 +108,6 @@ class MessageResourceIT {
     public void cleanup() {
         if (insertedMessage != null) {
             messageRepository.delete(insertedMessage);
-            messageSearchRepository.delete(insertedMessage);
             insertedMessage = null;
         }
     }
@@ -127,7 +116,6 @@ class MessageResourceIT {
     @Transactional
     void createMessage() throws Exception {
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(messageSearchRepository.findAll());
         // Create the Message
         MessageDTO messageDTO = messageMapper.toDto(message);
         var returnedMessageDTO = om.readValue(
@@ -145,13 +133,6 @@ class MessageResourceIT {
         var returnedMessage = messageMapper.toEntity(returnedMessageDTO);
         assertMessageUpdatableFieldsEquals(returnedMessage, getPersistedMessage(returnedMessage));
 
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(messageSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore + 1);
-            });
-
         insertedMessage = returnedMessage;
     }
 
@@ -163,7 +144,6 @@ class MessageResourceIT {
         MessageDTO messageDTO = messageMapper.toDto(message);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(messageSearchRepository.findAll());
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restMessageMockMvc
@@ -172,15 +152,12 @@ class MessageResourceIT {
 
         // Validate the Message in the database
         assertSameRepositoryCount(databaseSizeBeforeCreate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(messageSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkTypeIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(messageSearchRepository.findAll());
         // set the field null
         message.setType(null);
 
@@ -192,16 +169,12 @@ class MessageResourceIT {
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
-
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(messageSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkContentIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(messageSearchRepository.findAll());
         // set the field null
         message.setContent(null);
 
@@ -213,9 +186,6 @@ class MessageResourceIT {
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
-
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(messageSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -281,8 +251,6 @@ class MessageResourceIT {
         insertedMessage = messageRepository.saveAndFlush(message);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        messageSearchRepository.save(message);
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(messageSearchRepository.findAll());
 
         // Update the message
         Message updatedMessage = messageRepository.findById(message.getId()).orElseThrow();
@@ -300,24 +268,12 @@ class MessageResourceIT {
         // Validate the Message in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
         assertPersistedMessageToMatchAllProperties(updatedMessage);
-
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(messageSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
-                List<Message> messageSearchList = Streamable.of(messageSearchRepository.findAll()).toList();
-                Message testMessageSearch = messageSearchList.get(searchDatabaseSizeAfter - 1);
-
-                assertMessageAllPropertiesEquals(testMessageSearch, updatedMessage);
-            });
     }
 
     @Test
     @Transactional
     void putNonExistingMessage() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(messageSearchRepository.findAll());
         message.setId(UUID.randomUUID());
 
         // Create the Message
@@ -332,15 +288,12 @@ class MessageResourceIT {
 
         // Validate the Message in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(messageSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithIdMismatchMessage() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(messageSearchRepository.findAll());
         message.setId(UUID.randomUUID());
 
         // Create the Message
@@ -355,15 +308,12 @@ class MessageResourceIT {
 
         // Validate the Message in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(messageSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithMissingIdPathParamMessage() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(messageSearchRepository.findAll());
         message.setId(UUID.randomUUID());
 
         // Create the Message
@@ -376,8 +326,6 @@ class MessageResourceIT {
 
         // Validate the Message in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(messageSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -438,7 +386,6 @@ class MessageResourceIT {
     @Transactional
     void patchNonExistingMessage() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(messageSearchRepository.findAll());
         message.setId(UUID.randomUUID());
 
         // Create the Message
@@ -455,15 +402,12 @@ class MessageResourceIT {
 
         // Validate the Message in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(messageSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithIdMismatchMessage() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(messageSearchRepository.findAll());
         message.setId(UUID.randomUUID());
 
         // Create the Message
@@ -480,15 +424,12 @@ class MessageResourceIT {
 
         // Validate the Message in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(messageSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithMissingIdPathParamMessage() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(messageSearchRepository.findAll());
         message.setId(UUID.randomUUID());
 
         // Create the Message
@@ -501,8 +442,6 @@ class MessageResourceIT {
 
         // Validate the Message in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(messageSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -510,12 +449,8 @@ class MessageResourceIT {
     void deleteMessage() throws Exception {
         // Initialize the database
         insertedMessage = messageRepository.saveAndFlush(message);
-        messageRepository.save(message);
-        messageSearchRepository.save(message);
 
         long databaseSizeBeforeDelete = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(messageSearchRepository.findAll());
-        assertThat(searchDatabaseSizeBefore).isEqualTo(databaseSizeBeforeDelete);
 
         // Delete the message
         restMessageMockMvc
@@ -524,25 +459,6 @@ class MessageResourceIT {
 
         // Validate the database contains one less item
         assertDecrementedRepositoryCount(databaseSizeBeforeDelete);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(messageSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore - 1);
-    }
-
-    @Test
-    @Transactional
-    void searchMessage() throws Exception {
-        // Initialize the database
-        insertedMessage = messageRepository.saveAndFlush(message);
-        messageSearchRepository.save(message);
-
-        // Search the message
-        restMessageMockMvc
-            .perform(get(ENTITY_SEARCH_API_URL + "?query=id:" + message.getId()))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(message.getId().toString())))
-            .andExpect(jsonPath("$.[*].type").value(hasItem(DEFAULT_TYPE.toString())))
-            .andExpect(jsonPath("$.[*].content").value(hasItem(DEFAULT_CONTENT)));
     }
 
     protected long getRepositoryCount() {

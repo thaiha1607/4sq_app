@@ -3,22 +3,8 @@ import axios from 'axios';
 import { type IShipmentStatus } from '@/shared/model/shipment-status.model';
 
 const baseApiUrl = 'api/shipment-statuses';
-const baseSearchApiUrl = 'api/shipment-statuses/_search?query=';
 
 export default class ShipmentStatusService {
-  public search(query): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      axios
-        .get(`${baseSearchApiUrl}${query}`)
-        .then(res => {
-          resolve(res.data);
-        })
-        .catch(err => {
-          reject(err);
-        });
-    });
-  }
-
   public find(id: number): Promise<IShipmentStatus> {
     return new Promise<IShipmentStatus>((resolve, reject) => {
       axios

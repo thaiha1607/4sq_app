@@ -16,7 +16,6 @@ import org.springframework.data.domain.Persistable;
 @Table(name = "shipment_status")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @JsonIgnoreProperties(value = { "new" })
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "shipmentstatus")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class ShipmentStatus extends AbstractAuditingEntity<Long> implements Serializable, Persistable<Long> {
 
@@ -30,11 +29,9 @@ public class ShipmentStatus extends AbstractAuditingEntity<Long> implements Seri
 
     @NotNull
     @Column(name = "status_code", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String statusCode;
 
     @Column(name = "description")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String description;
 
     // Inherited createdBy definition

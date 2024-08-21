@@ -13,20 +13,16 @@ export default defineComponent({
     const shipmentService = inject('shipmentService', () => new ShipmentService());
     const alertService = inject('alertService', () => useAlertService(), true);
 
-    const currentSearch = ref('');
-
     const shipments: Ref<IShipment[]> = ref([]);
 
     const isFetching = ref(false);
 
-    const clear = () => {
-      currentSearch.value = '';
-    };
+    const clear = () => {};
 
     const retrieveShipments = async () => {
       isFetching.value = true;
       try {
-        const res = currentSearch.value ? await shipmentService().search(currentSearch.value) : await shipmentService().retrieve();
+        const res = await shipmentService().retrieve();
         shipments.value = res.data;
       } catch (err) {
         alertService.showHttpError(err.response);
@@ -42,14 +38,6 @@ export default defineComponent({
     onMounted(async () => {
       await retrieveShipments();
     });
-
-    const search = query => {
-      if (!query) {
-        return clear();
-      }
-      currentSearch.value = query;
-      retrieveShipments();
-    };
 
     const removeId: Ref<string> = ref(null);
     const removeEntity = ref<any>(null);
@@ -80,7 +68,6 @@ export default defineComponent({
       retrieveShipments,
       clear,
       ...dateFormat,
-      currentSearch,
       removeId,
       removeEntity,
       prepareRemove,

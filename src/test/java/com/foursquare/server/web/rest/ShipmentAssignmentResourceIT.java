@@ -3,7 +3,6 @@ package com.foursquare.server.web.rest;
 import static com.foursquare.server.domain.ShipmentAssignmentAsserts.*;
 import static com.foursquare.server.web.rest.TestUtil.createUpdateProxyForBean;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -15,16 +14,12 @@ import com.foursquare.server.domain.ShipmentAssignment;
 import com.foursquare.server.domain.enumeration.AssignmentStatus;
 import com.foursquare.server.repository.ShipmentAssignmentRepository;
 import com.foursquare.server.repository.UserRepository;
-import com.foursquare.server.repository.search.ShipmentAssignmentSearchRepository;
 import com.foursquare.server.service.ShipmentAssignmentService;
 import com.foursquare.server.service.dto.ShipmentAssignmentDTO;
 import com.foursquare.server.service.mapper.ShipmentAssignmentMapper;
 import jakarta.persistence.EntityManager;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-import org.assertj.core.util.IterableUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -36,7 +31,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.util.Streamable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -63,7 +57,6 @@ class ShipmentAssignmentResourceIT {
 
     private static final String ENTITY_API_URL = "/api/shipment-assignments";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
-    private static final String ENTITY_SEARCH_API_URL = "/api/shipment-assignments/_search";
 
     @Autowired
     private ObjectMapper om;
@@ -82,9 +75,6 @@ class ShipmentAssignmentResourceIT {
 
     @Mock
     private ShipmentAssignmentService shipmentAssignmentServiceMock;
-
-    @Autowired
-    private ShipmentAssignmentSearchRepository shipmentAssignmentSearchRepository;
 
     @Autowired
     private EntityManager em;
@@ -133,7 +123,6 @@ class ShipmentAssignmentResourceIT {
     public void cleanup() {
         if (insertedShipmentAssignment != null) {
             shipmentAssignmentRepository.delete(insertedShipmentAssignment);
-            shipmentAssignmentSearchRepository.delete(insertedShipmentAssignment);
             insertedShipmentAssignment = null;
         }
     }
@@ -142,7 +131,6 @@ class ShipmentAssignmentResourceIT {
     @Transactional
     void createShipmentAssignment() throws Exception {
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(shipmentAssignmentSearchRepository.findAll());
         // Create the ShipmentAssignment
         ShipmentAssignmentDTO shipmentAssignmentDTO = shipmentAssignmentMapper.toDto(shipmentAssignment);
         var returnedShipmentAssignmentDTO = om.readValue(
@@ -163,13 +151,6 @@ class ShipmentAssignmentResourceIT {
             getPersistedShipmentAssignment(returnedShipmentAssignment)
         );
 
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(shipmentAssignmentSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore + 1);
-            });
-
         insertedShipmentAssignment = returnedShipmentAssignment;
     }
 
@@ -181,7 +162,6 @@ class ShipmentAssignmentResourceIT {
         ShipmentAssignmentDTO shipmentAssignmentDTO = shipmentAssignmentMapper.toDto(shipmentAssignment);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(shipmentAssignmentSearchRepository.findAll());
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restShipmentAssignmentMockMvc
@@ -190,15 +170,12 @@ class ShipmentAssignmentResourceIT {
 
         // Validate the ShipmentAssignment in the database
         assertSameRepositoryCount(databaseSizeBeforeCreate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(shipmentAssignmentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkStatusIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(shipmentAssignmentSearchRepository.findAll());
         // set the field null
         shipmentAssignment.setStatus(null);
 
@@ -210,9 +187,6 @@ class ShipmentAssignmentResourceIT {
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
-
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(shipmentAssignmentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -280,8 +254,6 @@ class ShipmentAssignmentResourceIT {
         insertedShipmentAssignment = shipmentAssignmentRepository.saveAndFlush(shipmentAssignment);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        shipmentAssignmentSearchRepository.save(shipmentAssignment);
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(shipmentAssignmentSearchRepository.findAll());
 
         // Update the shipmentAssignment
         ShipmentAssignment updatedShipmentAssignment = shipmentAssignmentRepository.findById(shipmentAssignment.getId()).orElseThrow();
@@ -301,26 +273,12 @@ class ShipmentAssignmentResourceIT {
         // Validate the ShipmentAssignment in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
         assertPersistedShipmentAssignmentToMatchAllProperties(updatedShipmentAssignment);
-
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(shipmentAssignmentSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
-                List<ShipmentAssignment> shipmentAssignmentSearchList = Streamable.of(
-                    shipmentAssignmentSearchRepository.findAll()
-                ).toList();
-                ShipmentAssignment testShipmentAssignmentSearch = shipmentAssignmentSearchList.get(searchDatabaseSizeAfter - 1);
-
-                assertShipmentAssignmentAllPropertiesEquals(testShipmentAssignmentSearch, updatedShipmentAssignment);
-            });
     }
 
     @Test
     @Transactional
     void putNonExistingShipmentAssignment() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(shipmentAssignmentSearchRepository.findAll());
         shipmentAssignment.setId(UUID.randomUUID());
 
         // Create the ShipmentAssignment
@@ -337,15 +295,12 @@ class ShipmentAssignmentResourceIT {
 
         // Validate the ShipmentAssignment in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(shipmentAssignmentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithIdMismatchShipmentAssignment() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(shipmentAssignmentSearchRepository.findAll());
         shipmentAssignment.setId(UUID.randomUUID());
 
         // Create the ShipmentAssignment
@@ -362,15 +317,12 @@ class ShipmentAssignmentResourceIT {
 
         // Validate the ShipmentAssignment in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(shipmentAssignmentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithMissingIdPathParamShipmentAssignment() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(shipmentAssignmentSearchRepository.findAll());
         shipmentAssignment.setId(UUID.randomUUID());
 
         // Create the ShipmentAssignment
@@ -383,8 +335,6 @@ class ShipmentAssignmentResourceIT {
 
         // Validate the ShipmentAssignment in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(shipmentAssignmentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -453,7 +403,6 @@ class ShipmentAssignmentResourceIT {
     @Transactional
     void patchNonExistingShipmentAssignment() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(shipmentAssignmentSearchRepository.findAll());
         shipmentAssignment.setId(UUID.randomUUID());
 
         // Create the ShipmentAssignment
@@ -470,15 +419,12 @@ class ShipmentAssignmentResourceIT {
 
         // Validate the ShipmentAssignment in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(shipmentAssignmentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithIdMismatchShipmentAssignment() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(shipmentAssignmentSearchRepository.findAll());
         shipmentAssignment.setId(UUID.randomUUID());
 
         // Create the ShipmentAssignment
@@ -495,15 +441,12 @@ class ShipmentAssignmentResourceIT {
 
         // Validate the ShipmentAssignment in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(shipmentAssignmentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithMissingIdPathParamShipmentAssignment() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(shipmentAssignmentSearchRepository.findAll());
         shipmentAssignment.setId(UUID.randomUUID());
 
         // Create the ShipmentAssignment
@@ -516,8 +459,6 @@ class ShipmentAssignmentResourceIT {
 
         // Validate the ShipmentAssignment in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(shipmentAssignmentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -525,12 +466,8 @@ class ShipmentAssignmentResourceIT {
     void deleteShipmentAssignment() throws Exception {
         // Initialize the database
         insertedShipmentAssignment = shipmentAssignmentRepository.saveAndFlush(shipmentAssignment);
-        shipmentAssignmentRepository.save(shipmentAssignment);
-        shipmentAssignmentSearchRepository.save(shipmentAssignment);
 
         long databaseSizeBeforeDelete = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(shipmentAssignmentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeBefore).isEqualTo(databaseSizeBeforeDelete);
 
         // Delete the shipmentAssignment
         restShipmentAssignmentMockMvc
@@ -539,26 +476,6 @@ class ShipmentAssignmentResourceIT {
 
         // Validate the database contains one less item
         assertDecrementedRepositoryCount(databaseSizeBeforeDelete);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(shipmentAssignmentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore - 1);
-    }
-
-    @Test
-    @Transactional
-    void searchShipmentAssignment() throws Exception {
-        // Initialize the database
-        insertedShipmentAssignment = shipmentAssignmentRepository.saveAndFlush(shipmentAssignment);
-        shipmentAssignmentSearchRepository.save(shipmentAssignment);
-
-        // Search the shipmentAssignment
-        restShipmentAssignmentMockMvc
-            .perform(get(ENTITY_SEARCH_API_URL + "?query=id:" + shipmentAssignment.getId()))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(shipmentAssignment.getId().toString())))
-            .andExpect(jsonPath("$.[*].status").value(hasItem(DEFAULT_STATUS.toString())))
-            .andExpect(jsonPath("$.[*].note").value(hasItem(DEFAULT_NOTE)))
-            .andExpect(jsonPath("$.[*].otherInfo").value(hasItem(DEFAULT_OTHER_INFO)));
     }
 
     protected long getRepositoryCount() {

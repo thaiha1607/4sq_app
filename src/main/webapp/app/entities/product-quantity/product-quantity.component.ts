@@ -13,22 +13,16 @@ export default defineComponent({
     const productQuantityService = inject('productQuantityService', () => new ProductQuantityService());
     const alertService = inject('alertService', () => useAlertService(), true);
 
-    const currentSearch = ref('');
-
     const productQuantities: Ref<IProductQuantity[]> = ref([]);
 
     const isFetching = ref(false);
 
-    const clear = () => {
-      currentSearch.value = '';
-    };
+    const clear = () => {};
 
     const retrieveProductQuantitys = async () => {
       isFetching.value = true;
       try {
-        const res = currentSearch.value
-          ? await productQuantityService().search(currentSearch.value)
-          : await productQuantityService().retrieve();
+        const res = await productQuantityService().retrieve();
         productQuantities.value = res.data;
       } catch (err) {
         alertService.showHttpError(err.response);
@@ -44,14 +38,6 @@ export default defineComponent({
     onMounted(async () => {
       await retrieveProductQuantitys();
     });
-
-    const search = query => {
-      if (!query) {
-        return clear();
-      }
-      currentSearch.value = query;
-      retrieveProductQuantitys();
-    };
 
     const removeId: Ref<string> = ref(null);
     const removeEntity = ref<any>(null);
@@ -82,7 +68,6 @@ export default defineComponent({
       retrieveProductQuantitys,
       clear,
       ...dateFormat,
-      currentSearch,
       removeId,
       removeEntity,
       prepareRemove,

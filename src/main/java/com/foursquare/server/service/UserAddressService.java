@@ -64,12 +64,4 @@ public interface UserAddressService {
      * @param id the id of the entity.
      */
     void delete(UUID id);
-
-    /**
-     * Search for the userAddress corresponding to the query.
-     *
-     * @param query the query of the search.
-     * @return the list of entities.
-     */
-    List<UserAddressDTO> search(String query);
 }

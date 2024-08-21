@@ -13,12 +13,10 @@ application {
         enableHibernateCache true
         enableTranslation false
         languages [en, vi]
-        messageBroker kafka
         nativeLanguage en
         packageName com.foursquare.server
         prodDatabaseType postgresql
         reactive false
-        searchEngine elasticsearch
         testFrameworks [cypress, cucumber, gatling]
         websocket spring-websocket
     }
@@ -29,7 +27,6 @@ application {
 @dto(mapstruct)
 @service(serviceImpl)
 @paginate(no)
-@search(no)
 entity UserDetails {
     /** Phone number in E.164 format. */
     phone String pattern(/^\+[0-9]\d{1,14}$/)
@@ -45,7 +42,6 @@ enum StaffStatus {
 @dto(mapstruct)
 @service(serviceImpl)
 @paginate(no)
-@search(no)
 entity StaffInfo {
     status StaffStatus required
 }
@@ -53,7 +49,6 @@ entity StaffInfo {
 @dto(mapstruct)
 @service(serviceClass)
 @paginate(no)
-@search(no)
 entity Address {
     id UUID
     line1 String required
@@ -67,7 +62,6 @@ entity Address {
 @dto(mapstruct)
 @service(serviceClass)
 @paginate(pagination)
-@search(elasticsearch)
 entity Colour {
     id UUID
     /** Colour name. */
@@ -79,7 +73,6 @@ entity Colour {
 @dto(mapstruct)
 @service(serviceClass)
 @paginate(pagination)
-@search(no)
 entity Conversation {
     id UUID
     title String required maxlength(100)
@@ -88,7 +81,6 @@ entity Conversation {
 @dto(mapstruct)
 @service(serviceClass)
 @paginate(pagination)
-@search(no)
 entity Participant {
     id UUID
     @defaultValue(false) isAdmin Boolean
@@ -97,7 +89,6 @@ entity Participant {
 @dto(mapstruct)
 @service(serviceClass)
 @paginate(pagination)
-@search(elasticsearch)
 entity InvoiceStatus {
     statusCode String required
     description String
@@ -106,7 +97,6 @@ entity InvoiceStatus {
 @dto(mapstruct)
 @service(serviceClass)
 @paginate(pagination)
-@search(elasticsearch)
 entity Invoice {
     id UUID
     totalAmount BigDecimal required min(0)
@@ -142,7 +132,6 @@ enum PaymentMethod {
 @dto(mapstruct)
 @service(serviceClass)
 @paginate(pagination)
-@search(no)
 entity Message {
     id UUID
     type MessageType required
@@ -157,7 +146,6 @@ enum MessageType {
 @dto(mapstruct)
 @service(serviceClass)
 @paginate(pagination)
-@search(elasticsearch)
 entity OrderItem {
     id UUID
     orderedQty Integer required min(0)
@@ -169,7 +157,6 @@ entity OrderItem {
 @dto(mapstruct)
 @service(serviceClass)
 @paginate(pagination)
-@search(elasticsearch)
 entity OrderStatus {
     statusCode String required
     description String
@@ -178,7 +165,6 @@ entity OrderStatus {
 @dto(mapstruct)
 @service(serviceClass)
 @paginate(pagination)
-@search(elasticsearch)
 entity Order {
     id UUID
     type OrderType required
@@ -198,7 +184,6 @@ enum OrderType {
 @dto(mapstruct)
 @service(serviceClass)
 @paginate(pagination)
-@search(elasticsearch)
 entity ProductQuantity {
     id UUID
     qty Integer required min(0)
@@ -207,7 +192,6 @@ entity ProductQuantity {
 @dto(mapstruct)
 @service(serviceClass)
 @paginate(pagination)
-@search(elasticsearch)
 entity ProductCategory {
     id UUID
     // We won't include SKU, UPC, EAN, JAN, ISBN, MPN, GTIN, etc. for simplicity. Also, we won't include weight, dimensions, etc.
@@ -224,7 +208,6 @@ entity ProductCategory {
 @dto(mapstruct)
 @service(serviceClass)
 @paginate(pagination)
-@search(elasticsearch)
 entity Product {
     id UUID
     name String required
@@ -237,7 +220,6 @@ entity Product {
 @dto(mapstruct)
 @service(serviceImpl)
 @paginate(no)
-@search(no)
 entity ProductImage {
     id UUID
     imageUri String required
@@ -256,7 +238,6 @@ enum AssignmentStatus {
 @dto(mapstruct)
 @service(serviceClass)
 @paginate(pagination)
-@search(elasticsearch)
 entity ShipmentAssignment {
     id UUID
     status AssignmentStatus required
@@ -267,7 +248,6 @@ entity ShipmentAssignment {
 @dto(mapstruct)
 @service(serviceClass)
 @paginate(pagination)
-@search(elasticsearch)
 entity ShipmentItem {
     id UUID
     qty Integer required min(0)
@@ -278,7 +258,6 @@ entity ShipmentItem {
 @dto(mapstruct)
 @service(serviceClass)
 @paginate(pagination)
-@search(elasticsearch)
 entity ShipmentStatus {
     statusCode String required
     description String
@@ -287,7 +266,6 @@ entity ShipmentStatus {
 @dto(mapstruct)
 @service(serviceClass)
 @paginate(pagination)
-@search(elasticsearch)
 entity Shipment {
     id UUID
     // We won't include fields like tracking number, carrier, shipping method, etc. for simplicity.
@@ -307,7 +285,6 @@ enum ShipmentType {
 @dto(mapstruct)
 @service(serviceClass)
 @paginate(pagination)
-@search(elasticsearch)
 entity Tag {
     id UUID
     name String required
@@ -316,7 +293,6 @@ entity Tag {
 @dto(mapstruct)
 @service(serviceImpl)
 @paginate(no)
-@search(no)
 entity UserAddress {
     id UUID
     type AddressType required
@@ -334,7 +310,6 @@ enum AddressType {
 @dto(mapstruct)
 @service(serviceClass)
 @paginate(pagination)
-@search(elasticsearch)
 entity WarehouseAssignment {
     id UUID
     status AssignmentStatus required
@@ -345,7 +320,6 @@ entity WarehouseAssignment {
 @dto(mapstruct)
 @service(serviceClass)
 @paginate(pagination)
-@search(elasticsearch)
 entity WorkingUnit {
     id UUID
     name String required
@@ -362,7 +336,6 @@ enum WorkingUnitType {
 @dto(mapstruct)
 @service(serviceClass)
 @paginate(pagination)
-@search(elasticsearch)
 entity Comment {
     id UUID
     rating Integer min(1) max(5) required

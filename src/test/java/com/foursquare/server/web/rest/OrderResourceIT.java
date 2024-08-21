@@ -3,7 +3,6 @@ package com.foursquare.server.web.rest;
 import static com.foursquare.server.domain.OrderAsserts.*;
 import static com.foursquare.server.web.rest.TestUtil.createUpdateProxyForBean;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -17,16 +16,12 @@ import com.foursquare.server.domain.User;
 import com.foursquare.server.domain.enumeration.OrderType;
 import com.foursquare.server.repository.OrderRepository;
 import com.foursquare.server.repository.UserRepository;
-import com.foursquare.server.repository.search.OrderSearchRepository;
 import com.foursquare.server.service.OrderService;
 import com.foursquare.server.service.dto.OrderDTO;
 import com.foursquare.server.service.mapper.OrderMapper;
 import jakarta.persistence.EntityManager;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-import org.assertj.core.util.IterableUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -38,7 +33,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.util.Streamable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -71,7 +65,6 @@ class OrderResourceIT {
 
     private static final String ENTITY_API_URL = "/api/orders";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
-    private static final String ENTITY_SEARCH_API_URL = "/api/orders/_search";
 
     @Autowired
     private ObjectMapper om;
@@ -90,9 +83,6 @@ class OrderResourceIT {
 
     @Mock
     private OrderService orderServiceMock;
-
-    @Autowired
-    private OrderSearchRepository orderSearchRepository;
 
     @Autowired
     private EntityManager em;
@@ -175,7 +165,6 @@ class OrderResourceIT {
     public void cleanup() {
         if (insertedOrder != null) {
             orderRepository.delete(insertedOrder);
-            orderSearchRepository.delete(insertedOrder);
             insertedOrder = null;
         }
     }
@@ -184,7 +173,6 @@ class OrderResourceIT {
     @Transactional
     void createOrder() throws Exception {
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(orderSearchRepository.findAll());
         // Create the Order
         OrderDTO orderDTO = orderMapper.toDto(order);
         var returnedOrderDTO = om.readValue(
@@ -202,13 +190,6 @@ class OrderResourceIT {
         var returnedOrder = orderMapper.toEntity(returnedOrderDTO);
         assertOrderUpdatableFieldsEquals(returnedOrder, getPersistedOrder(returnedOrder));
 
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(orderSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore + 1);
-            });
-
         insertedOrder = returnedOrder;
     }
 
@@ -220,7 +201,6 @@ class OrderResourceIT {
         OrderDTO orderDTO = orderMapper.toDto(order);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(orderSearchRepository.findAll());
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restOrderMockMvc
@@ -229,15 +209,12 @@ class OrderResourceIT {
 
         // Validate the Order in the database
         assertSameRepositoryCount(databaseSizeBeforeCreate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(orderSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkTypeIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(orderSearchRepository.findAll());
         // set the field null
         order.setType(null);
 
@@ -249,9 +226,6 @@ class OrderResourceIT {
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
-
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(orderSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -323,8 +297,6 @@ class OrderResourceIT {
         insertedOrder = orderRepository.saveAndFlush(order);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        orderSearchRepository.save(order);
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(orderSearchRepository.findAll());
 
         // Update the order
         Order updatedOrder = orderRepository.findById(order.getId()).orElseThrow();
@@ -347,24 +319,12 @@ class OrderResourceIT {
         // Validate the Order in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
         assertPersistedOrderToMatchAllProperties(updatedOrder);
-
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(orderSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
-                List<Order> orderSearchList = Streamable.of(orderSearchRepository.findAll()).toList();
-                Order testOrderSearch = orderSearchList.get(searchDatabaseSizeAfter - 1);
-
-                assertOrderAllPropertiesEquals(testOrderSearch, updatedOrder);
-            });
     }
 
     @Test
     @Transactional
     void putNonExistingOrder() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(orderSearchRepository.findAll());
         order.setId(UUID.randomUUID());
 
         // Create the Order
@@ -379,15 +339,12 @@ class OrderResourceIT {
 
         // Validate the Order in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(orderSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithIdMismatchOrder() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(orderSearchRepository.findAll());
         order.setId(UUID.randomUUID());
 
         // Create the Order
@@ -402,15 +359,12 @@ class OrderResourceIT {
 
         // Validate the Order in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(orderSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithMissingIdPathParamOrder() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(orderSearchRepository.findAll());
         order.setId(UUID.randomUUID());
 
         // Create the Order
@@ -423,8 +377,6 @@ class OrderResourceIT {
 
         // Validate the Order in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(orderSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -490,7 +442,6 @@ class OrderResourceIT {
     @Transactional
     void patchNonExistingOrder() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(orderSearchRepository.findAll());
         order.setId(UUID.randomUUID());
 
         // Create the Order
@@ -507,15 +458,12 @@ class OrderResourceIT {
 
         // Validate the Order in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(orderSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithIdMismatchOrder() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(orderSearchRepository.findAll());
         order.setId(UUID.randomUUID());
 
         // Create the Order
@@ -532,15 +480,12 @@ class OrderResourceIT {
 
         // Validate the Order in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(orderSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithMissingIdPathParamOrder() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(orderSearchRepository.findAll());
         order.setId(UUID.randomUUID());
 
         // Create the Order
@@ -553,8 +498,6 @@ class OrderResourceIT {
 
         // Validate the Order in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(orderSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -562,12 +505,8 @@ class OrderResourceIT {
     void deleteOrder() throws Exception {
         // Initialize the database
         insertedOrder = orderRepository.saveAndFlush(order);
-        orderRepository.save(order);
-        orderSearchRepository.save(order);
 
         long databaseSizeBeforeDelete = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(orderSearchRepository.findAll());
-        assertThat(searchDatabaseSizeBefore).isEqualTo(databaseSizeBeforeDelete);
 
         // Delete the order
         restOrderMockMvc
@@ -576,28 +515,6 @@ class OrderResourceIT {
 
         // Validate the database contains one less item
         assertDecrementedRepositoryCount(databaseSizeBeforeDelete);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(orderSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore - 1);
-    }
-
-    @Test
-    @Transactional
-    void searchOrder() throws Exception {
-        // Initialize the database
-        insertedOrder = orderRepository.saveAndFlush(order);
-        orderSearchRepository.save(order);
-
-        // Search the order
-        restOrderMockMvc
-            .perform(get(ENTITY_SEARCH_API_URL + "?query=id:" + order.getId()))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(order.getId().toString())))
-            .andExpect(jsonPath("$.[*].type").value(hasItem(DEFAULT_TYPE.toString())))
-            .andExpect(jsonPath("$.[*].priority").value(hasItem(DEFAULT_PRIORITY)))
-            .andExpect(jsonPath("$.[*].isInternal").value(hasItem(DEFAULT_IS_INTERNAL.booleanValue())))
-            .andExpect(jsonPath("$.[*].note").value(hasItem(DEFAULT_NOTE)))
-            .andExpect(jsonPath("$.[*].otherInfo").value(hasItem(DEFAULT_OTHER_INFO)));
     }
 
     protected long getRepositoryCount() {

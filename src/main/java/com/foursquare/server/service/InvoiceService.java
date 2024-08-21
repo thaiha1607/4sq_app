@@ -2,7 +2,6 @@ package com.foursquare.server.service;
 
 import com.foursquare.server.domain.Invoice;
 import com.foursquare.server.repository.InvoiceRepository;
-import com.foursquare.server.repository.search.InvoiceSearchRepository;
 import com.foursquare.server.service.dto.InvoiceDTO;
 import com.foursquare.server.service.mapper.InvoiceMapper;
 import java.util.LinkedList;
@@ -10,7 +9,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -31,16 +29,9 @@ public class InvoiceService {
 
     private final InvoiceMapper invoiceMapper;
 
-    private final InvoiceSearchRepository invoiceSearchRepository;
-
-    public InvoiceService(
-        InvoiceRepository invoiceRepository,
-        InvoiceMapper invoiceMapper,
-        InvoiceSearchRepository invoiceSearchRepository
-    ) {
+    public InvoiceService(InvoiceRepository invoiceRepository, InvoiceMapper invoiceMapper) {
         this.invoiceRepository = invoiceRepository;
         this.invoiceMapper = invoiceMapper;
-        this.invoiceSearchRepository = invoiceSearchRepository;
     }
 
     /**
@@ -53,7 +44,6 @@ public class InvoiceService {
         log.debug("Request to save Invoice : {}", invoiceDTO);
         Invoice invoice = invoiceMapper.toEntity(invoiceDTO);
         invoice = invoiceRepository.save(invoice);
-        invoiceSearchRepository.index(invoice);
         return invoiceMapper.toDto(invoice);
     }
 
@@ -68,7 +58,6 @@ public class InvoiceService {
         Invoice invoice = invoiceMapper.toEntity(invoiceDTO);
         invoice.setIsPersisted();
         invoice = invoiceRepository.save(invoice);
-        invoiceSearchRepository.index(invoice);
         return invoiceMapper.toDto(invoice);
     }
 
@@ -89,10 +78,6 @@ public class InvoiceService {
                 return existingInvoice;
             })
             .map(invoiceRepository::save)
-            .map(savedInvoice -> {
-                invoiceSearchRepository.index(savedInvoice);
-                return savedInvoice;
-            })
             .map(invoiceMapper::toDto);
     }
 
@@ -136,22 +121,5 @@ public class InvoiceService {
     public void delete(UUID id) {
         log.debug("Request to delete Invoice : {}", id);
         invoiceRepository.deleteById(id);
-        invoiceSearchRepository.deleteFromIndexById(id);
-    }
-
-    /**
-     * Search for the invoice corresponding to the query.
-     *
-     * @param query the query of the search.
-     * @return the list of entities.
-     */
-    @Transactional(readOnly = true)
-    public List<InvoiceDTO> search(String query) {
-        log.debug("Request to search Invoices for query {}", query);
-        try {
-            return StreamSupport.stream(invoiceSearchRepository.search(query).spliterator(), false).map(invoiceMapper::toDto).toList();
-        } catch (RuntimeException e) {
-            throw e;
-        }
     }
 }

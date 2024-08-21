@@ -3,22 +3,8 @@ import axios from 'axios';
 import { type IProductImage } from '@/shared/model/product-image.model';
 
 const baseApiUrl = 'api/product-images';
-const baseSearchApiUrl = 'api/product-images/_search?query=';
 
 export default class ProductImageService {
-  public search(query): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      axios
-        .get(`${baseSearchApiUrl}${query}`)
-        .then(res => {
-          resolve(res.data);
-        })
-        .catch(err => {
-          reject(err);
-        });
-    });
-  }
-
   public find(id: string): Promise<IProductImage> {
     return new Promise<IProductImage>((resolve, reject) => {
       axios

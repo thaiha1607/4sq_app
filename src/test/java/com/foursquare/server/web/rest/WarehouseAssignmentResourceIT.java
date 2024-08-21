@@ -3,7 +3,6 @@ package com.foursquare.server.web.rest;
 import static com.foursquare.server.domain.WarehouseAssignmentAsserts.*;
 import static com.foursquare.server.web.rest.TestUtil.createUpdateProxyForBean;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -16,16 +15,12 @@ import com.foursquare.server.domain.WorkingUnit;
 import com.foursquare.server.domain.enumeration.AssignmentStatus;
 import com.foursquare.server.repository.UserRepository;
 import com.foursquare.server.repository.WarehouseAssignmentRepository;
-import com.foursquare.server.repository.search.WarehouseAssignmentSearchRepository;
 import com.foursquare.server.service.WarehouseAssignmentService;
 import com.foursquare.server.service.dto.WarehouseAssignmentDTO;
 import com.foursquare.server.service.mapper.WarehouseAssignmentMapper;
 import jakarta.persistence.EntityManager;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-import org.assertj.core.util.IterableUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -37,7 +32,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.util.Streamable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -64,7 +58,6 @@ class WarehouseAssignmentResourceIT {
 
     private static final String ENTITY_API_URL = "/api/warehouse-assignments";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
-    private static final String ENTITY_SEARCH_API_URL = "/api/warehouse-assignments/_search";
 
     @Autowired
     private ObjectMapper om;
@@ -83,9 +76,6 @@ class WarehouseAssignmentResourceIT {
 
     @Mock
     private WarehouseAssignmentService warehouseAssignmentServiceMock;
-
-    @Autowired
-    private WarehouseAssignmentSearchRepository warehouseAssignmentSearchRepository;
 
     @Autowired
     private EntityManager em;
@@ -154,7 +144,6 @@ class WarehouseAssignmentResourceIT {
     public void cleanup() {
         if (insertedWarehouseAssignment != null) {
             warehouseAssignmentRepository.delete(insertedWarehouseAssignment);
-            warehouseAssignmentSearchRepository.delete(insertedWarehouseAssignment);
             insertedWarehouseAssignment = null;
         }
     }
@@ -163,7 +152,6 @@ class WarehouseAssignmentResourceIT {
     @Transactional
     void createWarehouseAssignment() throws Exception {
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(warehouseAssignmentSearchRepository.findAll());
         // Create the WarehouseAssignment
         WarehouseAssignmentDTO warehouseAssignmentDTO = warehouseAssignmentMapper.toDto(warehouseAssignment);
         var returnedWarehouseAssignmentDTO = om.readValue(
@@ -184,13 +172,6 @@ class WarehouseAssignmentResourceIT {
             getPersistedWarehouseAssignment(returnedWarehouseAssignment)
         );
 
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(warehouseAssignmentSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore + 1);
-            });
-
         insertedWarehouseAssignment = returnedWarehouseAssignment;
     }
 
@@ -202,7 +183,6 @@ class WarehouseAssignmentResourceIT {
         WarehouseAssignmentDTO warehouseAssignmentDTO = warehouseAssignmentMapper.toDto(warehouseAssignment);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(warehouseAssignmentSearchRepository.findAll());
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restWarehouseAssignmentMockMvc
@@ -211,15 +191,12 @@ class WarehouseAssignmentResourceIT {
 
         // Validate the WarehouseAssignment in the database
         assertSameRepositoryCount(databaseSizeBeforeCreate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(warehouseAssignmentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkStatusIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(warehouseAssignmentSearchRepository.findAll());
         // set the field null
         warehouseAssignment.setStatus(null);
 
@@ -231,9 +208,6 @@ class WarehouseAssignmentResourceIT {
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
-
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(warehouseAssignmentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -301,8 +275,6 @@ class WarehouseAssignmentResourceIT {
         insertedWarehouseAssignment = warehouseAssignmentRepository.saveAndFlush(warehouseAssignment);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        warehouseAssignmentSearchRepository.save(warehouseAssignment);
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(warehouseAssignmentSearchRepository.findAll());
 
         // Update the warehouseAssignment
         WarehouseAssignment updatedWarehouseAssignment = warehouseAssignmentRepository.findById(warehouseAssignment.getId()).orElseThrow();
@@ -322,26 +294,12 @@ class WarehouseAssignmentResourceIT {
         // Validate the WarehouseAssignment in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
         assertPersistedWarehouseAssignmentToMatchAllProperties(updatedWarehouseAssignment);
-
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(warehouseAssignmentSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
-                List<WarehouseAssignment> warehouseAssignmentSearchList = Streamable.of(
-                    warehouseAssignmentSearchRepository.findAll()
-                ).toList();
-                WarehouseAssignment testWarehouseAssignmentSearch = warehouseAssignmentSearchList.get(searchDatabaseSizeAfter - 1);
-
-                assertWarehouseAssignmentAllPropertiesEquals(testWarehouseAssignmentSearch, updatedWarehouseAssignment);
-            });
     }
 
     @Test
     @Transactional
     void putNonExistingWarehouseAssignment() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(warehouseAssignmentSearchRepository.findAll());
         warehouseAssignment.setId(UUID.randomUUID());
 
         // Create the WarehouseAssignment
@@ -358,15 +316,12 @@ class WarehouseAssignmentResourceIT {
 
         // Validate the WarehouseAssignment in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(warehouseAssignmentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithIdMismatchWarehouseAssignment() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(warehouseAssignmentSearchRepository.findAll());
         warehouseAssignment.setId(UUID.randomUUID());
 
         // Create the WarehouseAssignment
@@ -383,15 +338,12 @@ class WarehouseAssignmentResourceIT {
 
         // Validate the WarehouseAssignment in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(warehouseAssignmentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithMissingIdPathParamWarehouseAssignment() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(warehouseAssignmentSearchRepository.findAll());
         warehouseAssignment.setId(UUID.randomUUID());
 
         // Create the WarehouseAssignment
@@ -404,8 +356,6 @@ class WarehouseAssignmentResourceIT {
 
         // Validate the WarehouseAssignment in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(warehouseAssignmentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -474,7 +424,6 @@ class WarehouseAssignmentResourceIT {
     @Transactional
     void patchNonExistingWarehouseAssignment() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(warehouseAssignmentSearchRepository.findAll());
         warehouseAssignment.setId(UUID.randomUUID());
 
         // Create the WarehouseAssignment
@@ -491,15 +440,12 @@ class WarehouseAssignmentResourceIT {
 
         // Validate the WarehouseAssignment in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(warehouseAssignmentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithIdMismatchWarehouseAssignment() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(warehouseAssignmentSearchRepository.findAll());
         warehouseAssignment.setId(UUID.randomUUID());
 
         // Create the WarehouseAssignment
@@ -516,15 +462,12 @@ class WarehouseAssignmentResourceIT {
 
         // Validate the WarehouseAssignment in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(warehouseAssignmentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithMissingIdPathParamWarehouseAssignment() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(warehouseAssignmentSearchRepository.findAll());
         warehouseAssignment.setId(UUID.randomUUID());
 
         // Create the WarehouseAssignment
@@ -539,8 +482,6 @@ class WarehouseAssignmentResourceIT {
 
         // Validate the WarehouseAssignment in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(warehouseAssignmentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -548,12 +489,8 @@ class WarehouseAssignmentResourceIT {
     void deleteWarehouseAssignment() throws Exception {
         // Initialize the database
         insertedWarehouseAssignment = warehouseAssignmentRepository.saveAndFlush(warehouseAssignment);
-        warehouseAssignmentRepository.save(warehouseAssignment);
-        warehouseAssignmentSearchRepository.save(warehouseAssignment);
 
         long databaseSizeBeforeDelete = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(warehouseAssignmentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeBefore).isEqualTo(databaseSizeBeforeDelete);
 
         // Delete the warehouseAssignment
         restWarehouseAssignmentMockMvc
@@ -562,26 +499,6 @@ class WarehouseAssignmentResourceIT {
 
         // Validate the database contains one less item
         assertDecrementedRepositoryCount(databaseSizeBeforeDelete);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(warehouseAssignmentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore - 1);
-    }
-
-    @Test
-    @Transactional
-    void searchWarehouseAssignment() throws Exception {
-        // Initialize the database
-        insertedWarehouseAssignment = warehouseAssignmentRepository.saveAndFlush(warehouseAssignment);
-        warehouseAssignmentSearchRepository.save(warehouseAssignment);
-
-        // Search the warehouseAssignment
-        restWarehouseAssignmentMockMvc
-            .perform(get(ENTITY_SEARCH_API_URL + "?query=id:" + warehouseAssignment.getId()))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(warehouseAssignment.getId().toString())))
-            .andExpect(jsonPath("$.[*].status").value(hasItem(DEFAULT_STATUS.toString())))
-            .andExpect(jsonPath("$.[*].note").value(hasItem(DEFAULT_NOTE)))
-            .andExpect(jsonPath("$.[*].otherInfo").value(hasItem(DEFAULT_OTHER_INFO)));
     }
 
     protected long getRepositoryCount() {

@@ -2,7 +2,6 @@ package com.foursquare.server.service;
 
 import com.foursquare.server.domain.WarehouseAssignment;
 import com.foursquare.server.repository.WarehouseAssignmentRepository;
-import com.foursquare.server.repository.search.WarehouseAssignmentSearchRepository;
 import com.foursquare.server.service.dto.WarehouseAssignmentDTO;
 import com.foursquare.server.service.mapper.WarehouseAssignmentMapper;
 import java.util.LinkedList;
@@ -10,7 +9,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -31,16 +29,12 @@ public class WarehouseAssignmentService {
 
     private final WarehouseAssignmentMapper warehouseAssignmentMapper;
 
-    private final WarehouseAssignmentSearchRepository warehouseAssignmentSearchRepository;
-
     public WarehouseAssignmentService(
         WarehouseAssignmentRepository warehouseAssignmentRepository,
-        WarehouseAssignmentMapper warehouseAssignmentMapper,
-        WarehouseAssignmentSearchRepository warehouseAssignmentSearchRepository
+        WarehouseAssignmentMapper warehouseAssignmentMapper
     ) {
         this.warehouseAssignmentRepository = warehouseAssignmentRepository;
         this.warehouseAssignmentMapper = warehouseAssignmentMapper;
-        this.warehouseAssignmentSearchRepository = warehouseAssignmentSearchRepository;
     }
 
     /**
@@ -53,7 +47,6 @@ public class WarehouseAssignmentService {
         log.debug("Request to save WarehouseAssignment : {}", warehouseAssignmentDTO);
         WarehouseAssignment warehouseAssignment = warehouseAssignmentMapper.toEntity(warehouseAssignmentDTO);
         warehouseAssignment = warehouseAssignmentRepository.save(warehouseAssignment);
-        warehouseAssignmentSearchRepository.index(warehouseAssignment);
         return warehouseAssignmentMapper.toDto(warehouseAssignment);
     }
 
@@ -68,7 +61,6 @@ public class WarehouseAssignmentService {
         WarehouseAssignment warehouseAssignment = warehouseAssignmentMapper.toEntity(warehouseAssignmentDTO);
         warehouseAssignment.setIsPersisted();
         warehouseAssignment = warehouseAssignmentRepository.save(warehouseAssignment);
-        warehouseAssignmentSearchRepository.index(warehouseAssignment);
         return warehouseAssignmentMapper.toDto(warehouseAssignment);
     }
 
@@ -89,10 +81,6 @@ public class WarehouseAssignmentService {
                 return existingWarehouseAssignment;
             })
             .map(warehouseAssignmentRepository::save)
-            .map(savedWarehouseAssignment -> {
-                warehouseAssignmentSearchRepository.index(savedWarehouseAssignment);
-                return savedWarehouseAssignment;
-            })
             .map(warehouseAssignmentMapper::toDto);
     }
 
@@ -140,24 +128,5 @@ public class WarehouseAssignmentService {
     public void delete(UUID id) {
         log.debug("Request to delete WarehouseAssignment : {}", id);
         warehouseAssignmentRepository.deleteById(id);
-        warehouseAssignmentSearchRepository.deleteFromIndexById(id);
-    }
-
-    /**
-     * Search for the warehouseAssignment corresponding to the query.
-     *
-     * @param query the query of the search.
-     * @return the list of entities.
-     */
-    @Transactional(readOnly = true)
-    public List<WarehouseAssignmentDTO> search(String query) {
-        log.debug("Request to search WarehouseAssignments for query {}", query);
-        try {
-            return StreamSupport.stream(warehouseAssignmentSearchRepository.search(query).spliterator(), false)
-                .map(warehouseAssignmentMapper::toDto)
-                .toList();
-        } catch (RuntimeException e) {
-            throw e;
-        }
     }
 }

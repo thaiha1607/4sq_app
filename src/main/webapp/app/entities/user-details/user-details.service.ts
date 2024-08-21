@@ -3,22 +3,8 @@ import axios from 'axios';
 import { type IUserDetails } from '@/shared/model/user-details.model';
 
 const baseApiUrl = 'api/user-details';
-const baseSearchApiUrl = 'api/user-details/_search?query=';
 
 export default class UserDetailsService {
-  public search(query): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      axios
-        .get(`${baseSearchApiUrl}${query}`)
-        .then(res => {
-          resolve(res.data);
-        })
-        .catch(err => {
-          reject(err);
-        });
-    });
-  }
-
   public find(id: number): Promise<IUserDetails> {
     return new Promise<IUserDetails>((resolve, reject) => {
       axios

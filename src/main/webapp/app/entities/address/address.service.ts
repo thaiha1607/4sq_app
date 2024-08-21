@@ -3,22 +3,8 @@ import axios from 'axios';
 import { type IAddress } from '@/shared/model/address.model';
 
 const baseApiUrl = 'api/addresses';
-const baseSearchApiUrl = 'api/addresses/_search?query=';
 
 export default class AddressService {
-  public search(query): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      axios
-        .get(`${baseSearchApiUrl}${query}`)
-        .then(res => {
-          resolve(res.data);
-        })
-        .catch(err => {
-          reject(err);
-        });
-    });
-  }
-
   public find(id: string): Promise<IAddress> {
     return new Promise<IAddress>((resolve, reject) => {
       axios

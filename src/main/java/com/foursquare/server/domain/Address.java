@@ -17,7 +17,6 @@ import org.springframework.data.domain.Persistable;
 @Table(name = "address")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @JsonIgnoreProperties(value = { "new" })
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "address")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class Address extends AbstractAuditingEntity<UUID> implements Serializable, Persistable<UUID> {
 
@@ -30,30 +29,24 @@ public class Address extends AbstractAuditingEntity<UUID> implements Serializabl
 
     @NotNull
     @Column(name = "line_1", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String line1;
 
     @Column(name = "line_2")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String line2;
 
     @NotNull
     @Column(name = "city", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String city;
 
     @NotNull
     @Column(name = "state", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String state;
 
     @NotNull
     @Column(name = "country", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String country;
 
     @Column(name = "zip_or_postal_code")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String zipOrPostalCode;
 
     // Inherited createdBy definition

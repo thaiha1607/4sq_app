@@ -3,7 +3,6 @@ package com.foursquare.server.web.rest;
 import static com.foursquare.server.domain.ShipmentAsserts.*;
 import static com.foursquare.server.web.rest.TestUtil.createUpdateProxyForBean;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -15,7 +14,6 @@ import com.foursquare.server.domain.Shipment;
 import com.foursquare.server.domain.ShipmentStatus;
 import com.foursquare.server.domain.enumeration.ShipmentType;
 import com.foursquare.server.repository.ShipmentRepository;
-import com.foursquare.server.repository.search.ShipmentSearchRepository;
 import com.foursquare.server.service.ShipmentService;
 import com.foursquare.server.service.dto.ShipmentDTO;
 import com.foursquare.server.service.mapper.ShipmentMapper;
@@ -23,10 +21,7 @@ import jakarta.persistence.EntityManager;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-import org.assertj.core.util.IterableUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -38,7 +33,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.util.Streamable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -65,7 +59,6 @@ class ShipmentResourceIT {
 
     private static final String ENTITY_API_URL = "/api/shipments";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
-    private static final String ENTITY_SEARCH_API_URL = "/api/shipments/_search";
 
     @Autowired
     private ObjectMapper om;
@@ -81,9 +74,6 @@ class ShipmentResourceIT {
 
     @Mock
     private ShipmentService shipmentServiceMock;
-
-    @Autowired
-    private ShipmentSearchRepository shipmentSearchRepository;
 
     @Autowired
     private EntityManager em;
@@ -146,7 +136,6 @@ class ShipmentResourceIT {
     public void cleanup() {
         if (insertedShipment != null) {
             shipmentRepository.delete(insertedShipment);
-            shipmentSearchRepository.delete(insertedShipment);
             insertedShipment = null;
         }
     }
@@ -155,7 +144,6 @@ class ShipmentResourceIT {
     @Transactional
     void createShipment() throws Exception {
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(shipmentSearchRepository.findAll());
         // Create the Shipment
         ShipmentDTO shipmentDTO = shipmentMapper.toDto(shipment);
         var returnedShipmentDTO = om.readValue(
@@ -173,13 +161,6 @@ class ShipmentResourceIT {
         var returnedShipment = shipmentMapper.toEntity(returnedShipmentDTO);
         assertShipmentUpdatableFieldsEquals(returnedShipment, getPersistedShipment(returnedShipment));
 
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(shipmentSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore + 1);
-            });
-
         insertedShipment = returnedShipment;
     }
 
@@ -191,7 +172,6 @@ class ShipmentResourceIT {
         ShipmentDTO shipmentDTO = shipmentMapper.toDto(shipment);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(shipmentSearchRepository.findAll());
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restShipmentMockMvc
@@ -200,15 +180,12 @@ class ShipmentResourceIT {
 
         // Validate the Shipment in the database
         assertSameRepositoryCount(databaseSizeBeforeCreate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(shipmentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkTypeIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(shipmentSearchRepository.findAll());
         // set the field null
         shipment.setType(null);
 
@@ -220,16 +197,12 @@ class ShipmentResourceIT {
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
-
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(shipmentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkShipmentDateIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(shipmentSearchRepository.findAll());
         // set the field null
         shipment.setShipmentDate(null);
 
@@ -241,9 +214,6 @@ class ShipmentResourceIT {
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
-
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(shipmentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -311,8 +281,6 @@ class ShipmentResourceIT {
         insertedShipment = shipmentRepository.saveAndFlush(shipment);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        shipmentSearchRepository.save(shipment);
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(shipmentSearchRepository.findAll());
 
         // Update the shipment
         Shipment updatedShipment = shipmentRepository.findById(shipment.getId()).orElseThrow();
@@ -332,24 +300,12 @@ class ShipmentResourceIT {
         // Validate the Shipment in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
         assertPersistedShipmentToMatchAllProperties(updatedShipment);
-
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(shipmentSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
-                List<Shipment> shipmentSearchList = Streamable.of(shipmentSearchRepository.findAll()).toList();
-                Shipment testShipmentSearch = shipmentSearchList.get(searchDatabaseSizeAfter - 1);
-
-                assertShipmentAllPropertiesEquals(testShipmentSearch, updatedShipment);
-            });
     }
 
     @Test
     @Transactional
     void putNonExistingShipment() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(shipmentSearchRepository.findAll());
         shipment.setId(UUID.randomUUID());
 
         // Create the Shipment
@@ -366,15 +322,12 @@ class ShipmentResourceIT {
 
         // Validate the Shipment in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(shipmentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithIdMismatchShipment() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(shipmentSearchRepository.findAll());
         shipment.setId(UUID.randomUUID());
 
         // Create the Shipment
@@ -389,15 +342,12 @@ class ShipmentResourceIT {
 
         // Validate the Shipment in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(shipmentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithMissingIdPathParamShipment() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(shipmentSearchRepository.findAll());
         shipment.setId(UUID.randomUUID());
 
         // Create the Shipment
@@ -410,8 +360,6 @@ class ShipmentResourceIT {
 
         // Validate the Shipment in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(shipmentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -474,7 +422,6 @@ class ShipmentResourceIT {
     @Transactional
     void patchNonExistingShipment() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(shipmentSearchRepository.findAll());
         shipment.setId(UUID.randomUUID());
 
         // Create the Shipment
@@ -491,15 +438,12 @@ class ShipmentResourceIT {
 
         // Validate the Shipment in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(shipmentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithIdMismatchShipment() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(shipmentSearchRepository.findAll());
         shipment.setId(UUID.randomUUID());
 
         // Create the Shipment
@@ -516,15 +460,12 @@ class ShipmentResourceIT {
 
         // Validate the Shipment in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(shipmentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithMissingIdPathParamShipment() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(shipmentSearchRepository.findAll());
         shipment.setId(UUID.randomUUID());
 
         // Create the Shipment
@@ -537,8 +478,6 @@ class ShipmentResourceIT {
 
         // Validate the Shipment in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(shipmentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -546,12 +485,8 @@ class ShipmentResourceIT {
     void deleteShipment() throws Exception {
         // Initialize the database
         insertedShipment = shipmentRepository.saveAndFlush(shipment);
-        shipmentRepository.save(shipment);
-        shipmentSearchRepository.save(shipment);
 
         long databaseSizeBeforeDelete = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(shipmentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeBefore).isEqualTo(databaseSizeBeforeDelete);
 
         // Delete the shipment
         restShipmentMockMvc
@@ -560,26 +495,6 @@ class ShipmentResourceIT {
 
         // Validate the database contains one less item
         assertDecrementedRepositoryCount(databaseSizeBeforeDelete);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(shipmentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore - 1);
-    }
-
-    @Test
-    @Transactional
-    void searchShipment() throws Exception {
-        // Initialize the database
-        insertedShipment = shipmentRepository.saveAndFlush(shipment);
-        shipmentSearchRepository.save(shipment);
-
-        // Search the shipment
-        restShipmentMockMvc
-            .perform(get(ENTITY_SEARCH_API_URL + "?query=id:" + shipment.getId()))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(shipment.getId().toString())))
-            .andExpect(jsonPath("$.[*].type").value(hasItem(DEFAULT_TYPE.toString())))
-            .andExpect(jsonPath("$.[*].shipmentDate").value(hasItem(DEFAULT_SHIPMENT_DATE.toString())))
-            .andExpect(jsonPath("$.[*].note").value(hasItem(DEFAULT_NOTE)));
     }
 
     protected long getRepositoryCount() {

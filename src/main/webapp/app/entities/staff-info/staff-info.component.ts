@@ -13,20 +13,16 @@ export default defineComponent({
     const staffInfoService = inject('staffInfoService', () => new StaffInfoService());
     const alertService = inject('alertService', () => useAlertService(), true);
 
-    const currentSearch = ref('');
-
     const staffInfos: Ref<IStaffInfo[]> = ref([]);
 
     const isFetching = ref(false);
 
-    const clear = () => {
-      currentSearch.value = '';
-    };
+    const clear = () => {};
 
     const retrieveStaffInfos = async () => {
       isFetching.value = true;
       try {
-        const res = currentSearch.value ? await staffInfoService().search(currentSearch.value) : await staffInfoService().retrieve();
+        const res = await staffInfoService().retrieve();
         staffInfos.value = res.data;
       } catch (err) {
         alertService.showHttpError(err.response);
@@ -42,14 +38,6 @@ export default defineComponent({
     onMounted(async () => {
       await retrieveStaffInfos();
     });
-
-    const search = query => {
-      if (!query) {
-        return clear();
-      }
-      currentSearch.value = query;
-      retrieveStaffInfos();
-    };
 
     const removeId: Ref<number> = ref(null);
     const removeEntity = ref<any>(null);
@@ -80,7 +68,6 @@ export default defineComponent({
       retrieveStaffInfos,
       clear,
       ...dateFormat,
-      currentSearch,
       removeId,
       removeEntity,
       prepareRemove,

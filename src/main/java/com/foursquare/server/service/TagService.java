@@ -2,7 +2,6 @@ package com.foursquare.server.service;
 
 import com.foursquare.server.domain.Tag;
 import com.foursquare.server.repository.TagRepository;
-import com.foursquare.server.repository.search.TagSearchRepository;
 import com.foursquare.server.service.dto.TagDTO;
 import com.foursquare.server.service.mapper.TagMapper;
 import java.util.LinkedList;
@@ -10,7 +9,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -29,12 +27,9 @@ public class TagService {
 
     private final TagMapper tagMapper;
 
-    private final TagSearchRepository tagSearchRepository;
-
-    public TagService(TagRepository tagRepository, TagMapper tagMapper, TagSearchRepository tagSearchRepository) {
+    public TagService(TagRepository tagRepository, TagMapper tagMapper) {
         this.tagRepository = tagRepository;
         this.tagMapper = tagMapper;
-        this.tagSearchRepository = tagSearchRepository;
     }
 
     /**
@@ -47,7 +42,6 @@ public class TagService {
         log.debug("Request to save Tag : {}", tagDTO);
         Tag tag = tagMapper.toEntity(tagDTO);
         tag = tagRepository.save(tag);
-        tagSearchRepository.index(tag);
         return tagMapper.toDto(tag);
     }
 
@@ -62,7 +56,6 @@ public class TagService {
         Tag tag = tagMapper.toEntity(tagDTO);
         tag.setIsPersisted();
         tag = tagRepository.save(tag);
-        tagSearchRepository.index(tag);
         return tagMapper.toDto(tag);
     }
 
@@ -83,10 +76,6 @@ public class TagService {
                 return existingTag;
             })
             .map(tagRepository::save)
-            .map(savedTag -> {
-                tagSearchRepository.index(savedTag);
-                return savedTag;
-            })
             .map(tagMapper::toDto);
     }
 
@@ -121,22 +110,5 @@ public class TagService {
     public void delete(UUID id) {
         log.debug("Request to delete Tag : {}", id);
         tagRepository.deleteById(id);
-        tagSearchRepository.deleteFromIndexById(id);
-    }
-
-    /**
-     * Search for the tag corresponding to the query.
-     *
-     * @param query the query of the search.
-     * @return the list of entities.
-     */
-    @Transactional(readOnly = true)
-    public List<TagDTO> search(String query) {
-        log.debug("Request to search Tags for query {}", query);
-        try {
-            return StreamSupport.stream(tagSearchRepository.search(query).spliterator(), false).map(tagMapper::toDto).toList();
-        } catch (RuntimeException e) {
-            throw e;
-        }
     }
 }

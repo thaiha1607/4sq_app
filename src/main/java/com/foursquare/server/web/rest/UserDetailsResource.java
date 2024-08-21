@@ -4,7 +4,6 @@ import com.foursquare.server.repository.UserDetailsRepository;
 import com.foursquare.server.service.UserDetailsService;
 import com.foursquare.server.service.dto.UserDetailsDTO;
 import com.foursquare.server.web.rest.errors.BadRequestAlertException;
-import com.foursquare.server.web.rest.errors.ElasticsearchExceptionMapper;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
@@ -171,22 +170,5 @@ public class UserDetailsResource {
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
-    }
-
-    /**
-     * {@code SEARCH  /user-details/_search?query=:query} : search for the userDetails corresponding
-     * to the query.
-     *
-     * @param query the query of the userDetails search.
-     * @return the result of the search.
-     */
-    @GetMapping("/_search")
-    public List<UserDetailsDTO> searchUserDetails(@RequestParam("query") String query) {
-        log.debug("REST request to search UserDetails for query {}", query);
-        try {
-            return userDetailsService.search(query);
-        } catch (RuntimeException e) {
-            throw ElasticsearchExceptionMapper.mapException(e);
-        }
     }
 }

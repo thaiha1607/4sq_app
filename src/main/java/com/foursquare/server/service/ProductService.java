@@ -2,7 +2,6 @@ package com.foursquare.server.service;
 
 import com.foursquare.server.domain.Product;
 import com.foursquare.server.repository.ProductRepository;
-import com.foursquare.server.repository.search.ProductSearchRepository;
 import com.foursquare.server.service.dto.ProductDTO;
 import com.foursquare.server.service.mapper.ProductMapper;
 import java.util.LinkedList;
@@ -10,7 +9,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -31,16 +29,9 @@ public class ProductService {
 
     private final ProductMapper productMapper;
 
-    private final ProductSearchRepository productSearchRepository;
-
-    public ProductService(
-        ProductRepository productRepository,
-        ProductMapper productMapper,
-        ProductSearchRepository productSearchRepository
-    ) {
+    public ProductService(ProductRepository productRepository, ProductMapper productMapper) {
         this.productRepository = productRepository;
         this.productMapper = productMapper;
-        this.productSearchRepository = productSearchRepository;
     }
 
     /**
@@ -53,7 +44,6 @@ public class ProductService {
         log.debug("Request to save Product : {}", productDTO);
         Product product = productMapper.toEntity(productDTO);
         product = productRepository.save(product);
-        productSearchRepository.index(product);
         return productMapper.toDto(product);
     }
 
@@ -68,7 +58,6 @@ public class ProductService {
         Product product = productMapper.toEntity(productDTO);
         product.setIsPersisted();
         product = productRepository.save(product);
-        productSearchRepository.index(product);
         return productMapper.toDto(product);
     }
 
@@ -89,10 +78,6 @@ public class ProductService {
                 return existingProduct;
             })
             .map(productRepository::save)
-            .map(savedProduct -> {
-                productSearchRepository.index(savedProduct);
-                return savedProduct;
-            })
             .map(productMapper::toDto);
     }
 
@@ -136,22 +121,5 @@ public class ProductService {
     public void delete(UUID id) {
         log.debug("Request to delete Product : {}", id);
         productRepository.deleteById(id);
-        productSearchRepository.deleteFromIndexById(id);
-    }
-
-    /**
-     * Search for the product corresponding to the query.
-     *
-     * @param query the query of the search.
-     * @return the list of entities.
-     */
-    @Transactional(readOnly = true)
-    public List<ProductDTO> search(String query) {
-        log.debug("Request to search Products for query {}", query);
-        try {
-            return StreamSupport.stream(productSearchRepository.search(query).spliterator(), false).map(productMapper::toDto).toList();
-        } catch (RuntimeException e) {
-            throw e;
-        }
     }
 }

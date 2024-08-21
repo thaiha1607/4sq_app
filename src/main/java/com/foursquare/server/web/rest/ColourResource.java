@@ -4,7 +4,6 @@ import com.foursquare.server.repository.ColourRepository;
 import com.foursquare.server.service.ColourService;
 import com.foursquare.server.service.dto.ColourDTO;
 import com.foursquare.server.web.rest.errors.BadRequestAlertException;
-import com.foursquare.server.web.rest.errors.ElasticsearchExceptionMapper;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
@@ -169,22 +168,5 @@ public class ColourResource {
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
-    }
-
-    /**
-     * {@code SEARCH  /colours/_search?query=:query} : search for the colour corresponding
-     * to the query.
-     *
-     * @param query the query of the colour search.
-     * @return the result of the search.
-     */
-    @GetMapping("/_search")
-    public List<ColourDTO> searchColours(@RequestParam("query") String query) {
-        log.debug("REST request to search Colours for query {}", query);
-        try {
-            return colourService.search(query);
-        } catch (RuntimeException e) {
-            throw ElasticsearchExceptionMapper.mapException(e);
-        }
     }
 }

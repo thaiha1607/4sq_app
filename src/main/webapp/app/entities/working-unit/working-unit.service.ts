@@ -3,22 +3,8 @@ import axios from 'axios';
 import { type IWorkingUnit } from '@/shared/model/working-unit.model';
 
 const baseApiUrl = 'api/working-units';
-const baseSearchApiUrl = 'api/working-units/_search?query=';
 
 export default class WorkingUnitService {
-  public search(query): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      axios
-        .get(`${baseSearchApiUrl}${query}`)
-        .then(res => {
-          resolve(res.data);
-        })
-        .catch(err => {
-          reject(err);
-        });
-    });
-  }
-
   public find(id: string): Promise<IWorkingUnit> {
     return new Promise<IWorkingUnit>((resolve, reject) => {
       axios

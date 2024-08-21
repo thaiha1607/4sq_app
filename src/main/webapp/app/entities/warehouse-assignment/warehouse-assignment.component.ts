@@ -13,22 +13,16 @@ export default defineComponent({
     const warehouseAssignmentService = inject('warehouseAssignmentService', () => new WarehouseAssignmentService());
     const alertService = inject('alertService', () => useAlertService(), true);
 
-    const currentSearch = ref('');
-
     const warehouseAssignments: Ref<IWarehouseAssignment[]> = ref([]);
 
     const isFetching = ref(false);
 
-    const clear = () => {
-      currentSearch.value = '';
-    };
+    const clear = () => {};
 
     const retrieveWarehouseAssignments = async () => {
       isFetching.value = true;
       try {
-        const res = currentSearch.value
-          ? await warehouseAssignmentService().search(currentSearch.value)
-          : await warehouseAssignmentService().retrieve();
+        const res = await warehouseAssignmentService().retrieve();
         warehouseAssignments.value = res.data;
       } catch (err) {
         alertService.showHttpError(err.response);
@@ -44,14 +38,6 @@ export default defineComponent({
     onMounted(async () => {
       await retrieveWarehouseAssignments();
     });
-
-    const search = query => {
-      if (!query) {
-        return clear();
-      }
-      currentSearch.value = query;
-      retrieveWarehouseAssignments();
-    };
 
     const removeId: Ref<string> = ref(null);
     const removeEntity = ref<any>(null);
@@ -82,7 +68,6 @@ export default defineComponent({
       retrieveWarehouseAssignments,
       clear,
       ...dateFormat,
-      currentSearch,
       removeId,
       removeEntity,
       prepareRemove,

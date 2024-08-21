@@ -4,7 +4,6 @@ import com.foursquare.server.repository.MessageRepository;
 import com.foursquare.server.service.MessageService;
 import com.foursquare.server.service.dto.MessageDTO;
 import com.foursquare.server.web.rest.errors.BadRequestAlertException;
-import com.foursquare.server.web.rest.errors.ElasticsearchExceptionMapper;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
@@ -170,22 +169,5 @@ public class MessageResource {
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
-    }
-
-    /**
-     * {@code SEARCH  /messages/_search?query=:query} : search for the message corresponding
-     * to the query.
-     *
-     * @param query the query of the message search.
-     * @return the result of the search.
-     */
-    @GetMapping("/_search")
-    public List<MessageDTO> searchMessages(@RequestParam("query") String query) {
-        log.debug("REST request to search Messages for query {}", query);
-        try {
-            return messageService.search(query);
-        } catch (RuntimeException e) {
-            throw ElasticsearchExceptionMapper.mapException(e);
-        }
     }
 }

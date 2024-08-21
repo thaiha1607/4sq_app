@@ -3,22 +3,8 @@ import axios from 'axios';
 import { type IStaffInfo } from '@/shared/model/staff-info.model';
 
 const baseApiUrl = 'api/staff-infos';
-const baseSearchApiUrl = 'api/staff-infos/_search?query=';
 
 export default class StaffInfoService {
-  public search(query): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      axios
-        .get(`${baseSearchApiUrl}${query}`)
-        .then(res => {
-          resolve(res.data);
-        })
-        .catch(err => {
-          reject(err);
-        });
-    });
-  }
-
   public find(id: number): Promise<IStaffInfo> {
     return new Promise<IStaffInfo>((resolve, reject) => {
       axios

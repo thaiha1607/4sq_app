@@ -17,7 +17,6 @@ import org.springframework.data.domain.Persistable;
 @Table(name = "product_quantity")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @JsonIgnoreProperties(value = { "new" })
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "productquantity")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class ProductQuantity extends AbstractAuditingEntity<UUID> implements Serializable, Persistable<UUID> {
 
@@ -31,7 +30,6 @@ public class ProductQuantity extends AbstractAuditingEntity<UUID> implements Ser
     @NotNull
     @Min(value = 0)
     @Column(name = "qty", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer qty;
 
     // Inherited createdBy definition

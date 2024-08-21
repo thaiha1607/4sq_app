@@ -2,7 +2,6 @@ package com.foursquare.server.service;
 
 import com.foursquare.server.domain.Participant;
 import com.foursquare.server.repository.ParticipantRepository;
-import com.foursquare.server.repository.search.ParticipantSearchRepository;
 import com.foursquare.server.service.dto.ParticipantDTO;
 import com.foursquare.server.service.mapper.ParticipantMapper;
 import java.util.LinkedList;
@@ -10,7 +9,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -31,16 +29,9 @@ public class ParticipantService {
 
     private final ParticipantMapper participantMapper;
 
-    private final ParticipantSearchRepository participantSearchRepository;
-
-    public ParticipantService(
-        ParticipantRepository participantRepository,
-        ParticipantMapper participantMapper,
-        ParticipantSearchRepository participantSearchRepository
-    ) {
+    public ParticipantService(ParticipantRepository participantRepository, ParticipantMapper participantMapper) {
         this.participantRepository = participantRepository;
         this.participantMapper = participantMapper;
-        this.participantSearchRepository = participantSearchRepository;
     }
 
     /**
@@ -53,7 +44,6 @@ public class ParticipantService {
         log.debug("Request to save Participant : {}", participantDTO);
         Participant participant = participantMapper.toEntity(participantDTO);
         participant = participantRepository.save(participant);
-        participantSearchRepository.index(participant);
         return participantMapper.toDto(participant);
     }
 
@@ -68,7 +58,6 @@ public class ParticipantService {
         Participant participant = participantMapper.toEntity(participantDTO);
         participant.setIsPersisted();
         participant = participantRepository.save(participant);
-        participantSearchRepository.index(participant);
         return participantMapper.toDto(participant);
     }
 
@@ -89,10 +78,6 @@ public class ParticipantService {
                 return existingParticipant;
             })
             .map(participantRepository::save)
-            .map(savedParticipant -> {
-                participantSearchRepository.index(savedParticipant);
-                return savedParticipant;
-            })
             .map(participantMapper::toDto);
     }
 
@@ -136,24 +121,5 @@ public class ParticipantService {
     public void delete(UUID id) {
         log.debug("Request to delete Participant : {}", id);
         participantRepository.deleteById(id);
-        participantSearchRepository.deleteFromIndexById(id);
-    }
-
-    /**
-     * Search for the participant corresponding to the query.
-     *
-     * @param query the query of the search.
-     * @return the list of entities.
-     */
-    @Transactional(readOnly = true)
-    public List<ParticipantDTO> search(String query) {
-        log.debug("Request to search Participants for query {}", query);
-        try {
-            return StreamSupport.stream(participantSearchRepository.search(query).spliterator(), false)
-                .map(participantMapper::toDto)
-                .toList();
-        } catch (RuntimeException e) {
-            throw e;
-        }
     }
 }

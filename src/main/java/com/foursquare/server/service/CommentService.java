@@ -2,7 +2,6 @@ package com.foursquare.server.service;
 
 import com.foursquare.server.domain.Comment;
 import com.foursquare.server.repository.CommentRepository;
-import com.foursquare.server.repository.search.CommentSearchRepository;
 import com.foursquare.server.service.dto.CommentDTO;
 import com.foursquare.server.service.mapper.CommentMapper;
 import java.util.LinkedList;
@@ -10,7 +9,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -31,16 +29,9 @@ public class CommentService {
 
     private final CommentMapper commentMapper;
 
-    private final CommentSearchRepository commentSearchRepository;
-
-    public CommentService(
-        CommentRepository commentRepository,
-        CommentMapper commentMapper,
-        CommentSearchRepository commentSearchRepository
-    ) {
+    public CommentService(CommentRepository commentRepository, CommentMapper commentMapper) {
         this.commentRepository = commentRepository;
         this.commentMapper = commentMapper;
-        this.commentSearchRepository = commentSearchRepository;
     }
 
     /**
@@ -53,7 +44,6 @@ public class CommentService {
         log.debug("Request to save Comment : {}", commentDTO);
         Comment comment = commentMapper.toEntity(commentDTO);
         comment = commentRepository.save(comment);
-        commentSearchRepository.index(comment);
         return commentMapper.toDto(comment);
     }
 
@@ -68,7 +58,6 @@ public class CommentService {
         Comment comment = commentMapper.toEntity(commentDTO);
         comment.setIsPersisted();
         comment = commentRepository.save(comment);
-        commentSearchRepository.index(comment);
         return commentMapper.toDto(comment);
     }
 
@@ -89,10 +78,6 @@ public class CommentService {
                 return existingComment;
             })
             .map(commentRepository::save)
-            .map(savedComment -> {
-                commentSearchRepository.index(savedComment);
-                return savedComment;
-            })
             .map(commentMapper::toDto);
     }
 
@@ -136,22 +121,5 @@ public class CommentService {
     public void delete(UUID id) {
         log.debug("Request to delete Comment : {}", id);
         commentRepository.deleteById(id);
-        commentSearchRepository.deleteFromIndexById(id);
-    }
-
-    /**
-     * Search for the comment corresponding to the query.
-     *
-     * @param query the query of the search.
-     * @return the list of entities.
-     */
-    @Transactional(readOnly = true)
-    public List<CommentDTO> search(String query) {
-        log.debug("Request to search Comments for query {}", query);
-        try {
-            return StreamSupport.stream(commentSearchRepository.search(query).spliterator(), false).map(commentMapper::toDto).toList();
-        } catch (RuntimeException e) {
-            throw e;
-        }
     }
 }

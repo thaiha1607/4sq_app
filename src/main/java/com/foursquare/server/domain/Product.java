@@ -20,7 +20,6 @@ import org.springframework.data.domain.Persistable;
 @Table(name = "product")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @JsonIgnoreProperties(value = { "new" })
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "product")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class Product extends AbstractAuditingEntity<UUID> implements Serializable, Persistable<UUID> {
 
@@ -33,11 +32,9 @@ public class Product extends AbstractAuditingEntity<UUID> implements Serializabl
 
     @NotNull
     @Column(name = "name", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String name;
 
     @Column(name = "description")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String description;
 
     @NotNull
@@ -46,7 +43,6 @@ public class Product extends AbstractAuditingEntity<UUID> implements Serializabl
     private BigDecimal price;
 
     @Column(name = "provider")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String provider;
 
     // Inherited createdBy definition
@@ -58,19 +54,16 @@ public class Product extends AbstractAuditingEntity<UUID> implements Serializabl
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "product")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @org.springframework.data.annotation.Transient
     @JsonIgnoreProperties(value = { "colour", "product" }, allowSetters = true)
     private Set<ProductCategory> productCategories = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "product")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @org.springframework.data.annotation.Transient
     @JsonIgnoreProperties(value = { "product" }, allowSetters = true)
     private Set<ProductImage> productImages = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "product")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @org.springframework.data.annotation.Transient
     @JsonIgnoreProperties(value = { "user", "product" }, allowSetters = true)
     private Set<Comment> comments = new HashSet<>();
 

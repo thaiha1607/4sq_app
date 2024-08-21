@@ -13,20 +13,16 @@ export default defineComponent({
     const userDetailsService = inject('userDetailsService', () => new UserDetailsService());
     const alertService = inject('alertService', () => useAlertService(), true);
 
-    const currentSearch = ref('');
-
     const userDetails: Ref<IUserDetails[]> = ref([]);
 
     const isFetching = ref(false);
 
-    const clear = () => {
-      currentSearch.value = '';
-    };
+    const clear = () => {};
 
     const retrieveUserDetailss = async () => {
       isFetching.value = true;
       try {
-        const res = currentSearch.value ? await userDetailsService().search(currentSearch.value) : await userDetailsService().retrieve();
+        const res = await userDetailsService().retrieve();
         userDetails.value = res.data;
       } catch (err) {
         alertService.showHttpError(err.response);
@@ -42,14 +38,6 @@ export default defineComponent({
     onMounted(async () => {
       await retrieveUserDetailss();
     });
-
-    const search = query => {
-      if (!query) {
-        return clear();
-      }
-      currentSearch.value = query;
-      retrieveUserDetailss();
-    };
 
     const removeId: Ref<number> = ref(null);
     const removeEntity = ref<any>(null);
@@ -80,7 +68,6 @@ export default defineComponent({
       retrieveUserDetailss,
       clear,
       ...dateFormat,
-      currentSearch,
       removeId,
       removeEntity,
       prepareRemove,

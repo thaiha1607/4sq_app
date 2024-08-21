@@ -18,7 +18,6 @@ import org.springframework.data.domain.Persistable;
 @Table(name = "order_item")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @JsonIgnoreProperties(value = { "new" })
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "orderitem")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class OrderItem extends AbstractAuditingEntity<UUID> implements Serializable, Persistable<UUID> {
 
@@ -32,13 +31,11 @@ public class OrderItem extends AbstractAuditingEntity<UUID> implements Serializa
     @NotNull
     @Min(value = 0)
     @Column(name = "ordered_qty", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer orderedQty;
 
     @NotNull
     @Min(value = 0)
     @Column(name = "received_qty", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer receivedQty;
 
     @NotNull
@@ -47,7 +44,6 @@ public class OrderItem extends AbstractAuditingEntity<UUID> implements Serializa
     private BigDecimal unitPrice;
 
     @Column(name = "note")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String note;
 
     // Inherited createdBy definition

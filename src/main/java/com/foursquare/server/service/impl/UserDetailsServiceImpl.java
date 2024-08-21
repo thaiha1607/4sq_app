@@ -2,7 +2,6 @@ package com.foursquare.server.service.impl;
 
 import com.foursquare.server.domain.UserDetails;
 import com.foursquare.server.repository.UserDetailsRepository;
-import com.foursquare.server.repository.search.UserDetailsSearchRepository;
 import com.foursquare.server.service.UserDetailsService;
 import com.foursquare.server.service.dto.UserDetailsDTO;
 import com.foursquare.server.service.mapper.UserDetailsMapper;
@@ -10,7 +9,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -31,16 +29,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UserDetailsMapper userDetailsMapper;
 
-    private final UserDetailsSearchRepository userDetailsSearchRepository;
-
-    public UserDetailsServiceImpl(
-        UserDetailsRepository userDetailsRepository,
-        UserDetailsMapper userDetailsMapper,
-        UserDetailsSearchRepository userDetailsSearchRepository
-    ) {
+    public UserDetailsServiceImpl(UserDetailsRepository userDetailsRepository, UserDetailsMapper userDetailsMapper) {
         this.userDetailsRepository = userDetailsRepository;
         this.userDetailsMapper = userDetailsMapper;
-        this.userDetailsSearchRepository = userDetailsSearchRepository;
     }
 
     @Override
@@ -48,7 +39,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         log.debug("Request to save UserDetails : {}", userDetailsDTO);
         UserDetails userDetails = userDetailsMapper.toEntity(userDetailsDTO);
         userDetails = userDetailsRepository.save(userDetails);
-        userDetailsSearchRepository.index(userDetails);
         return userDetailsMapper.toDto(userDetails);
     }
 
@@ -58,7 +48,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         UserDetails userDetails = userDetailsMapper.toEntity(userDetailsDTO);
         userDetails.setIsPersisted();
         userDetails = userDetailsRepository.save(userDetails);
-        userDetailsSearchRepository.index(userDetails);
         return userDetailsMapper.toDto(userDetails);
     }
 
@@ -74,10 +63,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 return existingUserDetails;
             })
             .map(userDetailsRepository::save)
-            .map(savedUserDetails -> {
-                userDetailsSearchRepository.index(savedUserDetails);
-                return savedUserDetails;
-            })
             .map(userDetailsMapper::toDto);
     }
 
@@ -103,19 +88,5 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public void delete(Long id) {
         log.debug("Request to delete UserDetails : {}", id);
         userDetailsRepository.deleteById(id);
-        userDetailsSearchRepository.deleteFromIndexById(id);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<UserDetailsDTO> search(String query) {
-        log.debug("Request to search UserDetails for query {}", query);
-        try {
-            return StreamSupport.stream(userDetailsSearchRepository.search(query).spliterator(), false)
-                .map(userDetailsMapper::toDto)
-                .toList();
-        } catch (RuntimeException e) {
-            throw e;
-        }
     }
 }

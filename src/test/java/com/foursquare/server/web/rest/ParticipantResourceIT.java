@@ -3,7 +3,6 @@ package com.foursquare.server.web.rest;
 import static com.foursquare.server.domain.ParticipantAsserts.*;
 import static com.foursquare.server.web.rest.TestUtil.createUpdateProxyForBean;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -16,16 +15,12 @@ import com.foursquare.server.domain.Participant;
 import com.foursquare.server.domain.User;
 import com.foursquare.server.repository.ParticipantRepository;
 import com.foursquare.server.repository.UserRepository;
-import com.foursquare.server.repository.search.ParticipantSearchRepository;
 import com.foursquare.server.service.ParticipantService;
 import com.foursquare.server.service.dto.ParticipantDTO;
 import com.foursquare.server.service.mapper.ParticipantMapper;
 import jakarta.persistence.EntityManager;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-import org.assertj.core.util.IterableUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,7 +31,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.util.Streamable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -56,7 +50,6 @@ class ParticipantResourceIT {
 
     private static final String ENTITY_API_URL = "/api/participants";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
-    private static final String ENTITY_SEARCH_API_URL = "/api/participants/_search";
 
     @Autowired
     private ObjectMapper om;
@@ -75,9 +68,6 @@ class ParticipantResourceIT {
 
     @Mock
     private ParticipantService participantServiceMock;
-
-    @Autowired
-    private ParticipantSearchRepository participantSearchRepository;
 
     @Autowired
     private EntityManager em;
@@ -150,7 +140,6 @@ class ParticipantResourceIT {
     public void cleanup() {
         if (insertedParticipant != null) {
             participantRepository.delete(insertedParticipant);
-            participantSearchRepository.delete(insertedParticipant);
             insertedParticipant = null;
         }
     }
@@ -159,7 +148,6 @@ class ParticipantResourceIT {
     @Transactional
     void createParticipant() throws Exception {
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(participantSearchRepository.findAll());
         // Create the Participant
         ParticipantDTO participantDTO = participantMapper.toDto(participant);
         var returnedParticipantDTO = om.readValue(
@@ -177,13 +165,6 @@ class ParticipantResourceIT {
         var returnedParticipant = participantMapper.toEntity(returnedParticipantDTO);
         assertParticipantUpdatableFieldsEquals(returnedParticipant, getPersistedParticipant(returnedParticipant));
 
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(participantSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore + 1);
-            });
-
         insertedParticipant = returnedParticipant;
     }
 
@@ -195,7 +176,6 @@ class ParticipantResourceIT {
         ParticipantDTO participantDTO = participantMapper.toDto(participant);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(participantSearchRepository.findAll());
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restParticipantMockMvc
@@ -204,8 +184,6 @@ class ParticipantResourceIT {
 
         // Validate the Participant in the database
         assertSameRepositoryCount(databaseSizeBeforeCreate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(participantSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -269,8 +247,6 @@ class ParticipantResourceIT {
         insertedParticipant = participantRepository.saveAndFlush(participant);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        participantSearchRepository.save(participant);
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(participantSearchRepository.findAll());
 
         // Update the participant
         Participant updatedParticipant = participantRepository.findById(participant.getId()).orElseThrow();
@@ -290,24 +266,12 @@ class ParticipantResourceIT {
         // Validate the Participant in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
         assertPersistedParticipantToMatchAllProperties(updatedParticipant);
-
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(participantSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
-                List<Participant> participantSearchList = Streamable.of(participantSearchRepository.findAll()).toList();
-                Participant testParticipantSearch = participantSearchList.get(searchDatabaseSizeAfter - 1);
-
-                assertParticipantAllPropertiesEquals(testParticipantSearch, updatedParticipant);
-            });
     }
 
     @Test
     @Transactional
     void putNonExistingParticipant() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(participantSearchRepository.findAll());
         participant.setId(UUID.randomUUID());
 
         // Create the Participant
@@ -324,15 +288,12 @@ class ParticipantResourceIT {
 
         // Validate the Participant in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(participantSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithIdMismatchParticipant() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(participantSearchRepository.findAll());
         participant.setId(UUID.randomUUID());
 
         // Create the Participant
@@ -349,15 +310,12 @@ class ParticipantResourceIT {
 
         // Validate the Participant in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(participantSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithMissingIdPathParamParticipant() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(participantSearchRepository.findAll());
         participant.setId(UUID.randomUUID());
 
         // Create the Participant
@@ -370,8 +328,6 @@ class ParticipantResourceIT {
 
         // Validate the Participant in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(participantSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -437,7 +393,6 @@ class ParticipantResourceIT {
     @Transactional
     void patchNonExistingParticipant() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(participantSearchRepository.findAll());
         participant.setId(UUID.randomUUID());
 
         // Create the Participant
@@ -454,15 +409,12 @@ class ParticipantResourceIT {
 
         // Validate the Participant in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(participantSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithIdMismatchParticipant() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(participantSearchRepository.findAll());
         participant.setId(UUID.randomUUID());
 
         // Create the Participant
@@ -479,15 +431,12 @@ class ParticipantResourceIT {
 
         // Validate the Participant in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(participantSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithMissingIdPathParamParticipant() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(participantSearchRepository.findAll());
         participant.setId(UUID.randomUUID());
 
         // Create the Participant
@@ -500,8 +449,6 @@ class ParticipantResourceIT {
 
         // Validate the Participant in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(participantSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -509,12 +456,8 @@ class ParticipantResourceIT {
     void deleteParticipant() throws Exception {
         // Initialize the database
         insertedParticipant = participantRepository.saveAndFlush(participant);
-        participantRepository.save(participant);
-        participantSearchRepository.save(participant);
 
         long databaseSizeBeforeDelete = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(participantSearchRepository.findAll());
-        assertThat(searchDatabaseSizeBefore).isEqualTo(databaseSizeBeforeDelete);
 
         // Delete the participant
         restParticipantMockMvc
@@ -523,24 +466,6 @@ class ParticipantResourceIT {
 
         // Validate the database contains one less item
         assertDecrementedRepositoryCount(databaseSizeBeforeDelete);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(participantSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore - 1);
-    }
-
-    @Test
-    @Transactional
-    void searchParticipant() throws Exception {
-        // Initialize the database
-        insertedParticipant = participantRepository.saveAndFlush(participant);
-        participantSearchRepository.save(participant);
-
-        // Search the participant
-        restParticipantMockMvc
-            .perform(get(ENTITY_SEARCH_API_URL + "?query=id:" + participant.getId()))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(participant.getId().toString())))
-            .andExpect(jsonPath("$.[*].isAdmin").value(hasItem(DEFAULT_IS_ADMIN.booleanValue())));
     }
 
     protected long getRepositoryCount() {

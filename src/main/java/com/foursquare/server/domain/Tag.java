@@ -19,7 +19,6 @@ import org.springframework.data.domain.Persistable;
 @Table(name = "tag")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @JsonIgnoreProperties(value = { "new" })
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "tag")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class Tag extends AbstractAuditingEntity<UUID> implements Serializable, Persistable<UUID> {
 
@@ -32,7 +31,6 @@ public class Tag extends AbstractAuditingEntity<UUID> implements Serializable, P
 
     @NotNull
     @Column(name = "name", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String name;
 
     // Inherited createdBy definition
@@ -44,7 +42,6 @@ public class Tag extends AbstractAuditingEntity<UUID> implements Serializable, P
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "tags")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @org.springframework.data.annotation.Transient
     @JsonIgnoreProperties(value = { "productCategories", "productImages", "comments", "tags" }, allowSetters = true)
     private Set<Product> products = new HashSet<>();
 

@@ -13,22 +13,16 @@ export default defineComponent({
     const shipmentAssignmentService = inject('shipmentAssignmentService', () => new ShipmentAssignmentService());
     const alertService = inject('alertService', () => useAlertService(), true);
 
-    const currentSearch = ref('');
-
     const shipmentAssignments: Ref<IShipmentAssignment[]> = ref([]);
 
     const isFetching = ref(false);
 
-    const clear = () => {
-      currentSearch.value = '';
-    };
+    const clear = () => {};
 
     const retrieveShipmentAssignments = async () => {
       isFetching.value = true;
       try {
-        const res = currentSearch.value
-          ? await shipmentAssignmentService().search(currentSearch.value)
-          : await shipmentAssignmentService().retrieve();
+        const res = await shipmentAssignmentService().retrieve();
         shipmentAssignments.value = res.data;
       } catch (err) {
         alertService.showHttpError(err.response);
@@ -44,14 +38,6 @@ export default defineComponent({
     onMounted(async () => {
       await retrieveShipmentAssignments();
     });
-
-    const search = query => {
-      if (!query) {
-        return clear();
-      }
-      currentSearch.value = query;
-      retrieveShipmentAssignments();
-    };
 
     const removeId: Ref<string> = ref(null);
     const removeEntity = ref<any>(null);
@@ -82,7 +68,6 @@ export default defineComponent({
       retrieveShipmentAssignments,
       clear,
       ...dateFormat,
-      currentSearch,
       removeId,
       removeEntity,
       prepareRemove,

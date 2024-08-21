@@ -3,22 +3,8 @@ import axios from 'axios';
 import { type IUserAddress } from '@/shared/model/user-address.model';
 
 const baseApiUrl = 'api/user-addresses';
-const baseSearchApiUrl = 'api/user-addresses/_search?query=';
 
 export default class UserAddressService {
-  public search(query): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      axios
-        .get(`${baseSearchApiUrl}${query}`)
-        .then(res => {
-          resolve(res.data);
-        })
-        .catch(err => {
-          reject(err);
-        });
-    });
-  }
-
   public find(id: string): Promise<IUserAddress> {
     return new Promise<IUserAddress>((resolve, reject) => {
       axios
