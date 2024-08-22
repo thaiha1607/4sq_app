@@ -130,9 +130,6 @@
               />
             </div>
           </div>
-          <div v-if="v$.orderItems.$anyDirty && v$.orderItems.$invalid">
-            <small class="form-text text-danger" v-for="error of v$.orderItems.$errors" :key="error.$uid">{{ error.$message }}</small>
-          </div>
           <div class="form-group">
             <label class="form-control-label" for="order-customer">Customer</label>
             <select class="form-control" id="order-customer" data-cy="customer" name="customer" v-model="order.customer" required>

@@ -94,9 +94,7 @@ export default defineComponent({
       lastModifiedBy: {},
       lastModifiedDate: {},
       assignments: {},
-      items: {
-        required: validations.required('This field is required.'),
-      },
+      items: {},
       status: {
         required: validations.required('This field is required.'),
       },

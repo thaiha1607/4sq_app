@@ -15,59 +15,19 @@ describe('Product e2e test', () => {
   const productPageUrlPattern = new RegExp('/product(\\?.*)?$');
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
-  // const productSample = {"name":"whoever shadow er","price":29233.89};
+  const productSample = { name: 'whoever shadow er', price: 29233.89 };
 
   let product;
-  // let productCategory;
 
   beforeEach(() => {
     cy.login(username, password);
   });
-
-  /* Disabled due to incompatibility
-  beforeEach(() => {
-    // create an instance at the required relationship entity:
-    cy.authenticatedRequest({
-      method: 'POST',
-      url: '/api/product-categories',
-      body: {"name":"fratricide mewl"},
-    }).then(({ body }) => {
-      productCategory = body;
-    });
-  });
-   */
 
   beforeEach(() => {
     cy.intercept('GET', '/api/products+(?*|)').as('entitiesRequest');
     cy.intercept('POST', '/api/products').as('postEntityRequest');
     cy.intercept('DELETE', '/api/products/*').as('deleteEntityRequest');
   });
-
-  /* Disabled due to incompatibility
-  beforeEach(() => {
-    // Simulate relationships api for better performance and reproducibility.
-    cy.intercept('GET', '/api/product-categories', {
-      statusCode: 200,
-      body: [productCategory],
-    });
-
-    cy.intercept('GET', '/api/product-images', {
-      statusCode: 200,
-      body: [],
-    });
-
-    cy.intercept('GET', '/api/comments', {
-      statusCode: 200,
-      body: [],
-    });
-
-    cy.intercept('GET', '/api/tags', {
-      statusCode: 200,
-      body: [],
-    });
-
-  });
-   */
 
   afterEach(() => {
     if (product) {
@@ -79,19 +39,6 @@ describe('Product e2e test', () => {
       });
     }
   });
-
-  /* Disabled due to incompatibility
-  afterEach(() => {
-    if (productCategory) {
-      cy.authenticatedRequest({
-        method: 'DELETE',
-        url: `/api/product-categories/${productCategory.id}`,
-      }).then(() => {
-        productCategory = undefined;
-      });
-    }
-  });
-   */
 
   it('Products menu should load Products page', () => {
     cy.visit('/');
@@ -128,15 +75,11 @@ describe('Product e2e test', () => {
     });
 
     describe('with existing value', () => {
-      /* Disabled due to incompatibility
       beforeEach(() => {
         cy.authenticatedRequest({
           method: 'POST',
           url: '/api/products',
-          body: {
-            ...productSample,
-            productCategory: productCategory,
-          },
+          body: productSample,
         }).then(({ body }) => {
           product = body;
 
@@ -149,24 +92,13 @@ describe('Product e2e test', () => {
             {
               statusCode: 200,
               body: [product],
-            }
+            },
           ).as('entitiesRequestInternal');
         });
 
         cy.visit(productPageUrl);
 
         cy.wait('@entitiesRequestInternal');
-      });
-       */
-
-      beforeEach(function () {
-        cy.visit(productPageUrl);
-
-        cy.wait('@entitiesRequest').then(({ response }) => {
-          if (response?.body.length === 0) {
-            this.skip();
-          }
-        });
       });
 
       it('detail button click should load details Product page', () => {
@@ -200,7 +132,7 @@ describe('Product e2e test', () => {
         cy.url().should('match', productPageUrlPattern);
       });
 
-      it.skip('last delete button click should delete instance of Product', () => {
+      it('last delete button click should delete instance of Product', () => {
         cy.get(entityDeleteButtonSelector).last().click();
         cy.getEntityDeleteDialogHeading('product').should('exist');
         cy.get(entityConfirmDeleteButtonSelector).click();
@@ -224,7 +156,7 @@ describe('Product e2e test', () => {
       cy.getEntityCreateUpdateHeading('Product');
     });
 
-    it.skip('should create an instance of Product', () => {
+    it('should create an instance of Product', () => {
       cy.get(`[data-cy="name"]`).type('stark');
       cy.get(`[data-cy="name"]`).should('have.value', 'stark');
 
@@ -236,8 +168,6 @@ describe('Product e2e test', () => {
 
       cy.get(`[data-cy="provider"]`).type('amidst doubtfully');
       cy.get(`[data-cy="provider"]`).should('have.value', 'amidst doubtfully');
-
-      cy.get(`[data-cy="productCategory"]`).select([0]);
 
       cy.get(entityCreateSaveButtonSelector).click();
 

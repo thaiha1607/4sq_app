@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foursquare.server.IntegrationTest;
+import com.foursquare.server.domain.Order;
 import com.foursquare.server.domain.User;
 import com.foursquare.server.domain.WarehouseAssignment;
 import com.foursquare.server.domain.WorkingUnit;
@@ -24,7 +25,6 @@ import java.util.ArrayList;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -42,7 +42,6 @@ import org.springframework.transaction.annotation.Transactional;
  * Integration tests for the {@link WarehouseAssignmentResource} REST controller.
  */
 @IntegrationTest
-@Disabled("Cyclic required relationships detected")
 @ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc
 @WithMockUser
@@ -109,6 +108,16 @@ class WarehouseAssignmentResourceIT {
             workingUnit = TestUtil.findAll(em, WorkingUnit.class).get(0);
         }
         warehouseAssignment.setSourceWorkingUnit(workingUnit);
+        // Add required entity
+        Order order;
+        if (TestUtil.findAll(em, Order.class).isEmpty()) {
+            order = OrderResourceIT.createEntity(em);
+            em.persist(order);
+            em.flush();
+        } else {
+            order = TestUtil.findAll(em, Order.class).get(0);
+        }
+        warehouseAssignment.setOrder(order);
         return warehouseAssignment;
     }
 
@@ -133,6 +142,16 @@ class WarehouseAssignmentResourceIT {
             workingUnit = TestUtil.findAll(em, WorkingUnit.class).get(0);
         }
         warehouseAssignment.setSourceWorkingUnit(workingUnit);
+        // Add required entity
+        Order order;
+        if (TestUtil.findAll(em, Order.class).isEmpty()) {
+            order = OrderResourceIT.createUpdatedEntity(em);
+            em.persist(order);
+            em.flush();
+        } else {
+            order = TestUtil.findAll(em, Order.class).get(0);
+        }
+        warehouseAssignment.setOrder(order);
         return warehouseAssignment;
     }
 
@@ -473,6 +492,28 @@ class WarehouseAssignmentResourceIT {
 
         // Get all the warehouseAssignmentList where targetWorkingUnit equals to UUID.randomUUID()
         defaultWarehouseAssignmentShouldNotBeFound("targetWorkingUnitId.equals=" + UUID.randomUUID());
+    }
+
+    @Test
+    @Transactional
+    void getAllWarehouseAssignmentsByOrderIsEqualToSomething() throws Exception {
+        Order order;
+        if (TestUtil.findAll(em, Order.class).isEmpty()) {
+            warehouseAssignmentRepository.saveAndFlush(warehouseAssignment);
+            order = OrderResourceIT.createEntity(em);
+        } else {
+            order = TestUtil.findAll(em, Order.class).get(0);
+        }
+        em.persist(order);
+        em.flush();
+        warehouseAssignment.setOrder(order);
+        warehouseAssignmentRepository.saveAndFlush(warehouseAssignment);
+        UUID orderId = order.getId();
+        // Get all the warehouseAssignmentList where order equals to orderId
+        defaultWarehouseAssignmentShouldBeFound("orderId.equals=" + orderId);
+
+        // Get all the warehouseAssignmentList where order equals to UUID.randomUUID()
+        defaultWarehouseAssignmentShouldNotBeFound("orderId.equals=" + UUID.randomUUID());
     }
 
     private void defaultWarehouseAssignmentFiltering(String shouldBeFound, String shouldNotBeFound) throws Exception {

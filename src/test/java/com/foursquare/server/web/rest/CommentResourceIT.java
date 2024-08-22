@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foursquare.server.IntegrationTest;
 import com.foursquare.server.domain.Comment;
+import com.foursquare.server.domain.Product;
 import com.foursquare.server.domain.User;
 import com.foursquare.server.repository.CommentRepository;
 import com.foursquare.server.repository.UserRepository;
@@ -22,7 +23,6 @@ import java.util.ArrayList;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -40,7 +40,6 @@ import org.springframework.transaction.annotation.Transactional;
  * Integration tests for the {@link CommentResource} REST controller.
  */
 @IntegrationTest
-@Disabled("Cyclic required relationships detected")
 @ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc
 @WithMockUser
@@ -97,6 +96,16 @@ class CommentResourceIT {
         em.persist(user);
         em.flush();
         comment.setUser(user);
+        // Add required entity
+        Product product;
+        if (TestUtil.findAll(em, Product.class).isEmpty()) {
+            product = ProductResourceIT.createEntity(em);
+            em.persist(product);
+            em.flush();
+        } else {
+            product = TestUtil.findAll(em, Product.class).get(0);
+        }
+        comment.setProduct(product);
         return comment;
     }
 
@@ -113,6 +122,16 @@ class CommentResourceIT {
         em.persist(user);
         em.flush();
         comment.setUser(user);
+        // Add required entity
+        Product product;
+        if (TestUtil.findAll(em, Product.class).isEmpty()) {
+            product = ProductResourceIT.createUpdatedEntity(em);
+            em.persist(product);
+            em.flush();
+        } else {
+            product = TestUtil.findAll(em, Product.class).get(0);
+        }
+        comment.setProduct(product);
         return comment;
     }
 
@@ -388,6 +407,28 @@ class CommentResourceIT {
 
         // Get all the commentList where user equals to (userId + 1)
         defaultCommentShouldNotBeFound("userId.equals=" + (userId + 1));
+    }
+
+    @Test
+    @Transactional
+    void getAllCommentsByProductIsEqualToSomething() throws Exception {
+        Product product;
+        if (TestUtil.findAll(em, Product.class).isEmpty()) {
+            commentRepository.saveAndFlush(comment);
+            product = ProductResourceIT.createEntity(em);
+        } else {
+            product = TestUtil.findAll(em, Product.class).get(0);
+        }
+        em.persist(product);
+        em.flush();
+        comment.setProduct(product);
+        commentRepository.saveAndFlush(comment);
+        UUID productId = product.getId();
+        // Get all the commentList where product equals to productId
+        defaultCommentShouldBeFound("productId.equals=" + productId);
+
+        // Get all the commentList where product equals to UUID.randomUUID()
+        defaultCommentShouldNotBeFound("productId.equals=" + UUID.randomUUID());
     }
 
     private void defaultCommentFiltering(String shouldBeFound, String shouldNotBeFound) throws Exception {

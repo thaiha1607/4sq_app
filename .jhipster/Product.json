@@ -75,8 +75,7 @@
       "otherEntityRelationshipName": "product",
       "relationshipName": "productCategory",
       "relationshipSide": "left",
-      "relationshipType": "one-to-many",
-      "relationshipValidateRules": "required"
+      "relationshipType": "one-to-many"
     },
     {
       "otherEntityName": "productImage",

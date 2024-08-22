@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foursquare.server.IntegrationTest;
+import com.foursquare.server.domain.Shipment;
 import com.foursquare.server.domain.ShipmentAssignment;
 import com.foursquare.server.domain.User;
 import com.foursquare.server.domain.enumeration.AssignmentStatus;
@@ -23,7 +24,6 @@ import java.util.ArrayList;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -41,7 +41,6 @@ import org.springframework.transaction.annotation.Transactional;
  * Integration tests for the {@link ShipmentAssignmentResource} REST controller.
  */
 @IntegrationTest
-@Disabled("Cyclic required relationships detected")
 @ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc
 @WithMockUser
@@ -98,6 +97,16 @@ class ShipmentAssignmentResourceIT {
             .status(DEFAULT_STATUS)
             .note(DEFAULT_NOTE)
             .otherInfo(DEFAULT_OTHER_INFO);
+        // Add required entity
+        Shipment shipment;
+        if (TestUtil.findAll(em, Shipment.class).isEmpty()) {
+            shipment = ShipmentResourceIT.createEntity(em);
+            em.persist(shipment);
+            em.flush();
+        } else {
+            shipment = TestUtil.findAll(em, Shipment.class).get(0);
+        }
+        shipmentAssignment.setShipment(shipment);
         return shipmentAssignment;
     }
 
@@ -112,6 +121,16 @@ class ShipmentAssignmentResourceIT {
             .status(UPDATED_STATUS)
             .note(UPDATED_NOTE)
             .otherInfo(UPDATED_OTHER_INFO);
+        // Add required entity
+        Shipment shipment;
+        if (TestUtil.findAll(em, Shipment.class).isEmpty()) {
+            shipment = ShipmentResourceIT.createUpdatedEntity(em);
+            em.persist(shipment);
+            em.flush();
+        } else {
+            shipment = TestUtil.findAll(em, Shipment.class).get(0);
+        }
+        shipmentAssignment.setShipment(shipment);
         return shipmentAssignment;
     }
 
@@ -408,6 +427,28 @@ class ShipmentAssignmentResourceIT {
 
         // Get all the shipmentAssignmentList where user equals to (userId + 1)
         defaultShipmentAssignmentShouldNotBeFound("userId.equals=" + (userId + 1));
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentAssignmentsByShipmentIsEqualToSomething() throws Exception {
+        Shipment shipment;
+        if (TestUtil.findAll(em, Shipment.class).isEmpty()) {
+            shipmentAssignmentRepository.saveAndFlush(shipmentAssignment);
+            shipment = ShipmentResourceIT.createEntity(em);
+        } else {
+            shipment = TestUtil.findAll(em, Shipment.class).get(0);
+        }
+        em.persist(shipment);
+        em.flush();
+        shipmentAssignment.setShipment(shipment);
+        shipmentAssignmentRepository.saveAndFlush(shipmentAssignment);
+        UUID shipmentId = shipment.getId();
+        // Get all the shipmentAssignmentList where shipment equals to shipmentId
+        defaultShipmentAssignmentShouldBeFound("shipmentId.equals=" + shipmentId);
+
+        // Get all the shipmentAssignmentList where shipment equals to UUID.randomUUID()
+        defaultShipmentAssignmentShouldNotBeFound("shipmentId.equals=" + UUID.randomUUID());
     }
 
     private void defaultShipmentAssignmentFiltering(String shouldBeFound, String shouldNotBeFound) throws Exception {

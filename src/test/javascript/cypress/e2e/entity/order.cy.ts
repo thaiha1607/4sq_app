@@ -18,7 +18,6 @@ describe('Order e2e test', () => {
   // const orderSample = {"type":"RETURN"};
 
   let order;
-  // let orderItem;
   // let user;
   // let orderStatus;
 
@@ -28,14 +27,6 @@ describe('Order e2e test', () => {
 
   /* Disabled due to incompatibility
   beforeEach(() => {
-    // create an instance at the required relationship entity:
-    cy.authenticatedRequest({
-      method: 'POST',
-      url: '/api/order-items',
-      body: {"orderedQty":14815,"receivedQty":26641,"unitPrice":24745.94,"note":"amid weird precipitation"},
-    }).then(({ body }) => {
-      orderItem = body;
-    });
     // create an instance at the required relationship entity:
     cy.authenticatedRequest({
       method: 'POST',
@@ -71,7 +62,7 @@ describe('Order e2e test', () => {
 
     cy.intercept('GET', '/api/order-items', {
       statusCode: 200,
-      body: [orderItem],
+      body: [],
     });
 
     cy.intercept('GET', '/api/orders', {
@@ -120,14 +111,6 @@ describe('Order e2e test', () => {
 
   /* Disabled due to incompatibility
   afterEach(() => {
-    if (orderItem) {
-      cy.authenticatedRequest({
-        method: 'DELETE',
-        url: `/api/order-items/${orderItem.id}`,
-      }).then(() => {
-        orderItem = undefined;
-      });
-    }
     if (user) {
       cy.authenticatedRequest({
         method: 'DELETE',
@@ -189,7 +172,6 @@ describe('Order e2e test', () => {
           url: '/api/orders',
           body: {
             ...orderSample,
-            orderItem: orderItem,
             customer: user,
             status: orderStatus,
           },
@@ -296,7 +278,6 @@ describe('Order e2e test', () => {
       cy.get(`[data-cy="otherInfo"]`).type('aw mouth');
       cy.get(`[data-cy="otherInfo"]`).should('have.value', 'aw mouth');
 
-      cy.get(`[data-cy="orderItem"]`).select([0]);
       cy.get(`[data-cy="customer"]`).select(1);
       cy.get(`[data-cy="status"]`).select(1);
 

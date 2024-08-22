@@ -15,27 +15,25 @@ describe('ProductImage e2e test', () => {
   const productImagePageUrlPattern = new RegExp('/product-image(\\?.*)?$');
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
-  // const productImageSample = {"imageUri":"bawl phew finally"};
+  const productImageSample = { imageUri: 'bawl phew finally' };
 
   let productImage;
-  // let product;
+  let product;
 
   beforeEach(() => {
     cy.login(username, password);
   });
 
-  /* Disabled due to incompatibility
   beforeEach(() => {
     // create an instance at the required relationship entity:
     cy.authenticatedRequest({
       method: 'POST',
       url: '/api/products',
-      body: {"name":"gleefully oof hm","description":"in while","price":9937.87,"provider":"who aw"},
+      body: { name: 'gleefully oof hm', description: 'in while', price: 9937.87, provider: 'who aw' },
     }).then(({ body }) => {
       product = body;
     });
   });
-   */
 
   beforeEach(() => {
     cy.intercept('GET', '/api/product-images+(?*|)').as('entitiesRequest');
@@ -43,16 +41,13 @@ describe('ProductImage e2e test', () => {
     cy.intercept('DELETE', '/api/product-images/*').as('deleteEntityRequest');
   });
 
-  /* Disabled due to incompatibility
   beforeEach(() => {
     // Simulate relationships api for better performance and reproducibility.
     cy.intercept('GET', '/api/products', {
       statusCode: 200,
       body: [product],
     });
-
   });
-   */
 
   afterEach(() => {
     if (productImage) {
@@ -65,7 +60,6 @@ describe('ProductImage e2e test', () => {
     }
   });
 
-  /* Disabled due to incompatibility
   afterEach(() => {
     if (product) {
       cy.authenticatedRequest({
@@ -76,7 +70,6 @@ describe('ProductImage e2e test', () => {
       });
     }
   });
-   */
 
   it('ProductImages menu should load ProductImages page', () => {
     cy.visit('/');
@@ -113,7 +106,6 @@ describe('ProductImage e2e test', () => {
     });
 
     describe('with existing value', () => {
-      /* Disabled due to incompatibility
       beforeEach(() => {
         cy.authenticatedRequest({
           method: 'POST',
@@ -134,24 +126,13 @@ describe('ProductImage e2e test', () => {
             {
               statusCode: 200,
               body: [productImage],
-            }
+            },
           ).as('entitiesRequestInternal');
         });
 
         cy.visit(productImagePageUrl);
 
         cy.wait('@entitiesRequestInternal');
-      });
-       */
-
-      beforeEach(function () {
-        cy.visit(productImagePageUrl);
-
-        cy.wait('@entitiesRequest').then(({ response }) => {
-          if (response?.body.length === 0) {
-            this.skip();
-          }
-        });
       });
 
       it('detail button click should load details ProductImage page', () => {
@@ -185,7 +166,7 @@ describe('ProductImage e2e test', () => {
         cy.url().should('match', productImagePageUrlPattern);
       });
 
-      it.skip('last delete button click should delete instance of ProductImage', () => {
+      it('last delete button click should delete instance of ProductImage', () => {
         cy.get(entityDeleteButtonSelector).last().click();
         cy.getEntityDeleteDialogHeading('productImage').should('exist');
         cy.get(entityConfirmDeleteButtonSelector).click();
@@ -209,7 +190,7 @@ describe('ProductImage e2e test', () => {
       cy.getEntityCreateUpdateHeading('ProductImage');
     });
 
-    it.skip('should create an instance of ProductImage', () => {
+    it('should create an instance of ProductImage', () => {
       cy.get(`[data-cy="imageUri"]`).type('bah from whereas');
       cy.get(`[data-cy="imageUri"]`).should('have.value', 'bah from whereas');
 

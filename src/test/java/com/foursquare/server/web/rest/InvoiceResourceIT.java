@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foursquare.server.IntegrationTest;
 import com.foursquare.server.domain.Invoice;
 import com.foursquare.server.domain.InvoiceStatus;
+import com.foursquare.server.domain.Order;
 import com.foursquare.server.domain.enumeration.InvoiceType;
 import com.foursquare.server.domain.enumeration.PaymentMethod;
 import com.foursquare.server.repository.InvoiceRepository;
@@ -25,7 +26,6 @@ import java.util.ArrayList;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -43,7 +43,6 @@ import org.springframework.transaction.annotation.Transactional;
  * Integration tests for the {@link InvoiceResource} REST controller.
  */
 @IntegrationTest
-@Disabled("Cyclic required relationships detected")
 @ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc
 @WithMockUser
@@ -112,6 +111,16 @@ class InvoiceResourceIT {
             invoiceStatus = TestUtil.findAll(em, InvoiceStatus.class).get(0);
         }
         invoice.setStatus(invoiceStatus);
+        // Add required entity
+        Order order;
+        if (TestUtil.findAll(em, Order.class).isEmpty()) {
+            order = OrderResourceIT.createEntity(em);
+            em.persist(order);
+            em.flush();
+        } else {
+            order = TestUtil.findAll(em, Order.class).get(0);
+        }
+        invoice.setOrder(order);
         return invoice;
     }
 
@@ -137,6 +146,16 @@ class InvoiceResourceIT {
             invoiceStatus = TestUtil.findAll(em, InvoiceStatus.class).get(0);
         }
         invoice.setStatus(invoiceStatus);
+        // Add required entity
+        Order order;
+        if (TestUtil.findAll(em, Order.class).isEmpty()) {
+            order = OrderResourceIT.createUpdatedEntity(em);
+            em.persist(order);
+            em.flush();
+        } else {
+            order = TestUtil.findAll(em, Order.class).get(0);
+        }
+        invoice.setOrder(order);
         return invoice;
     }
 
@@ -522,6 +541,28 @@ class InvoiceResourceIT {
 
         // Get all the invoiceList where status equals to (statusId + 1)
         defaultInvoiceShouldNotBeFound("statusId.equals=" + (statusId + 1));
+    }
+
+    @Test
+    @Transactional
+    void getAllInvoicesByOrderIsEqualToSomething() throws Exception {
+        Order order;
+        if (TestUtil.findAll(em, Order.class).isEmpty()) {
+            invoiceRepository.saveAndFlush(invoice);
+            order = OrderResourceIT.createEntity(em);
+        } else {
+            order = TestUtil.findAll(em, Order.class).get(0);
+        }
+        em.persist(order);
+        em.flush();
+        invoice.setOrder(order);
+        invoiceRepository.saveAndFlush(invoice);
+        UUID orderId = order.getId();
+        // Get all the invoiceList where order equals to orderId
+        defaultInvoiceShouldBeFound("orderId.equals=" + orderId);
+
+        // Get all the invoiceList where order equals to UUID.randomUUID()
+        defaultInvoiceShouldNotBeFound("orderId.equals=" + UUID.randomUUID());
     }
 
     private void defaultInvoiceFiltering(String shouldBeFound, String shouldNotBeFound) throws Exception {

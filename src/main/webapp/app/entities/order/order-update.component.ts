@@ -101,9 +101,7 @@ export default defineComponent({
       lastModifiedBy: {},
       lastModifiedDate: {},
       invoices: {},
-      orderItems: {
-        required: validations.required('This field is required.'),
-      },
+      orderItems: {},
       childOrders: {},
       shipments: {},
       histories: {},

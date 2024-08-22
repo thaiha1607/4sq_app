@@ -31,7 +31,7 @@ describe('ShipmentItem e2e test', () => {
     cy.authenticatedRequest({
       method: 'POST',
       url: '/api/order-items',
-      body: {"orderedQty":21229,"receivedQty":9596,"unitPrice":17001.92,"note":"incredible honorable"},
+      body: {"orderedQty":14815,"receivedQty":26641,"unitPrice":24745.94,"note":"amid weird precipitation"},
     }).then(({ body }) => {
       orderItem = body;
     });

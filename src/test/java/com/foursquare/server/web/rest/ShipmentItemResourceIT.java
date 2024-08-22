@@ -10,6 +10,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foursquare.server.IntegrationTest;
+import com.foursquare.server.domain.OrderItem;
+import com.foursquare.server.domain.Shipment;
 import com.foursquare.server.domain.ShipmentItem;
 import com.foursquare.server.repository.ShipmentItemRepository;
 import com.foursquare.server.service.dto.ShipmentItemDTO;
@@ -19,7 +21,6 @@ import java.math.BigDecimal;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -32,7 +33,6 @@ import org.springframework.transaction.annotation.Transactional;
  * Integration tests for the {@link ShipmentItemResource} REST controller.
  */
 @IntegrationTest
-@Disabled("Cyclic required relationships detected")
 @AutoConfigureMockMvc
 @WithMockUser
 class ShipmentItemResourceIT {
@@ -79,6 +79,26 @@ class ShipmentItemResourceIT {
      */
     public static ShipmentItem createEntity(EntityManager em) {
         ShipmentItem shipmentItem = new ShipmentItem().qty(DEFAULT_QTY).total(DEFAULT_TOTAL).rollQty(DEFAULT_ROLL_QTY);
+        // Add required entity
+        OrderItem orderItem;
+        if (TestUtil.findAll(em, OrderItem.class).isEmpty()) {
+            orderItem = OrderItemResourceIT.createEntity(em);
+            em.persist(orderItem);
+            em.flush();
+        } else {
+            orderItem = TestUtil.findAll(em, OrderItem.class).get(0);
+        }
+        shipmentItem.setOrderItem(orderItem);
+        // Add required entity
+        Shipment shipment;
+        if (TestUtil.findAll(em, Shipment.class).isEmpty()) {
+            shipment = ShipmentResourceIT.createEntity(em);
+            em.persist(shipment);
+            em.flush();
+        } else {
+            shipment = TestUtil.findAll(em, Shipment.class).get(0);
+        }
+        shipmentItem.setShipment(shipment);
         return shipmentItem;
     }
 
@@ -90,6 +110,26 @@ class ShipmentItemResourceIT {
      */
     public static ShipmentItem createUpdatedEntity(EntityManager em) {
         ShipmentItem shipmentItem = new ShipmentItem().qty(UPDATED_QTY).total(UPDATED_TOTAL).rollQty(UPDATED_ROLL_QTY);
+        // Add required entity
+        OrderItem orderItem;
+        if (TestUtil.findAll(em, OrderItem.class).isEmpty()) {
+            orderItem = OrderItemResourceIT.createUpdatedEntity(em);
+            em.persist(orderItem);
+            em.flush();
+        } else {
+            orderItem = TestUtil.findAll(em, OrderItem.class).get(0);
+        }
+        shipmentItem.setOrderItem(orderItem);
+        // Add required entity
+        Shipment shipment;
+        if (TestUtil.findAll(em, Shipment.class).isEmpty()) {
+            shipment = ShipmentResourceIT.createUpdatedEntity(em);
+            em.persist(shipment);
+            em.flush();
+        } else {
+            shipment = TestUtil.findAll(em, Shipment.class).get(0);
+        }
+        shipmentItem.setShipment(shipment);
         return shipmentItem;
     }
 
@@ -452,6 +492,50 @@ class ShipmentItemResourceIT {
 
         // Get all the shipmentItemList where rollQty is greater than
         defaultShipmentItemFiltering("rollQty.greaterThan=" + SMALLER_ROLL_QTY, "rollQty.greaterThan=" + DEFAULT_ROLL_QTY);
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentItemsByOrderItemIsEqualToSomething() throws Exception {
+        OrderItem orderItem;
+        if (TestUtil.findAll(em, OrderItem.class).isEmpty()) {
+            shipmentItemRepository.saveAndFlush(shipmentItem);
+            orderItem = OrderItemResourceIT.createEntity(em);
+        } else {
+            orderItem = TestUtil.findAll(em, OrderItem.class).get(0);
+        }
+        em.persist(orderItem);
+        em.flush();
+        shipmentItem.setOrderItem(orderItem);
+        shipmentItemRepository.saveAndFlush(shipmentItem);
+        UUID orderItemId = orderItem.getId();
+        // Get all the shipmentItemList where orderItem equals to orderItemId
+        defaultShipmentItemShouldBeFound("orderItemId.equals=" + orderItemId);
+
+        // Get all the shipmentItemList where orderItem equals to UUID.randomUUID()
+        defaultShipmentItemShouldNotBeFound("orderItemId.equals=" + UUID.randomUUID());
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentItemsByShipmentIsEqualToSomething() throws Exception {
+        Shipment shipment;
+        if (TestUtil.findAll(em, Shipment.class).isEmpty()) {
+            shipmentItemRepository.saveAndFlush(shipmentItem);
+            shipment = ShipmentResourceIT.createEntity(em);
+        } else {
+            shipment = TestUtil.findAll(em, Shipment.class).get(0);
+        }
+        em.persist(shipment);
+        em.flush();
+        shipmentItem.setShipment(shipment);
+        shipmentItemRepository.saveAndFlush(shipmentItem);
+        UUID shipmentId = shipment.getId();
+        // Get all the shipmentItemList where shipment equals to shipmentId
+        defaultShipmentItemShouldBeFound("shipmentId.equals=" + shipmentId);
+
+        // Get all the shipmentItemList where shipment equals to UUID.randomUUID()
+        defaultShipmentItemShouldNotBeFound("shipmentId.equals=" + UUID.randomUUID());
     }
 
     private void defaultShipmentItemFiltering(String shouldBeFound, String shouldNotBeFound) throws Exception {

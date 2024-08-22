@@ -10,6 +10,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foursquare.server.IntegrationTest;
+import com.foursquare.server.domain.Invoice;
+import com.foursquare.server.domain.Order;
 import com.foursquare.server.domain.Shipment;
 import com.foursquare.server.domain.ShipmentStatus;
 import com.foursquare.server.domain.enumeration.ShipmentType;
@@ -24,7 +26,6 @@ import java.util.ArrayList;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -42,7 +43,6 @@ import org.springframework.transaction.annotation.Transactional;
  * Integration tests for the {@link ShipmentResource} REST controller.
  */
 @IntegrationTest
-@Disabled("Cyclic required relationships detected")
 @ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc
 @WithMockUser
@@ -103,6 +103,26 @@ class ShipmentResourceIT {
             shipmentStatus = TestUtil.findAll(em, ShipmentStatus.class).get(0);
         }
         shipment.setStatus(shipmentStatus);
+        // Add required entity
+        Order order;
+        if (TestUtil.findAll(em, Order.class).isEmpty()) {
+            order = OrderResourceIT.createEntity(em);
+            em.persist(order);
+            em.flush();
+        } else {
+            order = TestUtil.findAll(em, Order.class).get(0);
+        }
+        shipment.setOrder(order);
+        // Add required entity
+        Invoice invoice;
+        if (TestUtil.findAll(em, Invoice.class).isEmpty()) {
+            invoice = InvoiceResourceIT.createEntity(em);
+            em.persist(invoice);
+            em.flush();
+        } else {
+            invoice = TestUtil.findAll(em, Invoice.class).get(0);
+        }
+        shipment.setInvoice(invoice);
         return shipment;
     }
 
@@ -124,6 +144,26 @@ class ShipmentResourceIT {
             shipmentStatus = TestUtil.findAll(em, ShipmentStatus.class).get(0);
         }
         shipment.setStatus(shipmentStatus);
+        // Add required entity
+        Order order;
+        if (TestUtil.findAll(em, Order.class).isEmpty()) {
+            order = OrderResourceIT.createUpdatedEntity(em);
+            em.persist(order);
+            em.flush();
+        } else {
+            order = TestUtil.findAll(em, Order.class).get(0);
+        }
+        shipment.setOrder(order);
+        // Add required entity
+        Invoice invoice;
+        if (TestUtil.findAll(em, Invoice.class).isEmpty()) {
+            invoice = InvoiceResourceIT.createUpdatedEntity(em);
+            em.persist(invoice);
+            em.flush();
+        } else {
+            invoice = TestUtil.findAll(em, Invoice.class).get(0);
+        }
+        shipment.setInvoice(invoice);
         return shipment;
     }
 
@@ -411,6 +451,50 @@ class ShipmentResourceIT {
 
         // Get all the shipmentList where status equals to (statusId + 1)
         defaultShipmentShouldNotBeFound("statusId.equals=" + (statusId + 1));
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentsByOrderIsEqualToSomething() throws Exception {
+        Order order;
+        if (TestUtil.findAll(em, Order.class).isEmpty()) {
+            shipmentRepository.saveAndFlush(shipment);
+            order = OrderResourceIT.createEntity(em);
+        } else {
+            order = TestUtil.findAll(em, Order.class).get(0);
+        }
+        em.persist(order);
+        em.flush();
+        shipment.setOrder(order);
+        shipmentRepository.saveAndFlush(shipment);
+        UUID orderId = order.getId();
+        // Get all the shipmentList where order equals to orderId
+        defaultShipmentShouldBeFound("orderId.equals=" + orderId);
+
+        // Get all the shipmentList where order equals to UUID.randomUUID()
+        defaultShipmentShouldNotBeFound("orderId.equals=" + UUID.randomUUID());
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentsByInvoiceIsEqualToSomething() throws Exception {
+        Invoice invoice;
+        if (TestUtil.findAll(em, Invoice.class).isEmpty()) {
+            shipmentRepository.saveAndFlush(shipment);
+            invoice = InvoiceResourceIT.createEntity(em);
+        } else {
+            invoice = TestUtil.findAll(em, Invoice.class).get(0);
+        }
+        em.persist(invoice);
+        em.flush();
+        shipment.setInvoice(invoice);
+        shipmentRepository.saveAndFlush(shipment);
+        UUID invoiceId = invoice.getId();
+        // Get all the shipmentList where invoice equals to invoiceId
+        defaultShipmentShouldBeFound("invoiceId.equals=" + invoiceId);
+
+        // Get all the shipmentList where invoice equals to UUID.randomUUID()
+        defaultShipmentShouldNotBeFound("invoiceId.equals=" + UUID.randomUUID());
     }
 
     private void defaultShipmentFiltering(String shouldBeFound, String shouldNotBeFound) throws Exception {

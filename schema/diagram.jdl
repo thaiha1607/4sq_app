@@ -336,12 +336,12 @@ relationship OneToOne {
  */
 relationship OneToMany {
     Order{invoice} to Invoice{order required}
-    Order{orderItem required} to OrderItem{order required}
+    Order{orderItem} to OrderItem{order required}
     Order{childOrder} to Order{parentOrder}
-    @OnDelete("CASCADE") Product{productCategory(name) required} to ProductCategory{product(name) required}
+    @OnDelete("CASCADE") Product{productCategory(name)} to ProductCategory{product(name) required}
     @OnDelete("CASCADE") Product{productImage} to ProductImage{product required}
     Shipment{assignment} to ShipmentAssignment{shipment required}
-    Shipment{item required} to ShipmentItem{shipment required}
+    Shipment{item} to ShipmentItem{shipment required}
     Order{shipment} to Shipment{order required}
     Invoice{shipment} to Shipment{invoice required}
     @OnDelete("CASCADE") Product{comment} to Comment{product required}

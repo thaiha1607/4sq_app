@@ -118,11 +118,6 @@
               />
             </div>
           </div>
-          <div v-if="v$.productCategories.$anyDirty && v$.productCategories.$invalid">
-            <small class="form-text text-danger" v-for="error of v$.productCategories.$errors" :key="error.$uid">{{
-              error.$message
-            }}</small>
-          </div>
           <div class="form-group">
             <label for="product-tag">Tag</label>
             <select

@@ -18,7 +18,6 @@ describe('Shipment e2e test', () => {
   // const shipmentSample = {"type":"TRANSFER","shipmentDate":"2024-08-21T04:18:07.533Z"};
 
   let shipment;
-  // let shipmentItem;
   // let shipmentStatus;
   // let order;
   // let invoice;
@@ -29,14 +28,6 @@ describe('Shipment e2e test', () => {
 
   /* Disabled due to incompatibility
   beforeEach(() => {
-    // create an instance at the required relationship entity:
-    cy.authenticatedRequest({
-      method: 'POST',
-      url: '/api/shipment-items',
-      body: {"qty":8478,"total":23014.76,"rollQty":26264},
-    }).then(({ body }) => {
-      shipmentItem = body;
-    });
     // create an instance at the required relationship entity:
     cy.authenticatedRequest({
       method: 'POST',
@@ -80,7 +71,7 @@ describe('Shipment e2e test', () => {
 
     cy.intercept('GET', '/api/shipment-items', {
       statusCode: 200,
-      body: [shipmentItem],
+      body: [],
     });
 
     cy.intercept('GET', '/api/shipment-statuses', {
@@ -114,14 +105,6 @@ describe('Shipment e2e test', () => {
 
   /* Disabled due to incompatibility
   afterEach(() => {
-    if (shipmentItem) {
-      cy.authenticatedRequest({
-        method: 'DELETE',
-        url: `/api/shipment-items/${shipmentItem.id}`,
-      }).then(() => {
-        shipmentItem = undefined;
-      });
-    }
     if (shipmentStatus) {
       cy.authenticatedRequest({
         method: 'DELETE',
@@ -191,7 +174,6 @@ describe('Shipment e2e test', () => {
           url: '/api/shipments',
           body: {
             ...shipmentSample,
-            item: shipmentItem,
             status: shipmentStatus,
             order: order,
             invoice: invoice,
@@ -293,7 +275,6 @@ describe('Shipment e2e test', () => {
       cy.get(`[data-cy="note"]`).type('bottling mmm neatly');
       cy.get(`[data-cy="note"]`).should('have.value', 'bottling mmm neatly');
 
-      cy.get(`[data-cy="item"]`).select([0]);
       cy.get(`[data-cy="status"]`).select(1);
       cy.get(`[data-cy="order"]`).select(1);
       cy.get(`[data-cy="invoice"]`).select(1);

@@ -70,9 +70,7 @@ export default defineComponent({
       createdDate: {},
       lastModifiedBy: {},
       lastModifiedDate: {},
-      productCategories: {
-        required: validations.required('This field is required.'),
-      },
+      productCategories: {},
       productImages: {},
       comments: {},
       tags: {},

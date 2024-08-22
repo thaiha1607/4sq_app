@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foursquare.server.IntegrationTest;
+import com.foursquare.server.domain.ProductCategory;
 import com.foursquare.server.domain.ProductQuantity;
 import com.foursquare.server.domain.WorkingUnit;
 import com.foursquare.server.repository.ProductQuantityRepository;
@@ -21,7 +22,6 @@ import java.util.ArrayList;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -39,7 +39,6 @@ import org.springframework.transaction.annotation.Transactional;
  * Integration tests for the {@link ProductQuantityResource} REST controller.
  */
 @IntegrationTest
-@Disabled("Cyclic required relationships detected")
 @ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc
 @WithMockUser
@@ -95,6 +94,16 @@ class ProductQuantityResourceIT {
             workingUnit = TestUtil.findAll(em, WorkingUnit.class).get(0);
         }
         productQuantity.setWorkingUnit(workingUnit);
+        // Add required entity
+        ProductCategory productCategory;
+        if (TestUtil.findAll(em, ProductCategory.class).isEmpty()) {
+            productCategory = ProductCategoryResourceIT.createEntity(em);
+            em.persist(productCategory);
+            em.flush();
+        } else {
+            productCategory = TestUtil.findAll(em, ProductCategory.class).get(0);
+        }
+        productQuantity.setProductCategory(productCategory);
         return productQuantity;
     }
 
@@ -116,6 +125,16 @@ class ProductQuantityResourceIT {
             workingUnit = TestUtil.findAll(em, WorkingUnit.class).get(0);
         }
         productQuantity.setWorkingUnit(workingUnit);
+        // Add required entity
+        ProductCategory productCategory;
+        if (TestUtil.findAll(em, ProductCategory.class).isEmpty()) {
+            productCategory = ProductCategoryResourceIT.createUpdatedEntity(em);
+            em.persist(productCategory);
+            em.flush();
+        } else {
+            productCategory = TestUtil.findAll(em, ProductCategory.class).get(0);
+        }
+        productQuantity.setProductCategory(productCategory);
         return productQuantity;
     }
 
@@ -339,6 +358,28 @@ class ProductQuantityResourceIT {
 
         // Get all the productQuantityList where workingUnit equals to UUID.randomUUID()
         defaultProductQuantityShouldNotBeFound("workingUnitId.equals=" + UUID.randomUUID());
+    }
+
+    @Test
+    @Transactional
+    void getAllProductQuantitiesByProductCategoryIsEqualToSomething() throws Exception {
+        ProductCategory productCategory;
+        if (TestUtil.findAll(em, ProductCategory.class).isEmpty()) {
+            productQuantityRepository.saveAndFlush(productQuantity);
+            productCategory = ProductCategoryResourceIT.createEntity(em);
+        } else {
+            productCategory = TestUtil.findAll(em, ProductCategory.class).get(0);
+        }
+        em.persist(productCategory);
+        em.flush();
+        productQuantity.setProductCategory(productCategory);
+        productQuantityRepository.saveAndFlush(productQuantity);
+        UUID productCategoryId = productCategory.getId();
+        // Get all the productQuantityList where productCategory equals to productCategoryId
+        defaultProductQuantityShouldBeFound("productCategoryId.equals=" + productCategoryId);
+
+        // Get all the productQuantityList where productCategory equals to UUID.randomUUID()
+        defaultProductQuantityShouldNotBeFound("productCategoryId.equals=" + UUID.randomUUID());
     }
 
     private void defaultProductQuantityFiltering(String shouldBeFound, String shouldNotBeFound) throws Exception {

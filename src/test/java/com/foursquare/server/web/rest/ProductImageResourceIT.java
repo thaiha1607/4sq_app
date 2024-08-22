@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foursquare.server.IntegrationTest;
+import com.foursquare.server.domain.Product;
 import com.foursquare.server.domain.ProductImage;
 import com.foursquare.server.repository.ProductImageRepository;
 import com.foursquare.server.service.dto.ProductImageDTO;
@@ -17,7 +18,6 @@ import jakarta.persistence.EntityManager;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -30,7 +30,6 @@ import org.springframework.transaction.annotation.Transactional;
  * Integration tests for the {@link ProductImageResource} REST controller.
  */
 @IntegrationTest
-@Disabled("Cyclic required relationships detected")
 @AutoConfigureMockMvc
 @WithMockUser
 class ProductImageResourceIT {
@@ -71,6 +70,16 @@ class ProductImageResourceIT {
      */
     public static ProductImage createEntity(EntityManager em) {
         ProductImage productImage = new ProductImage().imageUri(DEFAULT_IMAGE_URI).altText(DEFAULT_ALT_TEXT);
+        // Add required entity
+        Product product;
+        if (TestUtil.findAll(em, Product.class).isEmpty()) {
+            product = ProductResourceIT.createEntity(em);
+            em.persist(product);
+            em.flush();
+        } else {
+            product = TestUtil.findAll(em, Product.class).get(0);
+        }
+        productImage.setProduct(product);
         return productImage;
     }
 
@@ -82,6 +91,16 @@ class ProductImageResourceIT {
      */
     public static ProductImage createUpdatedEntity(EntityManager em) {
         ProductImage productImage = new ProductImage().imageUri(UPDATED_IMAGE_URI).altText(UPDATED_ALT_TEXT);
+        // Add required entity
+        Product product;
+        if (TestUtil.findAll(em, Product.class).isEmpty()) {
+            product = ProductResourceIT.createUpdatedEntity(em);
+            em.persist(product);
+            em.flush();
+        } else {
+            product = TestUtil.findAll(em, Product.class).get(0);
+        }
+        productImage.setProduct(product);
         return productImage;
     }
 
@@ -298,6 +317,28 @@ class ProductImageResourceIT {
 
         // Get all the productImageList where altText does not contain
         defaultProductImageFiltering("altText.doesNotContain=" + UPDATED_ALT_TEXT, "altText.doesNotContain=" + DEFAULT_ALT_TEXT);
+    }
+
+    @Test
+    @Transactional
+    void getAllProductImagesByProductIsEqualToSomething() throws Exception {
+        Product product;
+        if (TestUtil.findAll(em, Product.class).isEmpty()) {
+            productImageRepository.saveAndFlush(productImage);
+            product = ProductResourceIT.createEntity(em);
+        } else {
+            product = TestUtil.findAll(em, Product.class).get(0);
+        }
+        em.persist(product);
+        em.flush();
+        productImage.setProduct(product);
+        productImageRepository.saveAndFlush(productImage);
+        UUID productId = product.getId();
+        // Get all the productImageList where product equals to productId
+        defaultProductImageShouldBeFound("productId.equals=" + productId);
+
+        // Get all the productImageList where product equals to UUID.randomUUID()
+        defaultProductImageShouldNotBeFound("productId.equals=" + UUID.randomUUID());
     }
 
     private void defaultProductImageFiltering(String shouldBeFound, String shouldNotBeFound) throws Exception {

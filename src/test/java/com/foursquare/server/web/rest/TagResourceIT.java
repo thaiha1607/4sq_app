@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foursquare.server.IntegrationTest;
+import com.foursquare.server.domain.Product;
 import com.foursquare.server.domain.Tag;
 import com.foursquare.server.repository.TagRepository;
 import com.foursquare.server.service.dto.TagDTO;
@@ -241,6 +242,28 @@ class TagResourceIT {
 
         // Get all the tagList where name does not contain
         defaultTagFiltering("name.doesNotContain=" + UPDATED_NAME, "name.doesNotContain=" + DEFAULT_NAME);
+    }
+
+    @Test
+    @Transactional
+    void getAllTagsByProductIsEqualToSomething() throws Exception {
+        Product product;
+        if (TestUtil.findAll(em, Product.class).isEmpty()) {
+            tagRepository.saveAndFlush(tag);
+            product = ProductResourceIT.createEntity(em);
+        } else {
+            product = TestUtil.findAll(em, Product.class).get(0);
+        }
+        em.persist(product);
+        em.flush();
+        tag.addProduct(product);
+        tagRepository.saveAndFlush(tag);
+        UUID productId = product.getId();
+        // Get all the tagList where product equals to productId
+        defaultTagShouldBeFound("productId.equals=" + productId);
+
+        // Get all the tagList where product equals to UUID.randomUUID()
+        defaultTagShouldNotBeFound("productId.equals=" + UUID.randomUUID());
     }
 
     private void defaultTagFiltering(String shouldBeFound, String shouldNotBeFound) throws Exception {

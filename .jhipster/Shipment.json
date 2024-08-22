@@ -77,8 +77,7 @@
       "otherEntityRelationshipName": "shipment",
       "relationshipName": "item",
       "relationshipSide": "left",
-      "relationshipType": "one-to-many",
-      "relationshipValidateRules": "required"
+      "relationshipType": "one-to-many"
     },
     {
       "otherEntityField": "statusCode",

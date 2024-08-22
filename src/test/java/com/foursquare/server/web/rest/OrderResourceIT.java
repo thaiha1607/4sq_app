@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -44,7 +43,6 @@ import org.springframework.transaction.annotation.Transactional;
  * Integration tests for the {@link OrderResource} REST controller.
  */
 @IntegrationTest
-@Disabled("Cyclic required relationships detected")
 @ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc
 @WithMockUser
@@ -591,6 +589,28 @@ class OrderResourceIT {
 
         // Get all the orderList where address equals to UUID.randomUUID()
         defaultOrderShouldNotBeFound("addressId.equals=" + UUID.randomUUID());
+    }
+
+    @Test
+    @Transactional
+    void getAllOrdersByParentOrderIsEqualToSomething() throws Exception {
+        Order parentOrder;
+        if (TestUtil.findAll(em, Order.class).isEmpty()) {
+            orderRepository.saveAndFlush(order);
+            parentOrder = OrderResourceIT.createEntity(em);
+        } else {
+            parentOrder = TestUtil.findAll(em, Order.class).get(0);
+        }
+        em.persist(parentOrder);
+        em.flush();
+        order.setParentOrder(parentOrder);
+        orderRepository.saveAndFlush(order);
+        UUID parentOrderId = parentOrder.getId();
+        // Get all the orderList where parentOrder equals to parentOrderId
+        defaultOrderShouldBeFound("parentOrderId.equals=" + parentOrderId);
+
+        // Get all the orderList where parentOrder equals to UUID.randomUUID()
+        defaultOrderShouldNotBeFound("parentOrderId.equals=" + UUID.randomUUID());
     }
 
     private void defaultOrderFiltering(String shouldBeFound, String shouldNotBeFound) throws Exception {

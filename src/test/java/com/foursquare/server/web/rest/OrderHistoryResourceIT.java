@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foursquare.server.IntegrationTest;
+import com.foursquare.server.domain.Order;
 import com.foursquare.server.domain.OrderHistory;
 import com.foursquare.server.domain.OrderStatus;
 import com.foursquare.server.repository.OrderHistoryRepository;
@@ -21,7 +22,6 @@ import java.util.ArrayList;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -39,7 +39,6 @@ import org.springframework.transaction.annotation.Transactional;
  * Integration tests for the {@link OrderHistoryResource} REST controller.
  */
 @IntegrationTest
-@Disabled("Cyclic required relationships detected")
 @ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc
 @WithMockUser
@@ -94,6 +93,16 @@ class OrderHistoryResourceIT {
             orderStatus = TestUtil.findAll(em, OrderStatus.class).get(0);
         }
         orderHistory.setStatus(orderStatus);
+        // Add required entity
+        Order order;
+        if (TestUtil.findAll(em, Order.class).isEmpty()) {
+            order = OrderResourceIT.createEntity(em);
+            em.persist(order);
+            em.flush();
+        } else {
+            order = TestUtil.findAll(em, Order.class).get(0);
+        }
+        orderHistory.setOrder(order);
         return orderHistory;
     }
 
@@ -115,6 +124,16 @@ class OrderHistoryResourceIT {
             orderStatus = TestUtil.findAll(em, OrderStatus.class).get(0);
         }
         orderHistory.setStatus(orderStatus);
+        // Add required entity
+        Order order;
+        if (TestUtil.findAll(em, Order.class).isEmpty()) {
+            order = OrderResourceIT.createUpdatedEntity(em);
+            em.persist(order);
+            em.flush();
+        } else {
+            order = TestUtil.findAll(em, Order.class).get(0);
+        }
+        orderHistory.setOrder(order);
         return orderHistory;
     }
 
@@ -301,6 +320,28 @@ class OrderHistoryResourceIT {
 
         // Get all the orderHistoryList where status equals to (statusId + 1)
         defaultOrderHistoryShouldNotBeFound("statusId.equals=" + (statusId + 1));
+    }
+
+    @Test
+    @Transactional
+    void getAllOrderHistoriesByOrderIsEqualToSomething() throws Exception {
+        Order order;
+        if (TestUtil.findAll(em, Order.class).isEmpty()) {
+            orderHistoryRepository.saveAndFlush(orderHistory);
+            order = OrderResourceIT.createEntity(em);
+        } else {
+            order = TestUtil.findAll(em, Order.class).get(0);
+        }
+        em.persist(order);
+        em.flush();
+        orderHistory.setOrder(order);
+        orderHistoryRepository.saveAndFlush(orderHistory);
+        UUID orderId = order.getId();
+        // Get all the orderHistoryList where order equals to orderId
+        defaultOrderHistoryShouldBeFound("orderId.equals=" + orderId);
+
+        // Get all the orderHistoryList where order equals to UUID.randomUUID()
+        defaultOrderHistoryShouldNotBeFound("orderId.equals=" + UUID.randomUUID());
     }
 
     private void defaultOrderHistoryFiltering(String shouldBeFound, String shouldNotBeFound) throws Exception {
