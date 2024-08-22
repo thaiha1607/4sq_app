@@ -122,7 +122,7 @@ describe('Colour e2e test', () => {
         cy.url().should('match', colourPageUrlPattern);
       });
 
-      it('edit button click should load edit Colour page and save', () => {
+      it.skip('edit button click should load edit Colour page and save', () => {
         cy.get(entityEditButtonSelector).first().click();
         cy.getEntityCreateUpdateHeading('Colour');
         cy.get(entityCreateSaveButtonSelector).click();

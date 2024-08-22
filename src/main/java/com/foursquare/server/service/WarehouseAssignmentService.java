@@ -4,11 +4,8 @@ import com.foursquare.server.domain.WarehouseAssignment;
 import com.foursquare.server.repository.WarehouseAssignmentRepository;
 import com.foursquare.server.service.dto.WarehouseAssignmentDTO;
 import com.foursquare.server.service.mapper.WarehouseAssignmentMapper;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -82,21 +79,6 @@ public class WarehouseAssignmentService {
             })
             .map(warehouseAssignmentRepository::save)
             .map(warehouseAssignmentMapper::toDto);
-    }
-
-    /**
-     * Get all the warehouseAssignments.
-     *
-     * @return the list of entities.
-     */
-    @Transactional(readOnly = true)
-    public List<WarehouseAssignmentDTO> findAll() {
-        log.debug("Request to get all WarehouseAssignments");
-        return warehouseAssignmentRepository
-            .findAll()
-            .stream()
-            .map(warehouseAssignmentMapper::toDto)
-            .collect(Collectors.toCollection(LinkedList::new));
     }
 
     /**

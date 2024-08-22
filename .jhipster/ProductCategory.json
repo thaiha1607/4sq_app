@@ -51,6 +51,7 @@
       "readonly": true
     }
   ],
+  "jpaMetamodelFiltering": true,
   "name": "ProductCategory",
   "relationships": [
     {
@@ -74,5 +75,6 @@
       "relationshipValidateRules": "required"
     }
   ],
-  "searchEngine": "no"
+  "searchEngine": "no",
+  "service": "serviceClass"
 }

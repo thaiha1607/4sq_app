@@ -1,7 +1,9 @@
 package com.foursquare.server.web.rest;
 
 import com.foursquare.server.repository.ParticipantRepository;
+import com.foursquare.server.service.ParticipantQueryService;
 import com.foursquare.server.service.ParticipantService;
+import com.foursquare.server.service.criteria.ParticipantCriteria;
 import com.foursquare.server.service.dto.ParticipantDTO;
 import com.foursquare.server.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
@@ -38,9 +40,16 @@ public class ParticipantResource {
 
     private final ParticipantRepository participantRepository;
 
-    public ParticipantResource(ParticipantService participantService, ParticipantRepository participantRepository) {
+    private final ParticipantQueryService participantQueryService;
+
+    public ParticipantResource(
+        ParticipantService participantService,
+        ParticipantRepository participantRepository,
+        ParticipantQueryService participantQueryService
+    ) {
         this.participantService = participantService;
         this.participantRepository = participantRepository;
+        this.participantQueryService = participantQueryService;
     }
 
     /**
@@ -134,15 +143,27 @@ public class ParticipantResource {
     /**
      * {@code GET  /participants} : get all the participants.
      *
-     * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
+     * @param criteria the criteria which the requested entities should match.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of participants in body.
      */
     @GetMapping("")
-    public List<ParticipantDTO> getAllParticipants(
-        @RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload
-    ) {
-        log.debug("REST request to get all Participants");
-        return participantService.findAll();
+    public ResponseEntity<List<ParticipantDTO>> getAllParticipants(ParticipantCriteria criteria) {
+        log.debug("REST request to get Participants by criteria: {}", criteria);
+
+        List<ParticipantDTO> entityList = participantQueryService.findByCriteria(criteria);
+        return ResponseEntity.ok().body(entityList);
+    }
+
+    /**
+     * {@code GET  /participants/count} : count all the participants.
+     *
+     * @param criteria the criteria which the requested entities should match.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the count in body.
+     */
+    @GetMapping("/count")
+    public ResponseEntity<Long> countParticipants(ParticipantCriteria criteria) {
+        log.debug("REST request to count Participants by criteria: {}", criteria);
+        return ResponseEntity.ok().body(participantQueryService.countByCriteria(criteria));
     }
 
     /**

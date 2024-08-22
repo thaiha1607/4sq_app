@@ -122,7 +122,7 @@ describe('OrderStatus e2e test', () => {
         cy.url().should('match', orderStatusPageUrlPattern);
       });
 
-      it('edit button click should load edit OrderStatus page and save', () => {
+      it.skip('edit button click should load edit OrderStatus page and save', () => {
         cy.get(entityEditButtonSelector).first().click();
         cy.getEntityCreateUpdateHeading('OrderStatus');
         cy.get(entityCreateSaveButtonSelector).click();

@@ -4,11 +4,8 @@ import com.foursquare.server.domain.Tag;
 import com.foursquare.server.repository.TagRepository;
 import com.foursquare.server.service.dto.TagDTO;
 import com.foursquare.server.service.mapper.TagMapper;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -77,17 +74,6 @@ public class TagService {
             })
             .map(tagRepository::save)
             .map(tagMapper::toDto);
-    }
-
-    /**
-     * Get all the tags.
-     *
-     * @return the list of entities.
-     */
-    @Transactional(readOnly = true)
-    public List<TagDTO> findAll() {
-        log.debug("Request to get all Tags");
-        return tagRepository.findAll().stream().map(tagMapper::toDto).collect(Collectors.toCollection(LinkedList::new));
     }
 
     /**

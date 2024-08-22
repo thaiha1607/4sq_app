@@ -10,6 +10,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foursquare.server.IntegrationTest;
+import com.foursquare.server.domain.Address;
+import com.foursquare.server.domain.Order;
 import com.foursquare.server.domain.Order;
 import com.foursquare.server.domain.OrderStatus;
 import com.foursquare.server.domain.User;
@@ -53,6 +55,7 @@ class OrderResourceIT {
 
     private static final Integer DEFAULT_PRIORITY = 0;
     private static final Integer UPDATED_PRIORITY = 1;
+    private static final Integer SMALLER_PRIORITY = 0 - 1;
 
     private static final Boolean DEFAULT_IS_INTERNAL = false;
     private static final Boolean UPDATED_IS_INTERNAL = true;
@@ -281,6 +284,360 @@ class OrderResourceIT {
             .andExpect(jsonPath("$.isInternal").value(DEFAULT_IS_INTERNAL.booleanValue()))
             .andExpect(jsonPath("$.note").value(DEFAULT_NOTE))
             .andExpect(jsonPath("$.otherInfo").value(DEFAULT_OTHER_INFO));
+    }
+
+    @Test
+    @Transactional
+    void getOrdersByIdFiltering() throws Exception {
+        // Initialize the database
+        insertedOrder = orderRepository.saveAndFlush(order);
+
+        UUID id = order.getId();
+
+        defaultOrderFiltering("id.equals=" + id, "id.notEquals=" + id);
+    }
+
+    @Test
+    @Transactional
+    void getAllOrdersByTypeIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedOrder = orderRepository.saveAndFlush(order);
+
+        // Get all the orderList where type equals to
+        defaultOrderFiltering("type.equals=" + DEFAULT_TYPE, "type.equals=" + UPDATED_TYPE);
+    }
+
+    @Test
+    @Transactional
+    void getAllOrdersByTypeIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedOrder = orderRepository.saveAndFlush(order);
+
+        // Get all the orderList where type in
+        defaultOrderFiltering("type.in=" + DEFAULT_TYPE + "," + UPDATED_TYPE, "type.in=" + UPDATED_TYPE);
+    }
+
+    @Test
+    @Transactional
+    void getAllOrdersByTypeIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedOrder = orderRepository.saveAndFlush(order);
+
+        // Get all the orderList where type is not null
+        defaultOrderFiltering("type.specified=true", "type.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllOrdersByPriorityIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedOrder = orderRepository.saveAndFlush(order);
+
+        // Get all the orderList where priority equals to
+        defaultOrderFiltering("priority.equals=" + DEFAULT_PRIORITY, "priority.equals=" + UPDATED_PRIORITY);
+    }
+
+    @Test
+    @Transactional
+    void getAllOrdersByPriorityIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedOrder = orderRepository.saveAndFlush(order);
+
+        // Get all the orderList where priority in
+        defaultOrderFiltering("priority.in=" + DEFAULT_PRIORITY + "," + UPDATED_PRIORITY, "priority.in=" + UPDATED_PRIORITY);
+    }
+
+    @Test
+    @Transactional
+    void getAllOrdersByPriorityIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedOrder = orderRepository.saveAndFlush(order);
+
+        // Get all the orderList where priority is not null
+        defaultOrderFiltering("priority.specified=true", "priority.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllOrdersByPriorityIsGreaterThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedOrder = orderRepository.saveAndFlush(order);
+
+        // Get all the orderList where priority is greater than or equal to
+        defaultOrderFiltering("priority.greaterThanOrEqual=" + DEFAULT_PRIORITY, "priority.greaterThanOrEqual=" + (DEFAULT_PRIORITY + 1));
+    }
+
+    @Test
+    @Transactional
+    void getAllOrdersByPriorityIsLessThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedOrder = orderRepository.saveAndFlush(order);
+
+        // Get all the orderList where priority is less than or equal to
+        defaultOrderFiltering("priority.lessThanOrEqual=" + DEFAULT_PRIORITY, "priority.lessThanOrEqual=" + SMALLER_PRIORITY);
+    }
+
+    @Test
+    @Transactional
+    void getAllOrdersByPriorityIsLessThanSomething() throws Exception {
+        // Initialize the database
+        insertedOrder = orderRepository.saveAndFlush(order);
+
+        // Get all the orderList where priority is less than
+        defaultOrderFiltering("priority.lessThan=" + (DEFAULT_PRIORITY + 1), "priority.lessThan=" + DEFAULT_PRIORITY);
+    }
+
+    @Test
+    @Transactional
+    void getAllOrdersByPriorityIsGreaterThanSomething() throws Exception {
+        // Initialize the database
+        insertedOrder = orderRepository.saveAndFlush(order);
+
+        // Get all the orderList where priority is greater than
+        defaultOrderFiltering("priority.greaterThan=" + SMALLER_PRIORITY, "priority.greaterThan=" + DEFAULT_PRIORITY);
+    }
+
+    @Test
+    @Transactional
+    void getAllOrdersByIsInternalIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedOrder = orderRepository.saveAndFlush(order);
+
+        // Get all the orderList where isInternal equals to
+        defaultOrderFiltering("isInternal.equals=" + DEFAULT_IS_INTERNAL, "isInternal.equals=" + UPDATED_IS_INTERNAL);
+    }
+
+    @Test
+    @Transactional
+    void getAllOrdersByIsInternalIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedOrder = orderRepository.saveAndFlush(order);
+
+        // Get all the orderList where isInternal in
+        defaultOrderFiltering("isInternal.in=" + DEFAULT_IS_INTERNAL + "," + UPDATED_IS_INTERNAL, "isInternal.in=" + UPDATED_IS_INTERNAL);
+    }
+
+    @Test
+    @Transactional
+    void getAllOrdersByIsInternalIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedOrder = orderRepository.saveAndFlush(order);
+
+        // Get all the orderList where isInternal is not null
+        defaultOrderFiltering("isInternal.specified=true", "isInternal.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllOrdersByNoteIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedOrder = orderRepository.saveAndFlush(order);
+
+        // Get all the orderList where note equals to
+        defaultOrderFiltering("note.equals=" + DEFAULT_NOTE, "note.equals=" + UPDATED_NOTE);
+    }
+
+    @Test
+    @Transactional
+    void getAllOrdersByNoteIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedOrder = orderRepository.saveAndFlush(order);
+
+        // Get all the orderList where note in
+        defaultOrderFiltering("note.in=" + DEFAULT_NOTE + "," + UPDATED_NOTE, "note.in=" + UPDATED_NOTE);
+    }
+
+    @Test
+    @Transactional
+    void getAllOrdersByNoteIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedOrder = orderRepository.saveAndFlush(order);
+
+        // Get all the orderList where note is not null
+        defaultOrderFiltering("note.specified=true", "note.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllOrdersByNoteContainsSomething() throws Exception {
+        // Initialize the database
+        insertedOrder = orderRepository.saveAndFlush(order);
+
+        // Get all the orderList where note contains
+        defaultOrderFiltering("note.contains=" + DEFAULT_NOTE, "note.contains=" + UPDATED_NOTE);
+    }
+
+    @Test
+    @Transactional
+    void getAllOrdersByNoteNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedOrder = orderRepository.saveAndFlush(order);
+
+        // Get all the orderList where note does not contain
+        defaultOrderFiltering("note.doesNotContain=" + UPDATED_NOTE, "note.doesNotContain=" + DEFAULT_NOTE);
+    }
+
+    @Test
+    @Transactional
+    void getAllOrdersByOtherInfoIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedOrder = orderRepository.saveAndFlush(order);
+
+        // Get all the orderList where otherInfo equals to
+        defaultOrderFiltering("otherInfo.equals=" + DEFAULT_OTHER_INFO, "otherInfo.equals=" + UPDATED_OTHER_INFO);
+    }
+
+    @Test
+    @Transactional
+    void getAllOrdersByOtherInfoIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedOrder = orderRepository.saveAndFlush(order);
+
+        // Get all the orderList where otherInfo in
+        defaultOrderFiltering("otherInfo.in=" + DEFAULT_OTHER_INFO + "," + UPDATED_OTHER_INFO, "otherInfo.in=" + UPDATED_OTHER_INFO);
+    }
+
+    @Test
+    @Transactional
+    void getAllOrdersByOtherInfoIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedOrder = orderRepository.saveAndFlush(order);
+
+        // Get all the orderList where otherInfo is not null
+        defaultOrderFiltering("otherInfo.specified=true", "otherInfo.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllOrdersByOtherInfoContainsSomething() throws Exception {
+        // Initialize the database
+        insertedOrder = orderRepository.saveAndFlush(order);
+
+        // Get all the orderList where otherInfo contains
+        defaultOrderFiltering("otherInfo.contains=" + DEFAULT_OTHER_INFO, "otherInfo.contains=" + UPDATED_OTHER_INFO);
+    }
+
+    @Test
+    @Transactional
+    void getAllOrdersByOtherInfoNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedOrder = orderRepository.saveAndFlush(order);
+
+        // Get all the orderList where otherInfo does not contain
+        defaultOrderFiltering("otherInfo.doesNotContain=" + UPDATED_OTHER_INFO, "otherInfo.doesNotContain=" + DEFAULT_OTHER_INFO);
+    }
+
+    @Test
+    @Transactional
+    void getAllOrdersByCustomerIsEqualToSomething() throws Exception {
+        User customer;
+        if (TestUtil.findAll(em, User.class).isEmpty()) {
+            orderRepository.saveAndFlush(order);
+            customer = UserResourceIT.createEntity(em);
+        } else {
+            customer = TestUtil.findAll(em, User.class).get(0);
+        }
+        em.persist(customer);
+        em.flush();
+        order.setCustomer(customer);
+        orderRepository.saveAndFlush(order);
+        Long customerId = customer.getId();
+        // Get all the orderList where customer equals to customerId
+        defaultOrderShouldBeFound("customerId.equals=" + customerId);
+
+        // Get all the orderList where customer equals to (customerId + 1)
+        defaultOrderShouldNotBeFound("customerId.equals=" + (customerId + 1));
+    }
+
+    @Test
+    @Transactional
+    void getAllOrdersByStatusIsEqualToSomething() throws Exception {
+        OrderStatus status;
+        if (TestUtil.findAll(em, OrderStatus.class).isEmpty()) {
+            orderRepository.saveAndFlush(order);
+            status = OrderStatusResourceIT.createEntity(em);
+        } else {
+            status = TestUtil.findAll(em, OrderStatus.class).get(0);
+        }
+        em.persist(status);
+        em.flush();
+        order.setStatus(status);
+        orderRepository.saveAndFlush(order);
+        Long statusId = status.getId();
+        // Get all the orderList where status equals to statusId
+        defaultOrderShouldBeFound("statusId.equals=" + statusId);
+
+        // Get all the orderList where status equals to (statusId + 1)
+        defaultOrderShouldNotBeFound("statusId.equals=" + (statusId + 1));
+    }
+
+    @Test
+    @Transactional
+    void getAllOrdersByAddressIsEqualToSomething() throws Exception {
+        Address address;
+        if (TestUtil.findAll(em, Address.class).isEmpty()) {
+            orderRepository.saveAndFlush(order);
+            address = AddressResourceIT.createEntity(em);
+        } else {
+            address = TestUtil.findAll(em, Address.class).get(0);
+        }
+        em.persist(address);
+        em.flush();
+        order.setAddress(address);
+        orderRepository.saveAndFlush(order);
+        UUID addressId = address.getId();
+        // Get all the orderList where address equals to addressId
+        defaultOrderShouldBeFound("addressId.equals=" + addressId);
+
+        // Get all the orderList where address equals to UUID.randomUUID()
+        defaultOrderShouldNotBeFound("addressId.equals=" + UUID.randomUUID());
+    }
+
+    private void defaultOrderFiltering(String shouldBeFound, String shouldNotBeFound) throws Exception {
+        defaultOrderShouldBeFound(shouldBeFound);
+        defaultOrderShouldNotBeFound(shouldNotBeFound);
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is returned.
+     */
+    private void defaultOrderShouldBeFound(String filter) throws Exception {
+        restOrderMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(order.getId().toString())))
+            .andExpect(jsonPath("$.[*].type").value(hasItem(DEFAULT_TYPE.toString())))
+            .andExpect(jsonPath("$.[*].priority").value(hasItem(DEFAULT_PRIORITY)))
+            .andExpect(jsonPath("$.[*].isInternal").value(hasItem(DEFAULT_IS_INTERNAL.booleanValue())))
+            .andExpect(jsonPath("$.[*].note").value(hasItem(DEFAULT_NOTE)))
+            .andExpect(jsonPath("$.[*].otherInfo").value(hasItem(DEFAULT_OTHER_INFO)));
+
+        // Check, that the count call also returns 1
+        restOrderMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("1"));
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is not returned.
+     */
+    private void defaultOrderShouldNotBeFound(String filter) throws Exception {
+        restOrderMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$").isEmpty());
+
+        // Check, that the count call also returns 0
+        restOrderMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("0"));
     }
 
     @Test

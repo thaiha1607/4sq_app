@@ -4,11 +4,8 @@ import com.foursquare.server.domain.Shipment;
 import com.foursquare.server.repository.ShipmentRepository;
 import com.foursquare.server.service.dto.ShipmentDTO;
 import com.foursquare.server.service.mapper.ShipmentMapper;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -79,17 +76,6 @@ public class ShipmentService {
             })
             .map(shipmentRepository::save)
             .map(shipmentMapper::toDto);
-    }
-
-    /**
-     * Get all the shipments.
-     *
-     * @return the list of entities.
-     */
-    @Transactional(readOnly = true)
-    public List<ShipmentDTO> findAll() {
-        log.debug("Request to get all Shipments");
-        return shipmentRepository.findAll().stream().map(shipmentMapper::toDto).collect(Collectors.toCollection(LinkedList::new));
     }
 
     /**

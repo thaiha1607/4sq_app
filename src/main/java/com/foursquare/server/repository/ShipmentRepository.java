@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
  * Spring Data JPA repository for the Shipment entity.
  */
 @Repository
-public interface ShipmentRepository extends JpaRepository<Shipment, UUID> {
+public interface ShipmentRepository extends JpaRepository<Shipment, UUID>, JpaSpecificationExecutor<Shipment> {
     default Optional<Shipment> findOneWithEagerRelationships(UUID id) {
         return this.findOneWithToOneRelationships(id);
     }

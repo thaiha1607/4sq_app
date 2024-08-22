@@ -1,7 +1,9 @@
 package com.foursquare.server.web.rest;
 
 import com.foursquare.server.repository.ShipmentStatusRepository;
+import com.foursquare.server.service.ShipmentStatusQueryService;
 import com.foursquare.server.service.ShipmentStatusService;
+import com.foursquare.server.service.criteria.ShipmentStatusCriteria;
 import com.foursquare.server.service.dto.ShipmentStatusDTO;
 import com.foursquare.server.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
@@ -37,9 +39,16 @@ public class ShipmentStatusResource {
 
     private final ShipmentStatusRepository shipmentStatusRepository;
 
-    public ShipmentStatusResource(ShipmentStatusService shipmentStatusService, ShipmentStatusRepository shipmentStatusRepository) {
+    private final ShipmentStatusQueryService shipmentStatusQueryService;
+
+    public ShipmentStatusResource(
+        ShipmentStatusService shipmentStatusService,
+        ShipmentStatusRepository shipmentStatusRepository,
+        ShipmentStatusQueryService shipmentStatusQueryService
+    ) {
         this.shipmentStatusService = shipmentStatusService;
         this.shipmentStatusRepository = shipmentStatusRepository;
+        this.shipmentStatusQueryService = shipmentStatusQueryService;
     }
 
     /**
@@ -134,12 +143,27 @@ public class ShipmentStatusResource {
     /**
      * {@code GET  /shipment-statuses} : get all the shipmentStatuses.
      *
+     * @param criteria the criteria which the requested entities should match.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of shipmentStatuses in body.
      */
     @GetMapping("")
-    public List<ShipmentStatusDTO> getAllShipmentStatuses() {
-        log.debug("REST request to get all ShipmentStatuses");
-        return shipmentStatusService.findAll();
+    public ResponseEntity<List<ShipmentStatusDTO>> getAllShipmentStatuses(ShipmentStatusCriteria criteria) {
+        log.debug("REST request to get ShipmentStatuses by criteria: {}", criteria);
+
+        List<ShipmentStatusDTO> entityList = shipmentStatusQueryService.findByCriteria(criteria);
+        return ResponseEntity.ok().body(entityList);
+    }
+
+    /**
+     * {@code GET  /shipment-statuses/count} : count all the shipmentStatuses.
+     *
+     * @param criteria the criteria which the requested entities should match.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the count in body.
+     */
+    @GetMapping("/count")
+    public ResponseEntity<Long> countShipmentStatuses(ShipmentStatusCriteria criteria) {
+        log.debug("REST request to count ShipmentStatuses by criteria: {}", criteria);
+        return ResponseEntity.ok().body(shipmentStatusQueryService.countByCriteria(criteria));
     }
 
     /**

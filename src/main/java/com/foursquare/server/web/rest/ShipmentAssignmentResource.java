@@ -1,7 +1,9 @@
 package com.foursquare.server.web.rest;
 
 import com.foursquare.server.repository.ShipmentAssignmentRepository;
+import com.foursquare.server.service.ShipmentAssignmentQueryService;
 import com.foursquare.server.service.ShipmentAssignmentService;
+import com.foursquare.server.service.criteria.ShipmentAssignmentCriteria;
 import com.foursquare.server.service.dto.ShipmentAssignmentDTO;
 import com.foursquare.server.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
@@ -38,12 +40,16 @@ public class ShipmentAssignmentResource {
 
     private final ShipmentAssignmentRepository shipmentAssignmentRepository;
 
+    private final ShipmentAssignmentQueryService shipmentAssignmentQueryService;
+
     public ShipmentAssignmentResource(
         ShipmentAssignmentService shipmentAssignmentService,
-        ShipmentAssignmentRepository shipmentAssignmentRepository
+        ShipmentAssignmentRepository shipmentAssignmentRepository,
+        ShipmentAssignmentQueryService shipmentAssignmentQueryService
     ) {
         this.shipmentAssignmentService = shipmentAssignmentService;
         this.shipmentAssignmentRepository = shipmentAssignmentRepository;
+        this.shipmentAssignmentQueryService = shipmentAssignmentQueryService;
     }
 
     /**
@@ -138,15 +144,27 @@ public class ShipmentAssignmentResource {
     /**
      * {@code GET  /shipment-assignments} : get all the shipmentAssignments.
      *
-     * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
+     * @param criteria the criteria which the requested entities should match.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of shipmentAssignments in body.
      */
     @GetMapping("")
-    public List<ShipmentAssignmentDTO> getAllShipmentAssignments(
-        @RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload
-    ) {
-        log.debug("REST request to get all ShipmentAssignments");
-        return shipmentAssignmentService.findAll();
+    public ResponseEntity<List<ShipmentAssignmentDTO>> getAllShipmentAssignments(ShipmentAssignmentCriteria criteria) {
+        log.debug("REST request to get ShipmentAssignments by criteria: {}", criteria);
+
+        List<ShipmentAssignmentDTO> entityList = shipmentAssignmentQueryService.findByCriteria(criteria);
+        return ResponseEntity.ok().body(entityList);
+    }
+
+    /**
+     * {@code GET  /shipment-assignments/count} : count all the shipmentAssignments.
+     *
+     * @param criteria the criteria which the requested entities should match.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the count in body.
+     */
+    @GetMapping("/count")
+    public ResponseEntity<Long> countShipmentAssignments(ShipmentAssignmentCriteria criteria) {
+        log.debug("REST request to count ShipmentAssignments by criteria: {}", criteria);
+        return ResponseEntity.ok().body(shipmentAssignmentQueryService.countByCriteria(criteria));
     }
 
     /**

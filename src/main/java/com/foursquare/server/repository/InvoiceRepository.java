@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
  * Spring Data JPA repository for the Invoice entity.
  */
 @Repository
-public interface InvoiceRepository extends JpaRepository<Invoice, UUID> {
+public interface InvoiceRepository extends JpaRepository<Invoice, UUID>, JpaSpecificationExecutor<Invoice> {
     default Optional<Invoice> findOneWithEagerRelationships(UUID id) {
         return this.findOneWithToOneRelationships(id);
     }

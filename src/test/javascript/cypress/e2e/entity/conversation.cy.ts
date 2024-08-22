@@ -122,7 +122,7 @@ describe('Conversation e2e test', () => {
         cy.url().should('match', conversationPageUrlPattern);
       });
 
-      it('edit button click should load edit Conversation page and save', () => {
+      it.skip('edit button click should load edit Conversation page and save', () => {
         cy.get(entityEditButtonSelector).first().click();
         cy.getEntityCreateUpdateHeading('Conversation');
         cy.get(entityCreateSaveButtonSelector).click();

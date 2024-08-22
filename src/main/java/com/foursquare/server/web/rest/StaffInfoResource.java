@@ -1,7 +1,9 @@
 package com.foursquare.server.web.rest;
 
 import com.foursquare.server.repository.StaffInfoRepository;
+import com.foursquare.server.service.StaffInfoQueryService;
 import com.foursquare.server.service.StaffInfoService;
+import com.foursquare.server.service.criteria.StaffInfoCriteria;
 import com.foursquare.server.service.dto.StaffInfoDTO;
 import com.foursquare.server.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
@@ -37,9 +39,16 @@ public class StaffInfoResource {
 
     private final StaffInfoRepository staffInfoRepository;
 
-    public StaffInfoResource(StaffInfoService staffInfoService, StaffInfoRepository staffInfoRepository) {
+    private final StaffInfoQueryService staffInfoQueryService;
+
+    public StaffInfoResource(
+        StaffInfoService staffInfoService,
+        StaffInfoRepository staffInfoRepository,
+        StaffInfoQueryService staffInfoQueryService
+    ) {
         this.staffInfoService = staffInfoService;
         this.staffInfoRepository = staffInfoRepository;
+        this.staffInfoQueryService = staffInfoQueryService;
     }
 
     /**
@@ -133,15 +142,27 @@ public class StaffInfoResource {
     /**
      * {@code GET  /staff-infos} : get all the staffInfos.
      *
-     * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
+     * @param criteria the criteria which the requested entities should match.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of staffInfos in body.
      */
     @GetMapping("")
-    public List<StaffInfoDTO> getAllStaffInfos(
-        @RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload
-    ) {
-        log.debug("REST request to get all StaffInfos");
-        return staffInfoService.findAll();
+    public ResponseEntity<List<StaffInfoDTO>> getAllStaffInfos(StaffInfoCriteria criteria) {
+        log.debug("REST request to get StaffInfos by criteria: {}", criteria);
+
+        List<StaffInfoDTO> entityList = staffInfoQueryService.findByCriteria(criteria);
+        return ResponseEntity.ok().body(entityList);
+    }
+
+    /**
+     * {@code GET  /staff-infos/count} : count all the staffInfos.
+     *
+     * @param criteria the criteria which the requested entities should match.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the count in body.
+     */
+    @GetMapping("/count")
+    public ResponseEntity<Long> countStaffInfos(StaffInfoCriteria criteria) {
+        log.debug("REST request to count StaffInfos by criteria: {}", criteria);
+        return ResponseEntity.ok().body(staffInfoQueryService.countByCriteria(criteria));
     }
 
     /**

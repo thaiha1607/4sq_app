@@ -1,7 +1,9 @@
 package com.foursquare.server.web.rest;
 
 import com.foursquare.server.repository.ShipmentItemRepository;
+import com.foursquare.server.service.ShipmentItemQueryService;
 import com.foursquare.server.service.ShipmentItemService;
+import com.foursquare.server.service.criteria.ShipmentItemCriteria;
 import com.foursquare.server.service.dto.ShipmentItemDTO;
 import com.foursquare.server.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
@@ -38,9 +40,16 @@ public class ShipmentItemResource {
 
     private final ShipmentItemRepository shipmentItemRepository;
 
-    public ShipmentItemResource(ShipmentItemService shipmentItemService, ShipmentItemRepository shipmentItemRepository) {
+    private final ShipmentItemQueryService shipmentItemQueryService;
+
+    public ShipmentItemResource(
+        ShipmentItemService shipmentItemService,
+        ShipmentItemRepository shipmentItemRepository,
+        ShipmentItemQueryService shipmentItemQueryService
+    ) {
         this.shipmentItemService = shipmentItemService;
         this.shipmentItemRepository = shipmentItemRepository;
+        this.shipmentItemQueryService = shipmentItemQueryService;
     }
 
     /**
@@ -135,12 +144,27 @@ public class ShipmentItemResource {
     /**
      * {@code GET  /shipment-items} : get all the shipmentItems.
      *
+     * @param criteria the criteria which the requested entities should match.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of shipmentItems in body.
      */
     @GetMapping("")
-    public List<ShipmentItemDTO> getAllShipmentItems() {
-        log.debug("REST request to get all ShipmentItems");
-        return shipmentItemService.findAll();
+    public ResponseEntity<List<ShipmentItemDTO>> getAllShipmentItems(ShipmentItemCriteria criteria) {
+        log.debug("REST request to get ShipmentItems by criteria: {}", criteria);
+
+        List<ShipmentItemDTO> entityList = shipmentItemQueryService.findByCriteria(criteria);
+        return ResponseEntity.ok().body(entityList);
+    }
+
+    /**
+     * {@code GET  /shipment-items/count} : count all the shipmentItems.
+     *
+     * @param criteria the criteria which the requested entities should match.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the count in body.
+     */
+    @GetMapping("/count")
+    public ResponseEntity<Long> countShipmentItems(ShipmentItemCriteria criteria) {
+        log.debug("REST request to count ShipmentItems by criteria: {}", criteria);
+        return ResponseEntity.ok().body(shipmentItemQueryService.countByCriteria(criteria));
     }
 
     /**

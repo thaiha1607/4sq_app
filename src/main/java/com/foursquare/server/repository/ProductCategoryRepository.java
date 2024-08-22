@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
  * Spring Data JPA repository for the ProductCategory entity.
  */
 @Repository
-public interface ProductCategoryRepository extends JpaRepository<ProductCategory, UUID> {
+public interface ProductCategoryRepository extends JpaRepository<ProductCategory, UUID>, JpaSpecificationExecutor<ProductCategory> {
     default Optional<ProductCategory> findOneWithEagerRelationships(UUID id) {
         return this.findOneWithToOneRelationships(id);
     }

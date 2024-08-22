@@ -60,7 +60,9 @@
       "readonly": true
     }
   ],
+  "jpaMetamodelFiltering": true,
   "name": "Colour",
   "relationships": [],
-  "searchEngine": "no"
+  "searchEngine": "no",
+  "service": "serviceClass"
 }

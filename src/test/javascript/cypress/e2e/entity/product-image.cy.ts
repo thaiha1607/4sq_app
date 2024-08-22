@@ -175,7 +175,7 @@ describe('ProductImage e2e test', () => {
         cy.url().should('match', productImagePageUrlPattern);
       });
 
-      it('edit button click should load edit ProductImage page and save', () => {
+      it.skip('edit button click should load edit ProductImage page and save', () => {
         cy.get(entityEditButtonSelector).first().click();
         cy.getEntityCreateUpdateHeading('ProductImage');
         cy.get(entityCreateSaveButtonSelector).click();

@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
  * Spring Data JPA repository for the StaffInfo entity.
  */
 @Repository
-public interface StaffInfoRepository extends JpaRepository<StaffInfo, Long> {
+public interface StaffInfoRepository extends JpaRepository<StaffInfo, Long>, JpaSpecificationExecutor<StaffInfo> {
     default Optional<StaffInfo> findOneWithEagerRelationships(Long id) {
         return this.findOneWithToOneRelationships(id);
     }

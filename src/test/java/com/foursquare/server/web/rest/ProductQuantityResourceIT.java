@@ -47,6 +47,7 @@ class ProductQuantityResourceIT {
 
     private static final Integer DEFAULT_QTY = 0;
     private static final Integer UPDATED_QTY = 1;
+    private static final Integer SMALLER_QTY = 0 - 1;
 
     private static final String ENTITY_API_URL = "/api/product-quantities";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
@@ -235,6 +236,152 @@ class ProductQuantityResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(productQuantity.getId().toString()))
             .andExpect(jsonPath("$.qty").value(DEFAULT_QTY));
+    }
+
+    @Test
+    @Transactional
+    void getProductQuantitiesByIdFiltering() throws Exception {
+        // Initialize the database
+        insertedProductQuantity = productQuantityRepository.saveAndFlush(productQuantity);
+
+        UUID id = productQuantity.getId();
+
+        defaultProductQuantityFiltering("id.equals=" + id, "id.notEquals=" + id);
+    }
+
+    @Test
+    @Transactional
+    void getAllProductQuantitiesByQtyIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedProductQuantity = productQuantityRepository.saveAndFlush(productQuantity);
+
+        // Get all the productQuantityList where qty equals to
+        defaultProductQuantityFiltering("qty.equals=" + DEFAULT_QTY, "qty.equals=" + UPDATED_QTY);
+    }
+
+    @Test
+    @Transactional
+    void getAllProductQuantitiesByQtyIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedProductQuantity = productQuantityRepository.saveAndFlush(productQuantity);
+
+        // Get all the productQuantityList where qty in
+        defaultProductQuantityFiltering("qty.in=" + DEFAULT_QTY + "," + UPDATED_QTY, "qty.in=" + UPDATED_QTY);
+    }
+
+    @Test
+    @Transactional
+    void getAllProductQuantitiesByQtyIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedProductQuantity = productQuantityRepository.saveAndFlush(productQuantity);
+
+        // Get all the productQuantityList where qty is not null
+        defaultProductQuantityFiltering("qty.specified=true", "qty.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllProductQuantitiesByQtyIsGreaterThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedProductQuantity = productQuantityRepository.saveAndFlush(productQuantity);
+
+        // Get all the productQuantityList where qty is greater than or equal to
+        defaultProductQuantityFiltering("qty.greaterThanOrEqual=" + DEFAULT_QTY, "qty.greaterThanOrEqual=" + UPDATED_QTY);
+    }
+
+    @Test
+    @Transactional
+    void getAllProductQuantitiesByQtyIsLessThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedProductQuantity = productQuantityRepository.saveAndFlush(productQuantity);
+
+        // Get all the productQuantityList where qty is less than or equal to
+        defaultProductQuantityFiltering("qty.lessThanOrEqual=" + DEFAULT_QTY, "qty.lessThanOrEqual=" + SMALLER_QTY);
+    }
+
+    @Test
+    @Transactional
+    void getAllProductQuantitiesByQtyIsLessThanSomething() throws Exception {
+        // Initialize the database
+        insertedProductQuantity = productQuantityRepository.saveAndFlush(productQuantity);
+
+        // Get all the productQuantityList where qty is less than
+        defaultProductQuantityFiltering("qty.lessThan=" + UPDATED_QTY, "qty.lessThan=" + DEFAULT_QTY);
+    }
+
+    @Test
+    @Transactional
+    void getAllProductQuantitiesByQtyIsGreaterThanSomething() throws Exception {
+        // Initialize the database
+        insertedProductQuantity = productQuantityRepository.saveAndFlush(productQuantity);
+
+        // Get all the productQuantityList where qty is greater than
+        defaultProductQuantityFiltering("qty.greaterThan=" + SMALLER_QTY, "qty.greaterThan=" + DEFAULT_QTY);
+    }
+
+    @Test
+    @Transactional
+    void getAllProductQuantitiesByWorkingUnitIsEqualToSomething() throws Exception {
+        WorkingUnit workingUnit;
+        if (TestUtil.findAll(em, WorkingUnit.class).isEmpty()) {
+            productQuantityRepository.saveAndFlush(productQuantity);
+            workingUnit = WorkingUnitResourceIT.createEntity(em);
+        } else {
+            workingUnit = TestUtil.findAll(em, WorkingUnit.class).get(0);
+        }
+        em.persist(workingUnit);
+        em.flush();
+        productQuantity.setWorkingUnit(workingUnit);
+        productQuantityRepository.saveAndFlush(productQuantity);
+        UUID workingUnitId = workingUnit.getId();
+        // Get all the productQuantityList where workingUnit equals to workingUnitId
+        defaultProductQuantityShouldBeFound("workingUnitId.equals=" + workingUnitId);
+
+        // Get all the productQuantityList where workingUnit equals to UUID.randomUUID()
+        defaultProductQuantityShouldNotBeFound("workingUnitId.equals=" + UUID.randomUUID());
+    }
+
+    private void defaultProductQuantityFiltering(String shouldBeFound, String shouldNotBeFound) throws Exception {
+        defaultProductQuantityShouldBeFound(shouldBeFound);
+        defaultProductQuantityShouldNotBeFound(shouldNotBeFound);
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is returned.
+     */
+    private void defaultProductQuantityShouldBeFound(String filter) throws Exception {
+        restProductQuantityMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(productQuantity.getId().toString())))
+            .andExpect(jsonPath("$.[*].qty").value(hasItem(DEFAULT_QTY)));
+
+        // Check, that the count call also returns 1
+        restProductQuantityMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("1"));
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is not returned.
+     */
+    private void defaultProductQuantityShouldNotBeFound(String filter) throws Exception {
+        restProductQuantityMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$").isEmpty());
+
+        // Check, that the count call also returns 0
+        restProductQuantityMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("0"));
     }
 
     @Test

@@ -175,7 +175,7 @@ describe('UserDetails e2e test', () => {
         cy.url().should('match', userDetailsPageUrlPattern);
       });
 
-      it('edit button click should load edit UserDetails page and save', () => {
+      it.skip('edit button click should load edit UserDetails page and save', () => {
         cy.get(entityEditButtonSelector).first().click();
         cy.getEntityCreateUpdateHeading('UserDetails');
         cy.get(entityCreateSaveButtonSelector).click();

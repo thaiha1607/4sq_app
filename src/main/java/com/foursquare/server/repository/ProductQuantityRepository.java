@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
  * Spring Data JPA repository for the ProductQuantity entity.
  */
 @Repository
-public interface ProductQuantityRepository extends JpaRepository<ProductQuantity, UUID> {
+public interface ProductQuantityRepository extends JpaRepository<ProductQuantity, UUID>, JpaSpecificationExecutor<ProductQuantity> {
     default Optional<ProductQuantity> findOneWithEagerRelationships(UUID id) {
         return this.findOneWithToOneRelationships(id);
     }

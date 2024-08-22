@@ -1,7 +1,6 @@
 package com.foursquare.server.service;
 
 import com.foursquare.server.service.dto.ProductImageDTO;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -32,13 +31,6 @@ public interface ProductImageService {
      * @return the persisted entity.
      */
     Optional<ProductImageDTO> partialUpdate(ProductImageDTO productImageDTO);
-
-    /**
-     * Get all the productImages.
-     *
-     * @return the list of entities.
-     */
-    List<ProductImageDTO> findAll();
 
     /**
      * Get the "id" productImage.

@@ -5,11 +5,8 @@ import com.foursquare.server.repository.UserAddressRepository;
 import com.foursquare.server.service.UserAddressService;
 import com.foursquare.server.service.dto.UserAddressDTO;
 import com.foursquare.server.service.mapper.UserAddressMapper;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -65,13 +62,6 @@ public class UserAddressServiceImpl implements UserAddressService {
             })
             .map(userAddressRepository::save)
             .map(userAddressMapper::toDto);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<UserAddressDTO> findAll() {
-        log.debug("Request to get all UserAddresses");
-        return userAddressRepository.findAll().stream().map(userAddressMapper::toDto).collect(Collectors.toCollection(LinkedList::new));
     }
 
     public Page<UserAddressDTO> findAllWithEagerRelationships(Pageable pageable) {

@@ -193,6 +193,177 @@ class ShipmentStatusResourceIT {
 
     @Test
     @Transactional
+    void getShipmentStatusesByIdFiltering() throws Exception {
+        // Initialize the database
+        insertedShipmentStatus = shipmentStatusRepository.saveAndFlush(shipmentStatus);
+
+        Long id = shipmentStatus.getId();
+
+        defaultShipmentStatusFiltering("id.equals=" + id, "id.notEquals=" + id);
+
+        defaultShipmentStatusFiltering("id.greaterThanOrEqual=" + id, "id.greaterThan=" + id);
+
+        defaultShipmentStatusFiltering("id.lessThanOrEqual=" + id, "id.lessThan=" + id);
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentStatusesByStatusCodeIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedShipmentStatus = shipmentStatusRepository.saveAndFlush(shipmentStatus);
+
+        // Get all the shipmentStatusList where statusCode equals to
+        defaultShipmentStatusFiltering("statusCode.equals=" + DEFAULT_STATUS_CODE, "statusCode.equals=" + UPDATED_STATUS_CODE);
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentStatusesByStatusCodeIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedShipmentStatus = shipmentStatusRepository.saveAndFlush(shipmentStatus);
+
+        // Get all the shipmentStatusList where statusCode in
+        defaultShipmentStatusFiltering(
+            "statusCode.in=" + DEFAULT_STATUS_CODE + "," + UPDATED_STATUS_CODE,
+            "statusCode.in=" + UPDATED_STATUS_CODE
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentStatusesByStatusCodeIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedShipmentStatus = shipmentStatusRepository.saveAndFlush(shipmentStatus);
+
+        // Get all the shipmentStatusList where statusCode is not null
+        defaultShipmentStatusFiltering("statusCode.specified=true", "statusCode.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentStatusesByStatusCodeContainsSomething() throws Exception {
+        // Initialize the database
+        insertedShipmentStatus = shipmentStatusRepository.saveAndFlush(shipmentStatus);
+
+        // Get all the shipmentStatusList where statusCode contains
+        defaultShipmentStatusFiltering("statusCode.contains=" + DEFAULT_STATUS_CODE, "statusCode.contains=" + UPDATED_STATUS_CODE);
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentStatusesByStatusCodeNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedShipmentStatus = shipmentStatusRepository.saveAndFlush(shipmentStatus);
+
+        // Get all the shipmentStatusList where statusCode does not contain
+        defaultShipmentStatusFiltering(
+            "statusCode.doesNotContain=" + UPDATED_STATUS_CODE,
+            "statusCode.doesNotContain=" + DEFAULT_STATUS_CODE
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentStatusesByDescriptionIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedShipmentStatus = shipmentStatusRepository.saveAndFlush(shipmentStatus);
+
+        // Get all the shipmentStatusList where description equals to
+        defaultShipmentStatusFiltering("description.equals=" + DEFAULT_DESCRIPTION, "description.equals=" + UPDATED_DESCRIPTION);
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentStatusesByDescriptionIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedShipmentStatus = shipmentStatusRepository.saveAndFlush(shipmentStatus);
+
+        // Get all the shipmentStatusList where description in
+        defaultShipmentStatusFiltering(
+            "description.in=" + DEFAULT_DESCRIPTION + "," + UPDATED_DESCRIPTION,
+            "description.in=" + UPDATED_DESCRIPTION
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentStatusesByDescriptionIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedShipmentStatus = shipmentStatusRepository.saveAndFlush(shipmentStatus);
+
+        // Get all the shipmentStatusList where description is not null
+        defaultShipmentStatusFiltering("description.specified=true", "description.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentStatusesByDescriptionContainsSomething() throws Exception {
+        // Initialize the database
+        insertedShipmentStatus = shipmentStatusRepository.saveAndFlush(shipmentStatus);
+
+        // Get all the shipmentStatusList where description contains
+        defaultShipmentStatusFiltering("description.contains=" + DEFAULT_DESCRIPTION, "description.contains=" + UPDATED_DESCRIPTION);
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentStatusesByDescriptionNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedShipmentStatus = shipmentStatusRepository.saveAndFlush(shipmentStatus);
+
+        // Get all the shipmentStatusList where description does not contain
+        defaultShipmentStatusFiltering(
+            "description.doesNotContain=" + UPDATED_DESCRIPTION,
+            "description.doesNotContain=" + DEFAULT_DESCRIPTION
+        );
+    }
+
+    private void defaultShipmentStatusFiltering(String shouldBeFound, String shouldNotBeFound) throws Exception {
+        defaultShipmentStatusShouldBeFound(shouldBeFound);
+        defaultShipmentStatusShouldNotBeFound(shouldNotBeFound);
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is returned.
+     */
+    private void defaultShipmentStatusShouldBeFound(String filter) throws Exception {
+        restShipmentStatusMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(shipmentStatus.getId().intValue())))
+            .andExpect(jsonPath("$.[*].statusCode").value(hasItem(DEFAULT_STATUS_CODE)))
+            .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION)));
+
+        // Check, that the count call also returns 1
+        restShipmentStatusMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("1"));
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is not returned.
+     */
+    private void defaultShipmentStatusShouldNotBeFound(String filter) throws Exception {
+        restShipmentStatusMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$").isEmpty());
+
+        // Check, that the count call also returns 0
+        restShipmentStatusMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("0"));
+    }
+
+    @Test
+    @Transactional
     void getNonExistingShipmentStatus() throws Exception {
         // Get the shipmentStatus
         restShipmentStatusMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());

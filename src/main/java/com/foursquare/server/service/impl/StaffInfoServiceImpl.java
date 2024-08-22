@@ -5,10 +5,7 @@ import com.foursquare.server.repository.StaffInfoRepository;
 import com.foursquare.server.service.StaffInfoService;
 import com.foursquare.server.service.dto.StaffInfoDTO;
 import com.foursquare.server.service.mapper.StaffInfoMapper;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -64,13 +61,6 @@ public class StaffInfoServiceImpl implements StaffInfoService {
             })
             .map(staffInfoRepository::save)
             .map(staffInfoMapper::toDto);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<StaffInfoDTO> findAll() {
-        log.debug("Request to get all StaffInfos");
-        return staffInfoRepository.findAll().stream().map(staffInfoMapper::toDto).collect(Collectors.toCollection(LinkedList::new));
     }
 
     public Page<StaffInfoDTO> findAllWithEagerRelationships(Pageable pageable) {

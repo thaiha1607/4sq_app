@@ -269,6 +269,197 @@ class ShipmentResourceIT {
 
     @Test
     @Transactional
+    void getShipmentsByIdFiltering() throws Exception {
+        // Initialize the database
+        insertedShipment = shipmentRepository.saveAndFlush(shipment);
+
+        UUID id = shipment.getId();
+
+        defaultShipmentFiltering("id.equals=" + id, "id.notEquals=" + id);
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentsByTypeIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedShipment = shipmentRepository.saveAndFlush(shipment);
+
+        // Get all the shipmentList where type equals to
+        defaultShipmentFiltering("type.equals=" + DEFAULT_TYPE, "type.equals=" + UPDATED_TYPE);
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentsByTypeIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedShipment = shipmentRepository.saveAndFlush(shipment);
+
+        // Get all the shipmentList where type in
+        defaultShipmentFiltering("type.in=" + DEFAULT_TYPE + "," + UPDATED_TYPE, "type.in=" + UPDATED_TYPE);
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentsByTypeIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedShipment = shipmentRepository.saveAndFlush(shipment);
+
+        // Get all the shipmentList where type is not null
+        defaultShipmentFiltering("type.specified=true", "type.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentsByShipmentDateIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedShipment = shipmentRepository.saveAndFlush(shipment);
+
+        // Get all the shipmentList where shipmentDate equals to
+        defaultShipmentFiltering("shipmentDate.equals=" + DEFAULT_SHIPMENT_DATE, "shipmentDate.equals=" + UPDATED_SHIPMENT_DATE);
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentsByShipmentDateIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedShipment = shipmentRepository.saveAndFlush(shipment);
+
+        // Get all the shipmentList where shipmentDate in
+        defaultShipmentFiltering(
+            "shipmentDate.in=" + DEFAULT_SHIPMENT_DATE + "," + UPDATED_SHIPMENT_DATE,
+            "shipmentDate.in=" + UPDATED_SHIPMENT_DATE
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentsByShipmentDateIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedShipment = shipmentRepository.saveAndFlush(shipment);
+
+        // Get all the shipmentList where shipmentDate is not null
+        defaultShipmentFiltering("shipmentDate.specified=true", "shipmentDate.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentsByNoteIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedShipment = shipmentRepository.saveAndFlush(shipment);
+
+        // Get all the shipmentList where note equals to
+        defaultShipmentFiltering("note.equals=" + DEFAULT_NOTE, "note.equals=" + UPDATED_NOTE);
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentsByNoteIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedShipment = shipmentRepository.saveAndFlush(shipment);
+
+        // Get all the shipmentList where note in
+        defaultShipmentFiltering("note.in=" + DEFAULT_NOTE + "," + UPDATED_NOTE, "note.in=" + UPDATED_NOTE);
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentsByNoteIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedShipment = shipmentRepository.saveAndFlush(shipment);
+
+        // Get all the shipmentList where note is not null
+        defaultShipmentFiltering("note.specified=true", "note.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentsByNoteContainsSomething() throws Exception {
+        // Initialize the database
+        insertedShipment = shipmentRepository.saveAndFlush(shipment);
+
+        // Get all the shipmentList where note contains
+        defaultShipmentFiltering("note.contains=" + DEFAULT_NOTE, "note.contains=" + UPDATED_NOTE);
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentsByNoteNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedShipment = shipmentRepository.saveAndFlush(shipment);
+
+        // Get all the shipmentList where note does not contain
+        defaultShipmentFiltering("note.doesNotContain=" + UPDATED_NOTE, "note.doesNotContain=" + DEFAULT_NOTE);
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentsByStatusIsEqualToSomething() throws Exception {
+        ShipmentStatus status;
+        if (TestUtil.findAll(em, ShipmentStatus.class).isEmpty()) {
+            shipmentRepository.saveAndFlush(shipment);
+            status = ShipmentStatusResourceIT.createEntity(em);
+        } else {
+            status = TestUtil.findAll(em, ShipmentStatus.class).get(0);
+        }
+        em.persist(status);
+        em.flush();
+        shipment.setStatus(status);
+        shipmentRepository.saveAndFlush(shipment);
+        Long statusId = status.getId();
+        // Get all the shipmentList where status equals to statusId
+        defaultShipmentShouldBeFound("statusId.equals=" + statusId);
+
+        // Get all the shipmentList where status equals to (statusId + 1)
+        defaultShipmentShouldNotBeFound("statusId.equals=" + (statusId + 1));
+    }
+
+    private void defaultShipmentFiltering(String shouldBeFound, String shouldNotBeFound) throws Exception {
+        defaultShipmentShouldBeFound(shouldBeFound);
+        defaultShipmentShouldNotBeFound(shouldNotBeFound);
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is returned.
+     */
+    private void defaultShipmentShouldBeFound(String filter) throws Exception {
+        restShipmentMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(shipment.getId().toString())))
+            .andExpect(jsonPath("$.[*].type").value(hasItem(DEFAULT_TYPE.toString())))
+            .andExpect(jsonPath("$.[*].shipmentDate").value(hasItem(DEFAULT_SHIPMENT_DATE.toString())))
+            .andExpect(jsonPath("$.[*].note").value(hasItem(DEFAULT_NOTE)));
+
+        // Check, that the count call also returns 1
+        restShipmentMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("1"));
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is not returned.
+     */
+    private void defaultShipmentShouldNotBeFound(String filter) throws Exception {
+        restShipmentMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$").isEmpty());
+
+        // Check, that the count call also returns 0
+        restShipmentMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("0"));
+    }
+
+    @Test
+    @Transactional
     void getNonExistingShipment() throws Exception {
         // Get the shipment
         restShipmentMockMvc.perform(get(ENTITY_API_URL_ID, UUID.randomUUID().toString())).andExpect(status().isNotFound());

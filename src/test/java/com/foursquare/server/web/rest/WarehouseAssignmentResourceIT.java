@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foursquare.server.IntegrationTest;
+import com.foursquare.server.domain.User;
 import com.foursquare.server.domain.WarehouseAssignment;
 import com.foursquare.server.domain.WorkingUnit;
 import com.foursquare.server.domain.enumeration.AssignmentStatus;
@@ -259,6 +260,264 @@ class WarehouseAssignmentResourceIT {
             .andExpect(jsonPath("$.status").value(DEFAULT_STATUS.toString()))
             .andExpect(jsonPath("$.note").value(DEFAULT_NOTE))
             .andExpect(jsonPath("$.otherInfo").value(DEFAULT_OTHER_INFO));
+    }
+
+    @Test
+    @Transactional
+    void getWarehouseAssignmentsByIdFiltering() throws Exception {
+        // Initialize the database
+        insertedWarehouseAssignment = warehouseAssignmentRepository.saveAndFlush(warehouseAssignment);
+
+        UUID id = warehouseAssignment.getId();
+
+        defaultWarehouseAssignmentFiltering("id.equals=" + id, "id.notEquals=" + id);
+    }
+
+    @Test
+    @Transactional
+    void getAllWarehouseAssignmentsByStatusIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedWarehouseAssignment = warehouseAssignmentRepository.saveAndFlush(warehouseAssignment);
+
+        // Get all the warehouseAssignmentList where status equals to
+        defaultWarehouseAssignmentFiltering("status.equals=" + DEFAULT_STATUS, "status.equals=" + UPDATED_STATUS);
+    }
+
+    @Test
+    @Transactional
+    void getAllWarehouseAssignmentsByStatusIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedWarehouseAssignment = warehouseAssignmentRepository.saveAndFlush(warehouseAssignment);
+
+        // Get all the warehouseAssignmentList where status in
+        defaultWarehouseAssignmentFiltering("status.in=" + DEFAULT_STATUS + "," + UPDATED_STATUS, "status.in=" + UPDATED_STATUS);
+    }
+
+    @Test
+    @Transactional
+    void getAllWarehouseAssignmentsByStatusIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedWarehouseAssignment = warehouseAssignmentRepository.saveAndFlush(warehouseAssignment);
+
+        // Get all the warehouseAssignmentList where status is not null
+        defaultWarehouseAssignmentFiltering("status.specified=true", "status.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllWarehouseAssignmentsByNoteIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedWarehouseAssignment = warehouseAssignmentRepository.saveAndFlush(warehouseAssignment);
+
+        // Get all the warehouseAssignmentList where note equals to
+        defaultWarehouseAssignmentFiltering("note.equals=" + DEFAULT_NOTE, "note.equals=" + UPDATED_NOTE);
+    }
+
+    @Test
+    @Transactional
+    void getAllWarehouseAssignmentsByNoteIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedWarehouseAssignment = warehouseAssignmentRepository.saveAndFlush(warehouseAssignment);
+
+        // Get all the warehouseAssignmentList where note in
+        defaultWarehouseAssignmentFiltering("note.in=" + DEFAULT_NOTE + "," + UPDATED_NOTE, "note.in=" + UPDATED_NOTE);
+    }
+
+    @Test
+    @Transactional
+    void getAllWarehouseAssignmentsByNoteIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedWarehouseAssignment = warehouseAssignmentRepository.saveAndFlush(warehouseAssignment);
+
+        // Get all the warehouseAssignmentList where note is not null
+        defaultWarehouseAssignmentFiltering("note.specified=true", "note.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllWarehouseAssignmentsByNoteContainsSomething() throws Exception {
+        // Initialize the database
+        insertedWarehouseAssignment = warehouseAssignmentRepository.saveAndFlush(warehouseAssignment);
+
+        // Get all the warehouseAssignmentList where note contains
+        defaultWarehouseAssignmentFiltering("note.contains=" + DEFAULT_NOTE, "note.contains=" + UPDATED_NOTE);
+    }
+
+    @Test
+    @Transactional
+    void getAllWarehouseAssignmentsByNoteNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedWarehouseAssignment = warehouseAssignmentRepository.saveAndFlush(warehouseAssignment);
+
+        // Get all the warehouseAssignmentList where note does not contain
+        defaultWarehouseAssignmentFiltering("note.doesNotContain=" + UPDATED_NOTE, "note.doesNotContain=" + DEFAULT_NOTE);
+    }
+
+    @Test
+    @Transactional
+    void getAllWarehouseAssignmentsByOtherInfoIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedWarehouseAssignment = warehouseAssignmentRepository.saveAndFlush(warehouseAssignment);
+
+        // Get all the warehouseAssignmentList where otherInfo equals to
+        defaultWarehouseAssignmentFiltering("otherInfo.equals=" + DEFAULT_OTHER_INFO, "otherInfo.equals=" + UPDATED_OTHER_INFO);
+    }
+
+    @Test
+    @Transactional
+    void getAllWarehouseAssignmentsByOtherInfoIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedWarehouseAssignment = warehouseAssignmentRepository.saveAndFlush(warehouseAssignment);
+
+        // Get all the warehouseAssignmentList where otherInfo in
+        defaultWarehouseAssignmentFiltering(
+            "otherInfo.in=" + DEFAULT_OTHER_INFO + "," + UPDATED_OTHER_INFO,
+            "otherInfo.in=" + UPDATED_OTHER_INFO
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllWarehouseAssignmentsByOtherInfoIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedWarehouseAssignment = warehouseAssignmentRepository.saveAndFlush(warehouseAssignment);
+
+        // Get all the warehouseAssignmentList where otherInfo is not null
+        defaultWarehouseAssignmentFiltering("otherInfo.specified=true", "otherInfo.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllWarehouseAssignmentsByOtherInfoContainsSomething() throws Exception {
+        // Initialize the database
+        insertedWarehouseAssignment = warehouseAssignmentRepository.saveAndFlush(warehouseAssignment);
+
+        // Get all the warehouseAssignmentList where otherInfo contains
+        defaultWarehouseAssignmentFiltering("otherInfo.contains=" + DEFAULT_OTHER_INFO, "otherInfo.contains=" + UPDATED_OTHER_INFO);
+    }
+
+    @Test
+    @Transactional
+    void getAllWarehouseAssignmentsByOtherInfoNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedWarehouseAssignment = warehouseAssignmentRepository.saveAndFlush(warehouseAssignment);
+
+        // Get all the warehouseAssignmentList where otherInfo does not contain
+        defaultWarehouseAssignmentFiltering(
+            "otherInfo.doesNotContain=" + UPDATED_OTHER_INFO,
+            "otherInfo.doesNotContain=" + DEFAULT_OTHER_INFO
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllWarehouseAssignmentsByUserIsEqualToSomething() throws Exception {
+        User user;
+        if (TestUtil.findAll(em, User.class).isEmpty()) {
+            warehouseAssignmentRepository.saveAndFlush(warehouseAssignment);
+            user = UserResourceIT.createEntity(em);
+        } else {
+            user = TestUtil.findAll(em, User.class).get(0);
+        }
+        em.persist(user);
+        em.flush();
+        warehouseAssignment.setUser(user);
+        warehouseAssignmentRepository.saveAndFlush(warehouseAssignment);
+        Long userId = user.getId();
+        // Get all the warehouseAssignmentList where user equals to userId
+        defaultWarehouseAssignmentShouldBeFound("userId.equals=" + userId);
+
+        // Get all the warehouseAssignmentList where user equals to (userId + 1)
+        defaultWarehouseAssignmentShouldNotBeFound("userId.equals=" + (userId + 1));
+    }
+
+    @Test
+    @Transactional
+    void getAllWarehouseAssignmentsBySourceWorkingUnitIsEqualToSomething() throws Exception {
+        WorkingUnit sourceWorkingUnit;
+        if (TestUtil.findAll(em, WorkingUnit.class).isEmpty()) {
+            warehouseAssignmentRepository.saveAndFlush(warehouseAssignment);
+            sourceWorkingUnit = WorkingUnitResourceIT.createEntity(em);
+        } else {
+            sourceWorkingUnit = TestUtil.findAll(em, WorkingUnit.class).get(0);
+        }
+        em.persist(sourceWorkingUnit);
+        em.flush();
+        warehouseAssignment.setSourceWorkingUnit(sourceWorkingUnit);
+        warehouseAssignmentRepository.saveAndFlush(warehouseAssignment);
+        UUID sourceWorkingUnitId = sourceWorkingUnit.getId();
+        // Get all the warehouseAssignmentList where sourceWorkingUnit equals to sourceWorkingUnitId
+        defaultWarehouseAssignmentShouldBeFound("sourceWorkingUnitId.equals=" + sourceWorkingUnitId);
+
+        // Get all the warehouseAssignmentList where sourceWorkingUnit equals to UUID.randomUUID()
+        defaultWarehouseAssignmentShouldNotBeFound("sourceWorkingUnitId.equals=" + UUID.randomUUID());
+    }
+
+    @Test
+    @Transactional
+    void getAllWarehouseAssignmentsByTargetWorkingUnitIsEqualToSomething() throws Exception {
+        WorkingUnit targetWorkingUnit;
+        if (TestUtil.findAll(em, WorkingUnit.class).isEmpty()) {
+            warehouseAssignmentRepository.saveAndFlush(warehouseAssignment);
+            targetWorkingUnit = WorkingUnitResourceIT.createEntity(em);
+        } else {
+            targetWorkingUnit = TestUtil.findAll(em, WorkingUnit.class).get(0);
+        }
+        em.persist(targetWorkingUnit);
+        em.flush();
+        warehouseAssignment.setTargetWorkingUnit(targetWorkingUnit);
+        warehouseAssignmentRepository.saveAndFlush(warehouseAssignment);
+        UUID targetWorkingUnitId = targetWorkingUnit.getId();
+        // Get all the warehouseAssignmentList where targetWorkingUnit equals to targetWorkingUnitId
+        defaultWarehouseAssignmentShouldBeFound("targetWorkingUnitId.equals=" + targetWorkingUnitId);
+
+        // Get all the warehouseAssignmentList where targetWorkingUnit equals to UUID.randomUUID()
+        defaultWarehouseAssignmentShouldNotBeFound("targetWorkingUnitId.equals=" + UUID.randomUUID());
+    }
+
+    private void defaultWarehouseAssignmentFiltering(String shouldBeFound, String shouldNotBeFound) throws Exception {
+        defaultWarehouseAssignmentShouldBeFound(shouldBeFound);
+        defaultWarehouseAssignmentShouldNotBeFound(shouldNotBeFound);
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is returned.
+     */
+    private void defaultWarehouseAssignmentShouldBeFound(String filter) throws Exception {
+        restWarehouseAssignmentMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(warehouseAssignment.getId().toString())))
+            .andExpect(jsonPath("$.[*].status").value(hasItem(DEFAULT_STATUS.toString())))
+            .andExpect(jsonPath("$.[*].note").value(hasItem(DEFAULT_NOTE)))
+            .andExpect(jsonPath("$.[*].otherInfo").value(hasItem(DEFAULT_OTHER_INFO)));
+
+        // Check, that the count call also returns 1
+        restWarehouseAssignmentMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("1"));
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is not returned.
+     */
+    private void defaultWarehouseAssignmentShouldNotBeFound(String filter) throws Exception {
+        restWarehouseAssignmentMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$").isEmpty());
+
+        // Check, that the count call also returns 0
+        restWarehouseAssignmentMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("0"));
     }
 
     @Test

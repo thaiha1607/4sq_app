@@ -1,7 +1,6 @@
 package com.foursquare.server.service;
 
 import com.foursquare.server.service.dto.UserDetailsDTO;
-import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,13 +32,6 @@ public interface UserDetailsService {
      * @return the persisted entity.
      */
     Optional<UserDetailsDTO> partialUpdate(UserDetailsDTO userDetailsDTO);
-
-    /**
-     * Get all the userDetails.
-     *
-     * @return the list of entities.
-     */
-    List<UserDetailsDTO> findAll();
 
     /**
      * Get all the userDetails with eager load of many-to-many relationships.

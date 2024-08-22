@@ -5,10 +5,7 @@ import com.foursquare.server.repository.UserDetailsRepository;
 import com.foursquare.server.service.UserDetailsService;
 import com.foursquare.server.service.dto.UserDetailsDTO;
 import com.foursquare.server.service.mapper.UserDetailsMapper;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -64,13 +61,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             })
             .map(userDetailsRepository::save)
             .map(userDetailsMapper::toDto);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<UserDetailsDTO> findAll() {
-        log.debug("Request to get all UserDetails");
-        return userDetailsRepository.findAll().stream().map(userDetailsMapper::toDto).collect(Collectors.toCollection(LinkedList::new));
     }
 
     public Page<UserDetailsDTO> findAllWithEagerRelationships(Pageable pageable) {

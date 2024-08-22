@@ -1,7 +1,9 @@
 package com.foursquare.server.web.rest;
 
 import com.foursquare.server.repository.ConversationRepository;
+import com.foursquare.server.service.ConversationQueryService;
 import com.foursquare.server.service.ConversationService;
+import com.foursquare.server.service.criteria.ConversationCriteria;
 import com.foursquare.server.service.dto.ConversationDTO;
 import com.foursquare.server.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
@@ -38,9 +40,16 @@ public class ConversationResource {
 
     private final ConversationRepository conversationRepository;
 
-    public ConversationResource(ConversationService conversationService, ConversationRepository conversationRepository) {
+    private final ConversationQueryService conversationQueryService;
+
+    public ConversationResource(
+        ConversationService conversationService,
+        ConversationRepository conversationRepository,
+        ConversationQueryService conversationQueryService
+    ) {
         this.conversationService = conversationService;
         this.conversationRepository = conversationRepository;
+        this.conversationQueryService = conversationQueryService;
     }
 
     /**
@@ -135,12 +144,27 @@ public class ConversationResource {
     /**
      * {@code GET  /conversations} : get all the conversations.
      *
+     * @param criteria the criteria which the requested entities should match.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of conversations in body.
      */
     @GetMapping("")
-    public List<ConversationDTO> getAllConversations() {
-        log.debug("REST request to get all Conversations");
-        return conversationService.findAll();
+    public ResponseEntity<List<ConversationDTO>> getAllConversations(ConversationCriteria criteria) {
+        log.debug("REST request to get Conversations by criteria: {}", criteria);
+
+        List<ConversationDTO> entityList = conversationQueryService.findByCriteria(criteria);
+        return ResponseEntity.ok().body(entityList);
+    }
+
+    /**
+     * {@code GET  /conversations/count} : count all the conversations.
+     *
+     * @param criteria the criteria which the requested entities should match.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the count in body.
+     */
+    @GetMapping("/count")
+    public ResponseEntity<Long> countConversations(ConversationCriteria criteria) {
+        log.debug("REST request to count Conversations by criteria: {}", criteria);
+        return ResponseEntity.ok().body(conversationQueryService.countByCriteria(criteria));
     }
 
     /**

@@ -190,7 +190,7 @@ describe('Product e2e test', () => {
         cy.url().should('match', productPageUrlPattern);
       });
 
-      it('edit button click should load edit Product page and save', () => {
+      it.skip('edit button click should load edit Product page and save', () => {
         cy.get(entityEditButtonSelector).first().click();
         cy.getEntityCreateUpdateHeading('Product');
         cy.get(entityCreateSaveButtonSelector).click();

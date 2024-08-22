@@ -4,11 +4,8 @@ import com.foursquare.server.domain.Order;
 import com.foursquare.server.repository.OrderRepository;
 import com.foursquare.server.service.dto.OrderDTO;
 import com.foursquare.server.service.mapper.OrderMapper;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -79,17 +76,6 @@ public class OrderService {
             })
             .map(orderRepository::save)
             .map(orderMapper::toDto);
-    }
-
-    /**
-     * Get all the orders.
-     *
-     * @return the list of entities.
-     */
-    @Transactional(readOnly = true)
-    public List<OrderDTO> findAll() {
-        log.debug("Request to get all Orders");
-        return orderRepository.findAll().stream().map(orderMapper::toDto).collect(Collectors.toCollection(LinkedList::new));
     }
 
     /**

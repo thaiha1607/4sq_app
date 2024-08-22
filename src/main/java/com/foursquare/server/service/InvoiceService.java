@@ -4,11 +4,8 @@ import com.foursquare.server.domain.Invoice;
 import com.foursquare.server.repository.InvoiceRepository;
 import com.foursquare.server.service.dto.InvoiceDTO;
 import com.foursquare.server.service.mapper.InvoiceMapper;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -79,17 +76,6 @@ public class InvoiceService {
             })
             .map(invoiceRepository::save)
             .map(invoiceMapper::toDto);
-    }
-
-    /**
-     * Get all the invoices.
-     *
-     * @return the list of entities.
-     */
-    @Transactional(readOnly = true)
-    public List<InvoiceDTO> findAll() {
-        log.debug("Request to get all Invoices");
-        return invoiceRepository.findAll().stream().map(invoiceMapper::toDto).collect(Collectors.toCollection(LinkedList::new));
     }
 
     /**

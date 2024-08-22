@@ -9,4 +9,4 @@ import org.springframework.stereotype.Repository;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface ShipmentStatusRepository extends JpaRepository<ShipmentStatus, Long> {}
+public interface ShipmentStatusRepository extends JpaRepository<ShipmentStatus, Long>, JpaSpecificationExecutor<ShipmentStatus> {}

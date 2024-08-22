@@ -1,7 +1,9 @@
 package com.foursquare.server.web.rest;
 
 import com.foursquare.server.repository.ProductQuantityRepository;
+import com.foursquare.server.service.ProductQuantityQueryService;
 import com.foursquare.server.service.ProductQuantityService;
+import com.foursquare.server.service.criteria.ProductQuantityCriteria;
 import com.foursquare.server.service.dto.ProductQuantityDTO;
 import com.foursquare.server.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
@@ -38,9 +40,16 @@ public class ProductQuantityResource {
 
     private final ProductQuantityRepository productQuantityRepository;
 
-    public ProductQuantityResource(ProductQuantityService productQuantityService, ProductQuantityRepository productQuantityRepository) {
+    private final ProductQuantityQueryService productQuantityQueryService;
+
+    public ProductQuantityResource(
+        ProductQuantityService productQuantityService,
+        ProductQuantityRepository productQuantityRepository,
+        ProductQuantityQueryService productQuantityQueryService
+    ) {
         this.productQuantityService = productQuantityService;
         this.productQuantityRepository = productQuantityRepository;
+        this.productQuantityQueryService = productQuantityQueryService;
     }
 
     /**
@@ -135,15 +144,27 @@ public class ProductQuantityResource {
     /**
      * {@code GET  /product-quantities} : get all the productQuantities.
      *
-     * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
+     * @param criteria the criteria which the requested entities should match.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of productQuantities in body.
      */
     @GetMapping("")
-    public List<ProductQuantityDTO> getAllProductQuantities(
-        @RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload
-    ) {
-        log.debug("REST request to get all ProductQuantities");
-        return productQuantityService.findAll();
+    public ResponseEntity<List<ProductQuantityDTO>> getAllProductQuantities(ProductQuantityCriteria criteria) {
+        log.debug("REST request to get ProductQuantities by criteria: {}", criteria);
+
+        List<ProductQuantityDTO> entityList = productQuantityQueryService.findByCriteria(criteria);
+        return ResponseEntity.ok().body(entityList);
+    }
+
+    /**
+     * {@code GET  /product-quantities/count} : count all the productQuantities.
+     *
+     * @param criteria the criteria which the requested entities should match.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the count in body.
+     */
+    @GetMapping("/count")
+    public ResponseEntity<Long> countProductQuantities(ProductQuantityCriteria criteria) {
+        log.debug("REST request to count ProductQuantities by criteria: {}", criteria);
+        return ResponseEntity.ok().body(productQuantityQueryService.countByCriteria(criteria));
     }
 
     /**

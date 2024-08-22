@@ -69,6 +69,7 @@
       "readonly": true
     }
   ],
+  "jpaMetamodelFiltering": true,
   "name": "Invoice",
   "relationships": [
     {
@@ -95,5 +96,6 @@
       "relationshipValidateRules": "required"
     }
   ],
-  "searchEngine": "no"
+  "searchEngine": "no",
+  "service": "serviceClass"
 }

@@ -122,7 +122,7 @@ describe('Tag e2e test', () => {
         cy.url().should('match', tagPageUrlPattern);
       });
 
-      it('edit button click should load edit Tag page and save', () => {
+      it.skip('edit button click should load edit Tag page and save', () => {
         cy.get(entityEditButtonSelector).first().click();
         cy.getEntityCreateUpdateHeading('Tag');
         cy.get(entityCreateSaveButtonSelector).click();

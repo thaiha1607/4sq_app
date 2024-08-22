@@ -39,12 +39,15 @@ class ShipmentItemResourceIT {
 
     private static final Integer DEFAULT_QTY = 0;
     private static final Integer UPDATED_QTY = 1;
+    private static final Integer SMALLER_QTY = 0 - 1;
 
     private static final BigDecimal DEFAULT_TOTAL = new BigDecimal(0);
     private static final BigDecimal UPDATED_TOTAL = new BigDecimal(1);
+    private static final BigDecimal SMALLER_TOTAL = new BigDecimal(0 - 1);
 
     private static final Integer DEFAULT_ROLL_QTY = 0;
     private static final Integer UPDATED_ROLL_QTY = 1;
+    private static final Integer SMALLER_ROLL_QTY = 0 - 1;
 
     private static final String ENTITY_API_URL = "/api/shipment-items";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
@@ -228,6 +231,272 @@ class ShipmentItemResourceIT {
             .andExpect(jsonPath("$.qty").value(DEFAULT_QTY))
             .andExpect(jsonPath("$.total").value(sameNumber(DEFAULT_TOTAL)))
             .andExpect(jsonPath("$.rollQty").value(DEFAULT_ROLL_QTY));
+    }
+
+    @Test
+    @Transactional
+    void getShipmentItemsByIdFiltering() throws Exception {
+        // Initialize the database
+        insertedShipmentItem = shipmentItemRepository.saveAndFlush(shipmentItem);
+
+        UUID id = shipmentItem.getId();
+
+        defaultShipmentItemFiltering("id.equals=" + id, "id.notEquals=" + id);
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentItemsByQtyIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedShipmentItem = shipmentItemRepository.saveAndFlush(shipmentItem);
+
+        // Get all the shipmentItemList where qty equals to
+        defaultShipmentItemFiltering("qty.equals=" + DEFAULT_QTY, "qty.equals=" + UPDATED_QTY);
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentItemsByQtyIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedShipmentItem = shipmentItemRepository.saveAndFlush(shipmentItem);
+
+        // Get all the shipmentItemList where qty in
+        defaultShipmentItemFiltering("qty.in=" + DEFAULT_QTY + "," + UPDATED_QTY, "qty.in=" + UPDATED_QTY);
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentItemsByQtyIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedShipmentItem = shipmentItemRepository.saveAndFlush(shipmentItem);
+
+        // Get all the shipmentItemList where qty is not null
+        defaultShipmentItemFiltering("qty.specified=true", "qty.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentItemsByQtyIsGreaterThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedShipmentItem = shipmentItemRepository.saveAndFlush(shipmentItem);
+
+        // Get all the shipmentItemList where qty is greater than or equal to
+        defaultShipmentItemFiltering("qty.greaterThanOrEqual=" + DEFAULT_QTY, "qty.greaterThanOrEqual=" + UPDATED_QTY);
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentItemsByQtyIsLessThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedShipmentItem = shipmentItemRepository.saveAndFlush(shipmentItem);
+
+        // Get all the shipmentItemList where qty is less than or equal to
+        defaultShipmentItemFiltering("qty.lessThanOrEqual=" + DEFAULT_QTY, "qty.lessThanOrEqual=" + SMALLER_QTY);
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentItemsByQtyIsLessThanSomething() throws Exception {
+        // Initialize the database
+        insertedShipmentItem = shipmentItemRepository.saveAndFlush(shipmentItem);
+
+        // Get all the shipmentItemList where qty is less than
+        defaultShipmentItemFiltering("qty.lessThan=" + UPDATED_QTY, "qty.lessThan=" + DEFAULT_QTY);
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentItemsByQtyIsGreaterThanSomething() throws Exception {
+        // Initialize the database
+        insertedShipmentItem = shipmentItemRepository.saveAndFlush(shipmentItem);
+
+        // Get all the shipmentItemList where qty is greater than
+        defaultShipmentItemFiltering("qty.greaterThan=" + SMALLER_QTY, "qty.greaterThan=" + DEFAULT_QTY);
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentItemsByTotalIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedShipmentItem = shipmentItemRepository.saveAndFlush(shipmentItem);
+
+        // Get all the shipmentItemList where total equals to
+        defaultShipmentItemFiltering("total.equals=" + DEFAULT_TOTAL, "total.equals=" + UPDATED_TOTAL);
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentItemsByTotalIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedShipmentItem = shipmentItemRepository.saveAndFlush(shipmentItem);
+
+        // Get all the shipmentItemList where total in
+        defaultShipmentItemFiltering("total.in=" + DEFAULT_TOTAL + "," + UPDATED_TOTAL, "total.in=" + UPDATED_TOTAL);
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentItemsByTotalIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedShipmentItem = shipmentItemRepository.saveAndFlush(shipmentItem);
+
+        // Get all the shipmentItemList where total is not null
+        defaultShipmentItemFiltering("total.specified=true", "total.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentItemsByTotalIsGreaterThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedShipmentItem = shipmentItemRepository.saveAndFlush(shipmentItem);
+
+        // Get all the shipmentItemList where total is greater than or equal to
+        defaultShipmentItemFiltering("total.greaterThanOrEqual=" + DEFAULT_TOTAL, "total.greaterThanOrEqual=" + UPDATED_TOTAL);
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentItemsByTotalIsLessThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedShipmentItem = shipmentItemRepository.saveAndFlush(shipmentItem);
+
+        // Get all the shipmentItemList where total is less than or equal to
+        defaultShipmentItemFiltering("total.lessThanOrEqual=" + DEFAULT_TOTAL, "total.lessThanOrEqual=" + SMALLER_TOTAL);
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentItemsByTotalIsLessThanSomething() throws Exception {
+        // Initialize the database
+        insertedShipmentItem = shipmentItemRepository.saveAndFlush(shipmentItem);
+
+        // Get all the shipmentItemList where total is less than
+        defaultShipmentItemFiltering("total.lessThan=" + UPDATED_TOTAL, "total.lessThan=" + DEFAULT_TOTAL);
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentItemsByTotalIsGreaterThanSomething() throws Exception {
+        // Initialize the database
+        insertedShipmentItem = shipmentItemRepository.saveAndFlush(shipmentItem);
+
+        // Get all the shipmentItemList where total is greater than
+        defaultShipmentItemFiltering("total.greaterThan=" + SMALLER_TOTAL, "total.greaterThan=" + DEFAULT_TOTAL);
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentItemsByRollQtyIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedShipmentItem = shipmentItemRepository.saveAndFlush(shipmentItem);
+
+        // Get all the shipmentItemList where rollQty equals to
+        defaultShipmentItemFiltering("rollQty.equals=" + DEFAULT_ROLL_QTY, "rollQty.equals=" + UPDATED_ROLL_QTY);
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentItemsByRollQtyIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedShipmentItem = shipmentItemRepository.saveAndFlush(shipmentItem);
+
+        // Get all the shipmentItemList where rollQty in
+        defaultShipmentItemFiltering("rollQty.in=" + DEFAULT_ROLL_QTY + "," + UPDATED_ROLL_QTY, "rollQty.in=" + UPDATED_ROLL_QTY);
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentItemsByRollQtyIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedShipmentItem = shipmentItemRepository.saveAndFlush(shipmentItem);
+
+        // Get all the shipmentItemList where rollQty is not null
+        defaultShipmentItemFiltering("rollQty.specified=true", "rollQty.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentItemsByRollQtyIsGreaterThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedShipmentItem = shipmentItemRepository.saveAndFlush(shipmentItem);
+
+        // Get all the shipmentItemList where rollQty is greater than or equal to
+        defaultShipmentItemFiltering("rollQty.greaterThanOrEqual=" + DEFAULT_ROLL_QTY, "rollQty.greaterThanOrEqual=" + UPDATED_ROLL_QTY);
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentItemsByRollQtyIsLessThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedShipmentItem = shipmentItemRepository.saveAndFlush(shipmentItem);
+
+        // Get all the shipmentItemList where rollQty is less than or equal to
+        defaultShipmentItemFiltering("rollQty.lessThanOrEqual=" + DEFAULT_ROLL_QTY, "rollQty.lessThanOrEqual=" + SMALLER_ROLL_QTY);
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentItemsByRollQtyIsLessThanSomething() throws Exception {
+        // Initialize the database
+        insertedShipmentItem = shipmentItemRepository.saveAndFlush(shipmentItem);
+
+        // Get all the shipmentItemList where rollQty is less than
+        defaultShipmentItemFiltering("rollQty.lessThan=" + UPDATED_ROLL_QTY, "rollQty.lessThan=" + DEFAULT_ROLL_QTY);
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentItemsByRollQtyIsGreaterThanSomething() throws Exception {
+        // Initialize the database
+        insertedShipmentItem = shipmentItemRepository.saveAndFlush(shipmentItem);
+
+        // Get all the shipmentItemList where rollQty is greater than
+        defaultShipmentItemFiltering("rollQty.greaterThan=" + SMALLER_ROLL_QTY, "rollQty.greaterThan=" + DEFAULT_ROLL_QTY);
+    }
+
+    private void defaultShipmentItemFiltering(String shouldBeFound, String shouldNotBeFound) throws Exception {
+        defaultShipmentItemShouldBeFound(shouldBeFound);
+        defaultShipmentItemShouldNotBeFound(shouldNotBeFound);
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is returned.
+     */
+    private void defaultShipmentItemShouldBeFound(String filter) throws Exception {
+        restShipmentItemMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(shipmentItem.getId().toString())))
+            .andExpect(jsonPath("$.[*].qty").value(hasItem(DEFAULT_QTY)))
+            .andExpect(jsonPath("$.[*].total").value(hasItem(sameNumber(DEFAULT_TOTAL))))
+            .andExpect(jsonPath("$.[*].rollQty").value(hasItem(DEFAULT_ROLL_QTY)));
+
+        // Check, that the count call also returns 1
+        restShipmentItemMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("1"));
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is not returned.
+     */
+    private void defaultShipmentItemShouldNotBeFound(String filter) throws Exception {
+        restShipmentItemMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$").isEmpty());
+
+        // Check, that the count call also returns 0
+        restShipmentItemMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("0"));
     }
 
     @Test

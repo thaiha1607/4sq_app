@@ -61,6 +61,7 @@
       "readonly": true
     }
   ],
+  "jpaMetamodelFiltering": true,
   "name": "ShipmentAssignment",
   "relationships": [
     {
@@ -83,5 +84,6 @@
       "relationshipValidateRules": "required"
     }
   ],
-  "searchEngine": "no"
+  "searchEngine": "no",
+  "service": "serviceClass"
 }

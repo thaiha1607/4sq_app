@@ -1,7 +1,6 @@
 package com.foursquare.server.service;
 
 import com.foursquare.server.service.dto.StaffInfoDTO;
-import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,13 +32,6 @@ public interface StaffInfoService {
      * @return the persisted entity.
      */
     Optional<StaffInfoDTO> partialUpdate(StaffInfoDTO staffInfoDTO);
-
-    /**
-     * Get all the staffInfos.
-     *
-     * @return the list of entities.
-     */
-    List<StaffInfoDTO> findAll();
 
     /**
      * Get all the staffInfos with eager load of many-to-many relationships.

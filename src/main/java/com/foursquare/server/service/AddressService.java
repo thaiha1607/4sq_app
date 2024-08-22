@@ -4,11 +4,8 @@ import com.foursquare.server.domain.Address;
 import com.foursquare.server.repository.AddressRepository;
 import com.foursquare.server.service.dto.AddressDTO;
 import com.foursquare.server.service.mapper.AddressMapper;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -77,17 +74,6 @@ public class AddressService {
             })
             .map(addressRepository::save)
             .map(addressMapper::toDto);
-    }
-
-    /**
-     * Get all the addresses.
-     *
-     * @return the list of entities.
-     */
-    @Transactional(readOnly = true)
-    public List<AddressDTO> findAll() {
-        log.debug("Request to get all Addresses");
-        return addressRepository.findAll().stream().map(addressMapper::toDto).collect(Collectors.toCollection(LinkedList::new));
     }
 
     /**

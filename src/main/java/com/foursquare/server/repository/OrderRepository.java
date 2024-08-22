@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
  * Spring Data JPA repository for the Order entity.
  */
 @Repository
-public interface OrderRepository extends JpaRepository<Order, UUID> {
+public interface OrderRepository extends JpaRepository<Order, UUID>, JpaSpecificationExecutor<Order> {
     @Query("select jhiOrder from Order jhiOrder where jhiOrder.customer.login = ?#{authentication.name}")
     List<Order> findByCustomerIsCurrentUser();
 

@@ -1,7 +1,9 @@
 package com.foursquare.server.web.rest;
 
 import com.foursquare.server.repository.OrderRepository;
+import com.foursquare.server.service.OrderQueryService;
 import com.foursquare.server.service.OrderService;
+import com.foursquare.server.service.criteria.OrderCriteria;
 import com.foursquare.server.service.dto.OrderDTO;
 import com.foursquare.server.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
@@ -38,9 +40,12 @@ public class OrderResource {
 
     private final OrderRepository orderRepository;
 
-    public OrderResource(OrderService orderService, OrderRepository orderRepository) {
+    private final OrderQueryService orderQueryService;
+
+    public OrderResource(OrderService orderService, OrderRepository orderRepository, OrderQueryService orderQueryService) {
         this.orderService = orderService;
         this.orderRepository = orderRepository;
+        this.orderQueryService = orderQueryService;
     }
 
     /**
@@ -134,13 +139,27 @@ public class OrderResource {
     /**
      * {@code GET  /orders} : get all the orders.
      *
-     * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
+     * @param criteria the criteria which the requested entities should match.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of orders in body.
      */
     @GetMapping("")
-    public List<OrderDTO> getAllOrders(@RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload) {
-        log.debug("REST request to get all Orders");
-        return orderService.findAll();
+    public ResponseEntity<List<OrderDTO>> getAllOrders(OrderCriteria criteria) {
+        log.debug("REST request to get Orders by criteria: {}", criteria);
+
+        List<OrderDTO> entityList = orderQueryService.findByCriteria(criteria);
+        return ResponseEntity.ok().body(entityList);
+    }
+
+    /**
+     * {@code GET  /orders/count} : count all the orders.
+     *
+     * @param criteria the criteria which the requested entities should match.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the count in body.
+     */
+    @GetMapping("/count")
+    public ResponseEntity<Long> countOrders(OrderCriteria criteria) {
+        log.debug("REST request to count Orders by criteria: {}", criteria);
+        return ResponseEntity.ok().body(orderQueryService.countByCriteria(criteria));
     }
 
     /**

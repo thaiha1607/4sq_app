@@ -14,7 +14,8 @@ import org.springframework.stereotype.Repository;
  * Spring Data JPA repository for the ShipmentAssignment entity.
  */
 @Repository
-public interface ShipmentAssignmentRepository extends JpaRepository<ShipmentAssignment, UUID> {
+public interface ShipmentAssignmentRepository
+    extends JpaRepository<ShipmentAssignment, UUID>, JpaSpecificationExecutor<ShipmentAssignment> {
     @Query(
         "select shipmentAssignment from ShipmentAssignment shipmentAssignment where shipmentAssignment.user.login = ?#{authentication.name}"
     )

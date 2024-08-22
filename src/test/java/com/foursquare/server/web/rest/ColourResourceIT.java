@@ -206,6 +206,161 @@ class ColourResourceIT {
 
     @Test
     @Transactional
+    void getColoursByIdFiltering() throws Exception {
+        // Initialize the database
+        insertedColour = colourRepository.saveAndFlush(colour);
+
+        UUID id = colour.getId();
+
+        defaultColourFiltering("id.equals=" + id, "id.notEquals=" + id);
+    }
+
+    @Test
+    @Transactional
+    void getAllColoursByNameIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedColour = colourRepository.saveAndFlush(colour);
+
+        // Get all the colourList where name equals to
+        defaultColourFiltering("name.equals=" + DEFAULT_NAME, "name.equals=" + UPDATED_NAME);
+    }
+
+    @Test
+    @Transactional
+    void getAllColoursByNameIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedColour = colourRepository.saveAndFlush(colour);
+
+        // Get all the colourList where name in
+        defaultColourFiltering("name.in=" + DEFAULT_NAME + "," + UPDATED_NAME, "name.in=" + UPDATED_NAME);
+    }
+
+    @Test
+    @Transactional
+    void getAllColoursByNameIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedColour = colourRepository.saveAndFlush(colour);
+
+        // Get all the colourList where name is not null
+        defaultColourFiltering("name.specified=true", "name.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllColoursByNameContainsSomething() throws Exception {
+        // Initialize the database
+        insertedColour = colourRepository.saveAndFlush(colour);
+
+        // Get all the colourList where name contains
+        defaultColourFiltering("name.contains=" + DEFAULT_NAME, "name.contains=" + UPDATED_NAME);
+    }
+
+    @Test
+    @Transactional
+    void getAllColoursByNameNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedColour = colourRepository.saveAndFlush(colour);
+
+        // Get all the colourList where name does not contain
+        defaultColourFiltering("name.doesNotContain=" + UPDATED_NAME, "name.doesNotContain=" + DEFAULT_NAME);
+    }
+
+    @Test
+    @Transactional
+    void getAllColoursByHexCodeIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedColour = colourRepository.saveAndFlush(colour);
+
+        // Get all the colourList where hexCode equals to
+        defaultColourFiltering("hexCode.equals=" + DEFAULT_HEX_CODE, "hexCode.equals=" + UPDATED_HEX_CODE);
+    }
+
+    @Test
+    @Transactional
+    void getAllColoursByHexCodeIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedColour = colourRepository.saveAndFlush(colour);
+
+        // Get all the colourList where hexCode in
+        defaultColourFiltering("hexCode.in=" + DEFAULT_HEX_CODE + "," + UPDATED_HEX_CODE, "hexCode.in=" + UPDATED_HEX_CODE);
+    }
+
+    @Test
+    @Transactional
+    void getAllColoursByHexCodeIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedColour = colourRepository.saveAndFlush(colour);
+
+        // Get all the colourList where hexCode is not null
+        defaultColourFiltering("hexCode.specified=true", "hexCode.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllColoursByHexCodeContainsSomething() throws Exception {
+        // Initialize the database
+        insertedColour = colourRepository.saveAndFlush(colour);
+
+        // Get all the colourList where hexCode contains
+        defaultColourFiltering("hexCode.contains=" + DEFAULT_HEX_CODE, "hexCode.contains=" + UPDATED_HEX_CODE);
+    }
+
+    @Test
+    @Transactional
+    void getAllColoursByHexCodeNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedColour = colourRepository.saveAndFlush(colour);
+
+        // Get all the colourList where hexCode does not contain
+        defaultColourFiltering("hexCode.doesNotContain=" + UPDATED_HEX_CODE, "hexCode.doesNotContain=" + DEFAULT_HEX_CODE);
+    }
+
+    private void defaultColourFiltering(String shouldBeFound, String shouldNotBeFound) throws Exception {
+        defaultColourShouldBeFound(shouldBeFound);
+        defaultColourShouldNotBeFound(shouldNotBeFound);
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is returned.
+     */
+    private void defaultColourShouldBeFound(String filter) throws Exception {
+        restColourMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(colour.getId().toString())))
+            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
+            .andExpect(jsonPath("$.[*].hexCode").value(hasItem(DEFAULT_HEX_CODE)));
+
+        // Check, that the count call also returns 1
+        restColourMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("1"));
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is not returned.
+     */
+    private void defaultColourShouldNotBeFound(String filter) throws Exception {
+        restColourMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$").isEmpty());
+
+        // Check, that the count call also returns 0
+        restColourMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("0"));
+    }
+
+    @Test
+    @Transactional
     void getNonExistingColour() throws Exception {
         // Get the colour
         restColourMockMvc.perform(get(ENTITY_API_URL_ID, UUID.randomUUID().toString())).andExpect(status().isNotFound());

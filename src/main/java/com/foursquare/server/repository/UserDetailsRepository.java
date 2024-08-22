@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
  * Spring Data JPA repository for the UserDetails entity.
  */
 @Repository
-public interface UserDetailsRepository extends JpaRepository<UserDetails, Long> {
+public interface UserDetailsRepository extends JpaRepository<UserDetails, Long>, JpaSpecificationExecutor<UserDetails> {
     default Optional<UserDetails> findOneWithEagerRelationships(Long id) {
         return this.findOneWithToOneRelationships(id);
     }

@@ -51,6 +51,7 @@
       "readonly": true
     }
   ],
+  "jpaMetamodelFiltering": true,
   "name": "OrderHistory",
   "relationships": [
     {
@@ -73,5 +74,6 @@
       "relationshipValidateRules": "required"
     }
   ],
-  "searchEngine": "no"
+  "searchEngine": "no",
+  "service": "serviceClass"
 }

@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foursquare.server.IntegrationTest;
+import com.foursquare.server.domain.Address;
 import com.foursquare.server.domain.WorkingUnit;
 import com.foursquare.server.domain.enumeration.WorkingUnitType;
 import com.foursquare.server.repository.WorkingUnitRepository;
@@ -208,6 +209,214 @@ class WorkingUnitResourceIT {
             .andExpect(jsonPath("$.name").value(DEFAULT_NAME))
             .andExpect(jsonPath("$.type").value(DEFAULT_TYPE.toString()))
             .andExpect(jsonPath("$.imageUri").value(DEFAULT_IMAGE_URI));
+    }
+
+    @Test
+    @Transactional
+    void getWorkingUnitsByIdFiltering() throws Exception {
+        // Initialize the database
+        insertedWorkingUnit = workingUnitRepository.saveAndFlush(workingUnit);
+
+        UUID id = workingUnit.getId();
+
+        defaultWorkingUnitFiltering("id.equals=" + id, "id.notEquals=" + id);
+    }
+
+    @Test
+    @Transactional
+    void getAllWorkingUnitsByNameIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedWorkingUnit = workingUnitRepository.saveAndFlush(workingUnit);
+
+        // Get all the workingUnitList where name equals to
+        defaultWorkingUnitFiltering("name.equals=" + DEFAULT_NAME, "name.equals=" + UPDATED_NAME);
+    }
+
+    @Test
+    @Transactional
+    void getAllWorkingUnitsByNameIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedWorkingUnit = workingUnitRepository.saveAndFlush(workingUnit);
+
+        // Get all the workingUnitList where name in
+        defaultWorkingUnitFiltering("name.in=" + DEFAULT_NAME + "," + UPDATED_NAME, "name.in=" + UPDATED_NAME);
+    }
+
+    @Test
+    @Transactional
+    void getAllWorkingUnitsByNameIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedWorkingUnit = workingUnitRepository.saveAndFlush(workingUnit);
+
+        // Get all the workingUnitList where name is not null
+        defaultWorkingUnitFiltering("name.specified=true", "name.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllWorkingUnitsByNameContainsSomething() throws Exception {
+        // Initialize the database
+        insertedWorkingUnit = workingUnitRepository.saveAndFlush(workingUnit);
+
+        // Get all the workingUnitList where name contains
+        defaultWorkingUnitFiltering("name.contains=" + DEFAULT_NAME, "name.contains=" + UPDATED_NAME);
+    }
+
+    @Test
+    @Transactional
+    void getAllWorkingUnitsByNameNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedWorkingUnit = workingUnitRepository.saveAndFlush(workingUnit);
+
+        // Get all the workingUnitList where name does not contain
+        defaultWorkingUnitFiltering("name.doesNotContain=" + UPDATED_NAME, "name.doesNotContain=" + DEFAULT_NAME);
+    }
+
+    @Test
+    @Transactional
+    void getAllWorkingUnitsByTypeIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedWorkingUnit = workingUnitRepository.saveAndFlush(workingUnit);
+
+        // Get all the workingUnitList where type equals to
+        defaultWorkingUnitFiltering("type.equals=" + DEFAULT_TYPE, "type.equals=" + UPDATED_TYPE);
+    }
+
+    @Test
+    @Transactional
+    void getAllWorkingUnitsByTypeIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedWorkingUnit = workingUnitRepository.saveAndFlush(workingUnit);
+
+        // Get all the workingUnitList where type in
+        defaultWorkingUnitFiltering("type.in=" + DEFAULT_TYPE + "," + UPDATED_TYPE, "type.in=" + UPDATED_TYPE);
+    }
+
+    @Test
+    @Transactional
+    void getAllWorkingUnitsByTypeIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedWorkingUnit = workingUnitRepository.saveAndFlush(workingUnit);
+
+        // Get all the workingUnitList where type is not null
+        defaultWorkingUnitFiltering("type.specified=true", "type.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllWorkingUnitsByImageUriIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedWorkingUnit = workingUnitRepository.saveAndFlush(workingUnit);
+
+        // Get all the workingUnitList where imageUri equals to
+        defaultWorkingUnitFiltering("imageUri.equals=" + DEFAULT_IMAGE_URI, "imageUri.equals=" + UPDATED_IMAGE_URI);
+    }
+
+    @Test
+    @Transactional
+    void getAllWorkingUnitsByImageUriIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedWorkingUnit = workingUnitRepository.saveAndFlush(workingUnit);
+
+        // Get all the workingUnitList where imageUri in
+        defaultWorkingUnitFiltering("imageUri.in=" + DEFAULT_IMAGE_URI + "," + UPDATED_IMAGE_URI, "imageUri.in=" + UPDATED_IMAGE_URI);
+    }
+
+    @Test
+    @Transactional
+    void getAllWorkingUnitsByImageUriIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedWorkingUnit = workingUnitRepository.saveAndFlush(workingUnit);
+
+        // Get all the workingUnitList where imageUri is not null
+        defaultWorkingUnitFiltering("imageUri.specified=true", "imageUri.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllWorkingUnitsByImageUriContainsSomething() throws Exception {
+        // Initialize the database
+        insertedWorkingUnit = workingUnitRepository.saveAndFlush(workingUnit);
+
+        // Get all the workingUnitList where imageUri contains
+        defaultWorkingUnitFiltering("imageUri.contains=" + DEFAULT_IMAGE_URI, "imageUri.contains=" + UPDATED_IMAGE_URI);
+    }
+
+    @Test
+    @Transactional
+    void getAllWorkingUnitsByImageUriNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedWorkingUnit = workingUnitRepository.saveAndFlush(workingUnit);
+
+        // Get all the workingUnitList where imageUri does not contain
+        defaultWorkingUnitFiltering("imageUri.doesNotContain=" + UPDATED_IMAGE_URI, "imageUri.doesNotContain=" + DEFAULT_IMAGE_URI);
+    }
+
+    @Test
+    @Transactional
+    void getAllWorkingUnitsByAddressIsEqualToSomething() throws Exception {
+        Address address;
+        if (TestUtil.findAll(em, Address.class).isEmpty()) {
+            workingUnitRepository.saveAndFlush(workingUnit);
+            address = AddressResourceIT.createEntity(em);
+        } else {
+            address = TestUtil.findAll(em, Address.class).get(0);
+        }
+        em.persist(address);
+        em.flush();
+        workingUnit.setAddress(address);
+        workingUnitRepository.saveAndFlush(workingUnit);
+        UUID addressId = address.getId();
+        // Get all the workingUnitList where address equals to addressId
+        defaultWorkingUnitShouldBeFound("addressId.equals=" + addressId);
+
+        // Get all the workingUnitList where address equals to UUID.randomUUID()
+        defaultWorkingUnitShouldNotBeFound("addressId.equals=" + UUID.randomUUID());
+    }
+
+    private void defaultWorkingUnitFiltering(String shouldBeFound, String shouldNotBeFound) throws Exception {
+        defaultWorkingUnitShouldBeFound(shouldBeFound);
+        defaultWorkingUnitShouldNotBeFound(shouldNotBeFound);
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is returned.
+     */
+    private void defaultWorkingUnitShouldBeFound(String filter) throws Exception {
+        restWorkingUnitMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(workingUnit.getId().toString())))
+            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
+            .andExpect(jsonPath("$.[*].type").value(hasItem(DEFAULT_TYPE.toString())))
+            .andExpect(jsonPath("$.[*].imageUri").value(hasItem(DEFAULT_IMAGE_URI)));
+
+        // Check, that the count call also returns 1
+        restWorkingUnitMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("1"));
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is not returned.
+     */
+    private void defaultWorkingUnitShouldNotBeFound(String filter) throws Exception {
+        restWorkingUnitMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$").isEmpty());
+
+        // Check, that the count call also returns 0
+        restWorkingUnitMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("0"));
     }
 
     @Test

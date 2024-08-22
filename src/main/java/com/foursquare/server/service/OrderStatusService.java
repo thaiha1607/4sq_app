@@ -4,10 +4,7 @@ import com.foursquare.server.domain.OrderStatus;
 import com.foursquare.server.repository.OrderStatusRepository;
 import com.foursquare.server.service.dto.OrderStatusDTO;
 import com.foursquare.server.service.mapper.OrderStatusMapper;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -76,17 +73,6 @@ public class OrderStatusService {
             })
             .map(orderStatusRepository::save)
             .map(orderStatusMapper::toDto);
-    }
-
-    /**
-     * Get all the orderStatuses.
-     *
-     * @return the list of entities.
-     */
-    @Transactional(readOnly = true)
-    public List<OrderStatusDTO> findAll() {
-        log.debug("Request to get all OrderStatuses");
-        return orderStatusRepository.findAll().stream().map(orderStatusMapper::toDto).collect(Collectors.toCollection(LinkedList::new));
     }
 
     /**

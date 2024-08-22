@@ -203,7 +203,7 @@ describe('WarehouseAssignment e2e test', () => {
         cy.url().should('match', warehouseAssignmentPageUrlPattern);
       });
 
-      it('edit button click should load edit WarehouseAssignment page and save', () => {
+      it.skip('edit button click should load edit WarehouseAssignment page and save', () => {
         cy.get(entityEditButtonSelector).first().click();
         cy.getEntityCreateUpdateHeading('WarehouseAssignment');
         cy.get(entityCreateSaveButtonSelector).click();

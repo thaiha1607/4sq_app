@@ -263,6 +263,222 @@ class UserAddressResourceIT {
 
     @Test
     @Transactional
+    void getUserAddressesByIdFiltering() throws Exception {
+        // Initialize the database
+        insertedUserAddress = userAddressRepository.saveAndFlush(userAddress);
+
+        UUID id = userAddress.getId();
+
+        defaultUserAddressFiltering("id.equals=" + id, "id.notEquals=" + id);
+    }
+
+    @Test
+    @Transactional
+    void getAllUserAddressesByTypeIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedUserAddress = userAddressRepository.saveAndFlush(userAddress);
+
+        // Get all the userAddressList where type equals to
+        defaultUserAddressFiltering("type.equals=" + DEFAULT_TYPE, "type.equals=" + UPDATED_TYPE);
+    }
+
+    @Test
+    @Transactional
+    void getAllUserAddressesByTypeIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedUserAddress = userAddressRepository.saveAndFlush(userAddress);
+
+        // Get all the userAddressList where type in
+        defaultUserAddressFiltering("type.in=" + DEFAULT_TYPE + "," + UPDATED_TYPE, "type.in=" + UPDATED_TYPE);
+    }
+
+    @Test
+    @Transactional
+    void getAllUserAddressesByTypeIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedUserAddress = userAddressRepository.saveAndFlush(userAddress);
+
+        // Get all the userAddressList where type is not null
+        defaultUserAddressFiltering("type.specified=true", "type.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllUserAddressesByFriendlyNameIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedUserAddress = userAddressRepository.saveAndFlush(userAddress);
+
+        // Get all the userAddressList where friendlyName equals to
+        defaultUserAddressFiltering("friendlyName.equals=" + DEFAULT_FRIENDLY_NAME, "friendlyName.equals=" + UPDATED_FRIENDLY_NAME);
+    }
+
+    @Test
+    @Transactional
+    void getAllUserAddressesByFriendlyNameIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedUserAddress = userAddressRepository.saveAndFlush(userAddress);
+
+        // Get all the userAddressList where friendlyName in
+        defaultUserAddressFiltering(
+            "friendlyName.in=" + DEFAULT_FRIENDLY_NAME + "," + UPDATED_FRIENDLY_NAME,
+            "friendlyName.in=" + UPDATED_FRIENDLY_NAME
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllUserAddressesByFriendlyNameIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedUserAddress = userAddressRepository.saveAndFlush(userAddress);
+
+        // Get all the userAddressList where friendlyName is not null
+        defaultUserAddressFiltering("friendlyName.specified=true", "friendlyName.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllUserAddressesByFriendlyNameContainsSomething() throws Exception {
+        // Initialize the database
+        insertedUserAddress = userAddressRepository.saveAndFlush(userAddress);
+
+        // Get all the userAddressList where friendlyName contains
+        defaultUserAddressFiltering("friendlyName.contains=" + DEFAULT_FRIENDLY_NAME, "friendlyName.contains=" + UPDATED_FRIENDLY_NAME);
+    }
+
+    @Test
+    @Transactional
+    void getAllUserAddressesByFriendlyNameNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedUserAddress = userAddressRepository.saveAndFlush(userAddress);
+
+        // Get all the userAddressList where friendlyName does not contain
+        defaultUserAddressFiltering(
+            "friendlyName.doesNotContain=" + UPDATED_FRIENDLY_NAME,
+            "friendlyName.doesNotContain=" + DEFAULT_FRIENDLY_NAME
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllUserAddressesByIsDefaultIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedUserAddress = userAddressRepository.saveAndFlush(userAddress);
+
+        // Get all the userAddressList where isDefault equals to
+        defaultUserAddressFiltering("isDefault.equals=" + DEFAULT_IS_DEFAULT, "isDefault.equals=" + UPDATED_IS_DEFAULT);
+    }
+
+    @Test
+    @Transactional
+    void getAllUserAddressesByIsDefaultIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedUserAddress = userAddressRepository.saveAndFlush(userAddress);
+
+        // Get all the userAddressList where isDefault in
+        defaultUserAddressFiltering("isDefault.in=" + DEFAULT_IS_DEFAULT + "," + UPDATED_IS_DEFAULT, "isDefault.in=" + UPDATED_IS_DEFAULT);
+    }
+
+    @Test
+    @Transactional
+    void getAllUserAddressesByIsDefaultIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedUserAddress = userAddressRepository.saveAndFlush(userAddress);
+
+        // Get all the userAddressList where isDefault is not null
+        defaultUserAddressFiltering("isDefault.specified=true", "isDefault.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllUserAddressesByUserIsEqualToSomething() throws Exception {
+        User user;
+        if (TestUtil.findAll(em, User.class).isEmpty()) {
+            userAddressRepository.saveAndFlush(userAddress);
+            user = UserResourceIT.createEntity(em);
+        } else {
+            user = TestUtil.findAll(em, User.class).get(0);
+        }
+        em.persist(user);
+        em.flush();
+        userAddress.setUser(user);
+        userAddressRepository.saveAndFlush(userAddress);
+        Long userId = user.getId();
+        // Get all the userAddressList where user equals to userId
+        defaultUserAddressShouldBeFound("userId.equals=" + userId);
+
+        // Get all the userAddressList where user equals to (userId + 1)
+        defaultUserAddressShouldNotBeFound("userId.equals=" + (userId + 1));
+    }
+
+    @Test
+    @Transactional
+    void getAllUserAddressesByAddressIsEqualToSomething() throws Exception {
+        Address address;
+        if (TestUtil.findAll(em, Address.class).isEmpty()) {
+            userAddressRepository.saveAndFlush(userAddress);
+            address = AddressResourceIT.createEntity(em);
+        } else {
+            address = TestUtil.findAll(em, Address.class).get(0);
+        }
+        em.persist(address);
+        em.flush();
+        userAddress.setAddress(address);
+        userAddressRepository.saveAndFlush(userAddress);
+        UUID addressId = address.getId();
+        // Get all the userAddressList where address equals to addressId
+        defaultUserAddressShouldBeFound("addressId.equals=" + addressId);
+
+        // Get all the userAddressList where address equals to UUID.randomUUID()
+        defaultUserAddressShouldNotBeFound("addressId.equals=" + UUID.randomUUID());
+    }
+
+    private void defaultUserAddressFiltering(String shouldBeFound, String shouldNotBeFound) throws Exception {
+        defaultUserAddressShouldBeFound(shouldBeFound);
+        defaultUserAddressShouldNotBeFound(shouldNotBeFound);
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is returned.
+     */
+    private void defaultUserAddressShouldBeFound(String filter) throws Exception {
+        restUserAddressMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(userAddress.getId().toString())))
+            .andExpect(jsonPath("$.[*].type").value(hasItem(DEFAULT_TYPE.toString())))
+            .andExpect(jsonPath("$.[*].friendlyName").value(hasItem(DEFAULT_FRIENDLY_NAME)))
+            .andExpect(jsonPath("$.[*].isDefault").value(hasItem(DEFAULT_IS_DEFAULT.booleanValue())));
+
+        // Check, that the count call also returns 1
+        restUserAddressMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("1"));
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is not returned.
+     */
+    private void defaultUserAddressShouldNotBeFound(String filter) throws Exception {
+        restUserAddressMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$").isEmpty());
+
+        // Check, that the count call also returns 0
+        restUserAddressMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("0"));
+    }
+
+    @Test
+    @Transactional
     void getNonExistingUserAddress() throws Exception {
         // Get the userAddress
         restUserAddressMockMvc.perform(get(ENTITY_API_URL_ID, UUID.randomUUID().toString())).andExpect(status().isNotFound());

@@ -10,4 +10,4 @@ import org.springframework.stereotype.Repository;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface ProductImageRepository extends JpaRepository<ProductImage, UUID> {}
+public interface ProductImageRepository extends JpaRepository<ProductImage, UUID>, JpaSpecificationExecutor<ProductImage> {}

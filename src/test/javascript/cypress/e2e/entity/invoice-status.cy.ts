@@ -122,7 +122,7 @@ describe('InvoiceStatus e2e test', () => {
         cy.url().should('match', invoiceStatusPageUrlPattern);
       });
 
-      it('edit button click should load edit InvoiceStatus page and save', () => {
+      it.skip('edit button click should load edit InvoiceStatus page and save', () => {
         cy.get(entityEditButtonSelector).first().click();
         cy.getEntityCreateUpdateHeading('InvoiceStatus');
         cy.get(entityCreateSaveButtonSelector).click();

@@ -1,7 +1,9 @@
 package com.foursquare.server.web.rest;
 
 import com.foursquare.server.repository.OrderStatusRepository;
+import com.foursquare.server.service.OrderStatusQueryService;
 import com.foursquare.server.service.OrderStatusService;
+import com.foursquare.server.service.criteria.OrderStatusCriteria;
 import com.foursquare.server.service.dto.OrderStatusDTO;
 import com.foursquare.server.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
@@ -37,9 +39,16 @@ public class OrderStatusResource {
 
     private final OrderStatusRepository orderStatusRepository;
 
-    public OrderStatusResource(OrderStatusService orderStatusService, OrderStatusRepository orderStatusRepository) {
+    private final OrderStatusQueryService orderStatusQueryService;
+
+    public OrderStatusResource(
+        OrderStatusService orderStatusService,
+        OrderStatusRepository orderStatusRepository,
+        OrderStatusQueryService orderStatusQueryService
+    ) {
         this.orderStatusService = orderStatusService;
         this.orderStatusRepository = orderStatusRepository;
+        this.orderStatusQueryService = orderStatusQueryService;
     }
 
     /**
@@ -133,12 +142,27 @@ public class OrderStatusResource {
     /**
      * {@code GET  /order-statuses} : get all the orderStatuses.
      *
+     * @param criteria the criteria which the requested entities should match.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of orderStatuses in body.
      */
     @GetMapping("")
-    public List<OrderStatusDTO> getAllOrderStatuses() {
-        log.debug("REST request to get all OrderStatuses");
-        return orderStatusService.findAll();
+    public ResponseEntity<List<OrderStatusDTO>> getAllOrderStatuses(OrderStatusCriteria criteria) {
+        log.debug("REST request to get OrderStatuses by criteria: {}", criteria);
+
+        List<OrderStatusDTO> entityList = orderStatusQueryService.findByCriteria(criteria);
+        return ResponseEntity.ok().body(entityList);
+    }
+
+    /**
+     * {@code GET  /order-statuses/count} : count all the orderStatuses.
+     *
+     * @param criteria the criteria which the requested entities should match.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the count in body.
+     */
+    @GetMapping("/count")
+    public ResponseEntity<Long> countOrderStatuses(OrderStatusCriteria criteria) {
+        log.debug("REST request to count OrderStatuses by criteria: {}", criteria);
+        return ResponseEntity.ok().body(orderStatusQueryService.countByCriteria(criteria));
     }
 
     /**

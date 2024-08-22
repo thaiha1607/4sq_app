@@ -4,11 +4,8 @@ import com.foursquare.server.domain.Message;
 import com.foursquare.server.repository.MessageRepository;
 import com.foursquare.server.service.dto.MessageDTO;
 import com.foursquare.server.service.mapper.MessageMapper;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -79,17 +76,6 @@ public class MessageService {
             })
             .map(messageRepository::save)
             .map(messageMapper::toDto);
-    }
-
-    /**
-     * Get all the messages.
-     *
-     * @return the list of entities.
-     */
-    @Transactional(readOnly = true)
-    public List<MessageDTO> findAll() {
-        log.debug("Request to get all Messages");
-        return messageRepository.findAll().stream().map(messageMapper::toDto).collect(Collectors.toCollection(LinkedList::new));
     }
 
     /**

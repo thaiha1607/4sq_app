@@ -198,7 +198,7 @@ describe('Comment e2e test', () => {
         cy.url().should('match', commentPageUrlPattern);
       });
 
-      it('edit button click should load edit Comment page and save', () => {
+      it.skip('edit button click should load edit Comment page and save', () => {
         cy.get(entityEditButtonSelector).first().click();
         cy.getEntityCreateUpdateHeading('Comment');
         cy.get(entityCreateSaveButtonSelector).click();

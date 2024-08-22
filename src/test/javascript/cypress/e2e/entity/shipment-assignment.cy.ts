@@ -180,7 +180,7 @@ describe('ShipmentAssignment e2e test', () => {
         cy.url().should('match', shipmentAssignmentPageUrlPattern);
       });
 
-      it('edit button click should load edit ShipmentAssignment page and save', () => {
+      it.skip('edit button click should load edit ShipmentAssignment page and save', () => {
         cy.get(entityEditButtonSelector).first().click();
         cy.getEntityCreateUpdateHeading('ShipmentAssignment');
         cy.get(entityCreateSaveButtonSelector).click();

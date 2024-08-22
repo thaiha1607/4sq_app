@@ -1,7 +1,9 @@
 package com.foursquare.server.web.rest;
 
 import com.foursquare.server.repository.UserAddressRepository;
+import com.foursquare.server.service.UserAddressQueryService;
 import com.foursquare.server.service.UserAddressService;
+import com.foursquare.server.service.criteria.UserAddressCriteria;
 import com.foursquare.server.service.dto.UserAddressDTO;
 import com.foursquare.server.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
@@ -38,9 +40,16 @@ public class UserAddressResource {
 
     private final UserAddressRepository userAddressRepository;
 
-    public UserAddressResource(UserAddressService userAddressService, UserAddressRepository userAddressRepository) {
+    private final UserAddressQueryService userAddressQueryService;
+
+    public UserAddressResource(
+        UserAddressService userAddressService,
+        UserAddressRepository userAddressRepository,
+        UserAddressQueryService userAddressQueryService
+    ) {
         this.userAddressService = userAddressService;
         this.userAddressRepository = userAddressRepository;
+        this.userAddressQueryService = userAddressQueryService;
     }
 
     /**
@@ -134,15 +143,27 @@ public class UserAddressResource {
     /**
      * {@code GET  /user-addresses} : get all the userAddresses.
      *
-     * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
+     * @param criteria the criteria which the requested entities should match.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of userAddresses in body.
      */
     @GetMapping("")
-    public List<UserAddressDTO> getAllUserAddresses(
-        @RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload
-    ) {
-        log.debug("REST request to get all UserAddresses");
-        return userAddressService.findAll();
+    public ResponseEntity<List<UserAddressDTO>> getAllUserAddresses(UserAddressCriteria criteria) {
+        log.debug("REST request to get UserAddresses by criteria: {}", criteria);
+
+        List<UserAddressDTO> entityList = userAddressQueryService.findByCriteria(criteria);
+        return ResponseEntity.ok().body(entityList);
+    }
+
+    /**
+     * {@code GET  /user-addresses/count} : count all the userAddresses.
+     *
+     * @param criteria the criteria which the requested entities should match.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the count in body.
+     */
+    @GetMapping("/count")
+    public ResponseEntity<Long> countUserAddresses(UserAddressCriteria criteria) {
+        log.debug("REST request to count UserAddresses by criteria: {}", criteria);
+        return ResponseEntity.ok().body(userAddressQueryService.countByCriteria(criteria));
     }
 
     /**

@@ -62,6 +62,7 @@
       "readonly": true
     }
   ],
+  "jpaMetamodelFiltering": true,
   "name": "WorkingUnit",
   "relationships": [
     {
@@ -71,5 +72,6 @@
       "relationshipType": "many-to-one"
     }
   ],
-  "searchEngine": "no"
+  "searchEngine": "no",
+  "service": "serviceClass"
 }

@@ -1,7 +1,9 @@
 package com.foursquare.server.web.rest;
 
 import com.foursquare.server.repository.ColourRepository;
+import com.foursquare.server.service.ColourQueryService;
 import com.foursquare.server.service.ColourService;
+import com.foursquare.server.service.criteria.ColourCriteria;
 import com.foursquare.server.service.dto.ColourDTO;
 import com.foursquare.server.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
@@ -38,9 +40,12 @@ public class ColourResource {
 
     private final ColourRepository colourRepository;
 
-    public ColourResource(ColourService colourService, ColourRepository colourRepository) {
+    private final ColourQueryService colourQueryService;
+
+    public ColourResource(ColourService colourService, ColourRepository colourRepository, ColourQueryService colourQueryService) {
         this.colourService = colourService;
         this.colourRepository = colourRepository;
+        this.colourQueryService = colourQueryService;
     }
 
     /**
@@ -134,12 +139,27 @@ public class ColourResource {
     /**
      * {@code GET  /colours} : get all the colours.
      *
+     * @param criteria the criteria which the requested entities should match.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of colours in body.
      */
     @GetMapping("")
-    public List<ColourDTO> getAllColours() {
-        log.debug("REST request to get all Colours");
-        return colourService.findAll();
+    public ResponseEntity<List<ColourDTO>> getAllColours(ColourCriteria criteria) {
+        log.debug("REST request to get Colours by criteria: {}", criteria);
+
+        List<ColourDTO> entityList = colourQueryService.findByCriteria(criteria);
+        return ResponseEntity.ok().body(entityList);
+    }
+
+    /**
+     * {@code GET  /colours/count} : count all the colours.
+     *
+     * @param criteria the criteria which the requested entities should match.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the count in body.
+     */
+    @GetMapping("/count")
+    public ResponseEntity<Long> countColours(ColourCriteria criteria) {
+        log.debug("REST request to count Colours by criteria: {}", criteria);
+        return ResponseEntity.ok().body(colourQueryService.countByCriteria(criteria));
     }
 
     /**

@@ -10,4 +10,4 @@ import org.springframework.stereotype.Repository;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface TagRepository extends JpaRepository<Tag, UUID> {}
+public interface TagRepository extends JpaRepository<Tag, UUID>, JpaSpecificationExecutor<Tag> {}

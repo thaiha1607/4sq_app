@@ -70,6 +70,11 @@ export default defineComponent({
       createdDate: {},
       lastModifiedBy: {},
       lastModifiedDate: {},
+      productCategories: {
+        required: validations.required('This field is required.'),
+      },
+      productImages: {},
+      comments: {},
       tags: {},
     };
     const v$ = useVuelidate(validationRules, product as any);

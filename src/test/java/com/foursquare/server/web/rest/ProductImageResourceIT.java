@@ -191,6 +191,161 @@ class ProductImageResourceIT {
 
     @Test
     @Transactional
+    void getProductImagesByIdFiltering() throws Exception {
+        // Initialize the database
+        insertedProductImage = productImageRepository.saveAndFlush(productImage);
+
+        UUID id = productImage.getId();
+
+        defaultProductImageFiltering("id.equals=" + id, "id.notEquals=" + id);
+    }
+
+    @Test
+    @Transactional
+    void getAllProductImagesByImageUriIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedProductImage = productImageRepository.saveAndFlush(productImage);
+
+        // Get all the productImageList where imageUri equals to
+        defaultProductImageFiltering("imageUri.equals=" + DEFAULT_IMAGE_URI, "imageUri.equals=" + UPDATED_IMAGE_URI);
+    }
+
+    @Test
+    @Transactional
+    void getAllProductImagesByImageUriIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedProductImage = productImageRepository.saveAndFlush(productImage);
+
+        // Get all the productImageList where imageUri in
+        defaultProductImageFiltering("imageUri.in=" + DEFAULT_IMAGE_URI + "," + UPDATED_IMAGE_URI, "imageUri.in=" + UPDATED_IMAGE_URI);
+    }
+
+    @Test
+    @Transactional
+    void getAllProductImagesByImageUriIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedProductImage = productImageRepository.saveAndFlush(productImage);
+
+        // Get all the productImageList where imageUri is not null
+        defaultProductImageFiltering("imageUri.specified=true", "imageUri.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllProductImagesByImageUriContainsSomething() throws Exception {
+        // Initialize the database
+        insertedProductImage = productImageRepository.saveAndFlush(productImage);
+
+        // Get all the productImageList where imageUri contains
+        defaultProductImageFiltering("imageUri.contains=" + DEFAULT_IMAGE_URI, "imageUri.contains=" + UPDATED_IMAGE_URI);
+    }
+
+    @Test
+    @Transactional
+    void getAllProductImagesByImageUriNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedProductImage = productImageRepository.saveAndFlush(productImage);
+
+        // Get all the productImageList where imageUri does not contain
+        defaultProductImageFiltering("imageUri.doesNotContain=" + UPDATED_IMAGE_URI, "imageUri.doesNotContain=" + DEFAULT_IMAGE_URI);
+    }
+
+    @Test
+    @Transactional
+    void getAllProductImagesByAltTextIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedProductImage = productImageRepository.saveAndFlush(productImage);
+
+        // Get all the productImageList where altText equals to
+        defaultProductImageFiltering("altText.equals=" + DEFAULT_ALT_TEXT, "altText.equals=" + UPDATED_ALT_TEXT);
+    }
+
+    @Test
+    @Transactional
+    void getAllProductImagesByAltTextIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedProductImage = productImageRepository.saveAndFlush(productImage);
+
+        // Get all the productImageList where altText in
+        defaultProductImageFiltering("altText.in=" + DEFAULT_ALT_TEXT + "," + UPDATED_ALT_TEXT, "altText.in=" + UPDATED_ALT_TEXT);
+    }
+
+    @Test
+    @Transactional
+    void getAllProductImagesByAltTextIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedProductImage = productImageRepository.saveAndFlush(productImage);
+
+        // Get all the productImageList where altText is not null
+        defaultProductImageFiltering("altText.specified=true", "altText.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllProductImagesByAltTextContainsSomething() throws Exception {
+        // Initialize the database
+        insertedProductImage = productImageRepository.saveAndFlush(productImage);
+
+        // Get all the productImageList where altText contains
+        defaultProductImageFiltering("altText.contains=" + DEFAULT_ALT_TEXT, "altText.contains=" + UPDATED_ALT_TEXT);
+    }
+
+    @Test
+    @Transactional
+    void getAllProductImagesByAltTextNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedProductImage = productImageRepository.saveAndFlush(productImage);
+
+        // Get all the productImageList where altText does not contain
+        defaultProductImageFiltering("altText.doesNotContain=" + UPDATED_ALT_TEXT, "altText.doesNotContain=" + DEFAULT_ALT_TEXT);
+    }
+
+    private void defaultProductImageFiltering(String shouldBeFound, String shouldNotBeFound) throws Exception {
+        defaultProductImageShouldBeFound(shouldBeFound);
+        defaultProductImageShouldNotBeFound(shouldNotBeFound);
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is returned.
+     */
+    private void defaultProductImageShouldBeFound(String filter) throws Exception {
+        restProductImageMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(productImage.getId().toString())))
+            .andExpect(jsonPath("$.[*].imageUri").value(hasItem(DEFAULT_IMAGE_URI)))
+            .andExpect(jsonPath("$.[*].altText").value(hasItem(DEFAULT_ALT_TEXT)));
+
+        // Check, that the count call also returns 1
+        restProductImageMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("1"));
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is not returned.
+     */
+    private void defaultProductImageShouldNotBeFound(String filter) throws Exception {
+        restProductImageMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$").isEmpty());
+
+        // Check, that the count call also returns 0
+        restProductImageMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("0"));
+    }
+
+    @Test
+    @Transactional
     void getNonExistingProductImage() throws Exception {
         // Get the productImage
         restProductImageMockMvc.perform(get(ENTITY_API_URL_ID, UUID.randomUUID().toString())).andExpect(status().isNotFound());

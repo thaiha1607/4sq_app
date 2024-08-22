@@ -51,6 +51,7 @@ class InvoiceResourceIT {
 
     private static final BigDecimal DEFAULT_TOTAL_AMOUNT = new BigDecimal(0);
     private static final BigDecimal UPDATED_TOTAL_AMOUNT = new BigDecimal(1);
+    private static final BigDecimal SMALLER_TOTAL_AMOUNT = new BigDecimal(0 - 1);
 
     private static final InvoiceType DEFAULT_TYPE = InvoiceType.PRO_FORMA;
     private static final InvoiceType UPDATED_TYPE = InvoiceType.REGULAR;
@@ -296,6 +297,277 @@ class InvoiceResourceIT {
             .andExpect(jsonPath("$.type").value(DEFAULT_TYPE.toString()))
             .andExpect(jsonPath("$.paymentMethod").value(DEFAULT_PAYMENT_METHOD.toString()))
             .andExpect(jsonPath("$.note").value(DEFAULT_NOTE));
+    }
+
+    @Test
+    @Transactional
+    void getInvoicesByIdFiltering() throws Exception {
+        // Initialize the database
+        insertedInvoice = invoiceRepository.saveAndFlush(invoice);
+
+        UUID id = invoice.getId();
+
+        defaultInvoiceFiltering("id.equals=" + id, "id.notEquals=" + id);
+    }
+
+    @Test
+    @Transactional
+    void getAllInvoicesByTotalAmountIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedInvoice = invoiceRepository.saveAndFlush(invoice);
+
+        // Get all the invoiceList where totalAmount equals to
+        defaultInvoiceFiltering("totalAmount.equals=" + DEFAULT_TOTAL_AMOUNT, "totalAmount.equals=" + UPDATED_TOTAL_AMOUNT);
+    }
+
+    @Test
+    @Transactional
+    void getAllInvoicesByTotalAmountIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedInvoice = invoiceRepository.saveAndFlush(invoice);
+
+        // Get all the invoiceList where totalAmount in
+        defaultInvoiceFiltering(
+            "totalAmount.in=" + DEFAULT_TOTAL_AMOUNT + "," + UPDATED_TOTAL_AMOUNT,
+            "totalAmount.in=" + UPDATED_TOTAL_AMOUNT
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllInvoicesByTotalAmountIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedInvoice = invoiceRepository.saveAndFlush(invoice);
+
+        // Get all the invoiceList where totalAmount is not null
+        defaultInvoiceFiltering("totalAmount.specified=true", "totalAmount.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllInvoicesByTotalAmountIsGreaterThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedInvoice = invoiceRepository.saveAndFlush(invoice);
+
+        // Get all the invoiceList where totalAmount is greater than or equal to
+        defaultInvoiceFiltering(
+            "totalAmount.greaterThanOrEqual=" + DEFAULT_TOTAL_AMOUNT,
+            "totalAmount.greaterThanOrEqual=" + UPDATED_TOTAL_AMOUNT
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllInvoicesByTotalAmountIsLessThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedInvoice = invoiceRepository.saveAndFlush(invoice);
+
+        // Get all the invoiceList where totalAmount is less than or equal to
+        defaultInvoiceFiltering(
+            "totalAmount.lessThanOrEqual=" + DEFAULT_TOTAL_AMOUNT,
+            "totalAmount.lessThanOrEqual=" + SMALLER_TOTAL_AMOUNT
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllInvoicesByTotalAmountIsLessThanSomething() throws Exception {
+        // Initialize the database
+        insertedInvoice = invoiceRepository.saveAndFlush(invoice);
+
+        // Get all the invoiceList where totalAmount is less than
+        defaultInvoiceFiltering("totalAmount.lessThan=" + UPDATED_TOTAL_AMOUNT, "totalAmount.lessThan=" + DEFAULT_TOTAL_AMOUNT);
+    }
+
+    @Test
+    @Transactional
+    void getAllInvoicesByTotalAmountIsGreaterThanSomething() throws Exception {
+        // Initialize the database
+        insertedInvoice = invoiceRepository.saveAndFlush(invoice);
+
+        // Get all the invoiceList where totalAmount is greater than
+        defaultInvoiceFiltering("totalAmount.greaterThan=" + SMALLER_TOTAL_AMOUNT, "totalAmount.greaterThan=" + DEFAULT_TOTAL_AMOUNT);
+    }
+
+    @Test
+    @Transactional
+    void getAllInvoicesByTypeIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedInvoice = invoiceRepository.saveAndFlush(invoice);
+
+        // Get all the invoiceList where type equals to
+        defaultInvoiceFiltering("type.equals=" + DEFAULT_TYPE, "type.equals=" + UPDATED_TYPE);
+    }
+
+    @Test
+    @Transactional
+    void getAllInvoicesByTypeIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedInvoice = invoiceRepository.saveAndFlush(invoice);
+
+        // Get all the invoiceList where type in
+        defaultInvoiceFiltering("type.in=" + DEFAULT_TYPE + "," + UPDATED_TYPE, "type.in=" + UPDATED_TYPE);
+    }
+
+    @Test
+    @Transactional
+    void getAllInvoicesByTypeIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedInvoice = invoiceRepository.saveAndFlush(invoice);
+
+        // Get all the invoiceList where type is not null
+        defaultInvoiceFiltering("type.specified=true", "type.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllInvoicesByPaymentMethodIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedInvoice = invoiceRepository.saveAndFlush(invoice);
+
+        // Get all the invoiceList where paymentMethod equals to
+        defaultInvoiceFiltering("paymentMethod.equals=" + DEFAULT_PAYMENT_METHOD, "paymentMethod.equals=" + UPDATED_PAYMENT_METHOD);
+    }
+
+    @Test
+    @Transactional
+    void getAllInvoicesByPaymentMethodIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedInvoice = invoiceRepository.saveAndFlush(invoice);
+
+        // Get all the invoiceList where paymentMethod in
+        defaultInvoiceFiltering(
+            "paymentMethod.in=" + DEFAULT_PAYMENT_METHOD + "," + UPDATED_PAYMENT_METHOD,
+            "paymentMethod.in=" + UPDATED_PAYMENT_METHOD
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllInvoicesByPaymentMethodIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedInvoice = invoiceRepository.saveAndFlush(invoice);
+
+        // Get all the invoiceList where paymentMethod is not null
+        defaultInvoiceFiltering("paymentMethod.specified=true", "paymentMethod.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllInvoicesByNoteIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedInvoice = invoiceRepository.saveAndFlush(invoice);
+
+        // Get all the invoiceList where note equals to
+        defaultInvoiceFiltering("note.equals=" + DEFAULT_NOTE, "note.equals=" + UPDATED_NOTE);
+    }
+
+    @Test
+    @Transactional
+    void getAllInvoicesByNoteIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedInvoice = invoiceRepository.saveAndFlush(invoice);
+
+        // Get all the invoiceList where note in
+        defaultInvoiceFiltering("note.in=" + DEFAULT_NOTE + "," + UPDATED_NOTE, "note.in=" + UPDATED_NOTE);
+    }
+
+    @Test
+    @Transactional
+    void getAllInvoicesByNoteIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedInvoice = invoiceRepository.saveAndFlush(invoice);
+
+        // Get all the invoiceList where note is not null
+        defaultInvoiceFiltering("note.specified=true", "note.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllInvoicesByNoteContainsSomething() throws Exception {
+        // Initialize the database
+        insertedInvoice = invoiceRepository.saveAndFlush(invoice);
+
+        // Get all the invoiceList where note contains
+        defaultInvoiceFiltering("note.contains=" + DEFAULT_NOTE, "note.contains=" + UPDATED_NOTE);
+    }
+
+    @Test
+    @Transactional
+    void getAllInvoicesByNoteNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedInvoice = invoiceRepository.saveAndFlush(invoice);
+
+        // Get all the invoiceList where note does not contain
+        defaultInvoiceFiltering("note.doesNotContain=" + UPDATED_NOTE, "note.doesNotContain=" + DEFAULT_NOTE);
+    }
+
+    @Test
+    @Transactional
+    void getAllInvoicesByStatusIsEqualToSomething() throws Exception {
+        InvoiceStatus status;
+        if (TestUtil.findAll(em, InvoiceStatus.class).isEmpty()) {
+            invoiceRepository.saveAndFlush(invoice);
+            status = InvoiceStatusResourceIT.createEntity(em);
+        } else {
+            status = TestUtil.findAll(em, InvoiceStatus.class).get(0);
+        }
+        em.persist(status);
+        em.flush();
+        invoice.setStatus(status);
+        invoiceRepository.saveAndFlush(invoice);
+        Long statusId = status.getId();
+        // Get all the invoiceList where status equals to statusId
+        defaultInvoiceShouldBeFound("statusId.equals=" + statusId);
+
+        // Get all the invoiceList where status equals to (statusId + 1)
+        defaultInvoiceShouldNotBeFound("statusId.equals=" + (statusId + 1));
+    }
+
+    private void defaultInvoiceFiltering(String shouldBeFound, String shouldNotBeFound) throws Exception {
+        defaultInvoiceShouldBeFound(shouldBeFound);
+        defaultInvoiceShouldNotBeFound(shouldNotBeFound);
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is returned.
+     */
+    private void defaultInvoiceShouldBeFound(String filter) throws Exception {
+        restInvoiceMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(invoice.getId().toString())))
+            .andExpect(jsonPath("$.[*].totalAmount").value(hasItem(sameNumber(DEFAULT_TOTAL_AMOUNT))))
+            .andExpect(jsonPath("$.[*].type").value(hasItem(DEFAULT_TYPE.toString())))
+            .andExpect(jsonPath("$.[*].paymentMethod").value(hasItem(DEFAULT_PAYMENT_METHOD.toString())))
+            .andExpect(jsonPath("$.[*].note").value(hasItem(DEFAULT_NOTE)));
+
+        // Check, that the count call also returns 1
+        restInvoiceMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("1"));
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is not returned.
+     */
+    private void defaultInvoiceShouldNotBeFound(String filter) throws Exception {
+        restInvoiceMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$").isEmpty());
+
+        // Check, that the count call also returns 0
+        restInvoiceMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("0"));
     }
 
     @Test

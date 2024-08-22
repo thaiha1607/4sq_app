@@ -4,11 +4,8 @@ import com.foursquare.server.domain.ShipmentAssignment;
 import com.foursquare.server.repository.ShipmentAssignmentRepository;
 import com.foursquare.server.service.dto.ShipmentAssignmentDTO;
 import com.foursquare.server.service.mapper.ShipmentAssignmentMapper;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -82,21 +79,6 @@ public class ShipmentAssignmentService {
             })
             .map(shipmentAssignmentRepository::save)
             .map(shipmentAssignmentMapper::toDto);
-    }
-
-    /**
-     * Get all the shipmentAssignments.
-     *
-     * @return the list of entities.
-     */
-    @Transactional(readOnly = true)
-    public List<ShipmentAssignmentDTO> findAll() {
-        log.debug("Request to get all ShipmentAssignments");
-        return shipmentAssignmentRepository
-            .findAll()
-            .stream()
-            .map(shipmentAssignmentMapper::toDto)
-            .collect(Collectors.toCollection(LinkedList::new));
     }
 
     /**

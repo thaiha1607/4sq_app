@@ -4,11 +4,8 @@ import com.foursquare.server.domain.ProductCategory;
 import com.foursquare.server.repository.ProductCategoryRepository;
 import com.foursquare.server.service.dto.ProductCategoryDTO;
 import com.foursquare.server.service.mapper.ProductCategoryMapper;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -79,21 +76,6 @@ public class ProductCategoryService {
             })
             .map(productCategoryRepository::save)
             .map(productCategoryMapper::toDto);
-    }
-
-    /**
-     * Get all the productCategories.
-     *
-     * @return the list of entities.
-     */
-    @Transactional(readOnly = true)
-    public List<ProductCategoryDTO> findAll() {
-        log.debug("Request to get all ProductCategories");
-        return productCategoryRepository
-            .findAll()
-            .stream()
-            .map(productCategoryMapper::toDto)
-            .collect(Collectors.toCollection(LinkedList::new));
     }
 
     /**

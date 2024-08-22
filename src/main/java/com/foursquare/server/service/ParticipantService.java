@@ -4,11 +4,8 @@ import com.foursquare.server.domain.Participant;
 import com.foursquare.server.repository.ParticipantRepository;
 import com.foursquare.server.service.dto.ParticipantDTO;
 import com.foursquare.server.service.mapper.ParticipantMapper;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -79,17 +76,6 @@ public class ParticipantService {
             })
             .map(participantRepository::save)
             .map(participantMapper::toDto);
-    }
-
-    /**
-     * Get all the participants.
-     *
-     * @return the list of entities.
-     */
-    @Transactional(readOnly = true)
-    public List<ParticipantDTO> findAll() {
-        log.debug("Request to get all Participants");
-        return participantRepository.findAll().stream().map(participantMapper::toDto).collect(Collectors.toCollection(LinkedList::new));
     }
 
     /**

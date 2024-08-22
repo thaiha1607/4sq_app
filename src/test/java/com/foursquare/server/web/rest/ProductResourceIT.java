@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foursquare.server.IntegrationTest;
 import com.foursquare.server.domain.Product;
+import com.foursquare.server.domain.Tag;
 import com.foursquare.server.repository.ProductRepository;
 import com.foursquare.server.service.ProductService;
 import com.foursquare.server.service.dto.ProductDTO;
@@ -54,6 +55,7 @@ class ProductResourceIT {
 
     private static final BigDecimal DEFAULT_PRICE = new BigDecimal(0);
     private static final BigDecimal UPDATED_PRICE = new BigDecimal(1);
+    private static final BigDecimal SMALLER_PRICE = new BigDecimal(0 - 1);
 
     private static final String DEFAULT_PROVIDER = "AAAAAAAAAA";
     private static final String UPDATED_PROVIDER = "BBBBBBBBBB";
@@ -248,6 +250,308 @@ class ProductResourceIT {
             .andExpect(jsonPath("$.description").value(DEFAULT_DESCRIPTION))
             .andExpect(jsonPath("$.price").value(sameNumber(DEFAULT_PRICE)))
             .andExpect(jsonPath("$.provider").value(DEFAULT_PROVIDER));
+    }
+
+    @Test
+    @Transactional
+    void getProductsByIdFiltering() throws Exception {
+        // Initialize the database
+        insertedProduct = productRepository.saveAndFlush(product);
+
+        UUID id = product.getId();
+
+        defaultProductFiltering("id.equals=" + id, "id.notEquals=" + id);
+    }
+
+    @Test
+    @Transactional
+    void getAllProductsByNameIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedProduct = productRepository.saveAndFlush(product);
+
+        // Get all the productList where name equals to
+        defaultProductFiltering("name.equals=" + DEFAULT_NAME, "name.equals=" + UPDATED_NAME);
+    }
+
+    @Test
+    @Transactional
+    void getAllProductsByNameIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedProduct = productRepository.saveAndFlush(product);
+
+        // Get all the productList where name in
+        defaultProductFiltering("name.in=" + DEFAULT_NAME + "," + UPDATED_NAME, "name.in=" + UPDATED_NAME);
+    }
+
+    @Test
+    @Transactional
+    void getAllProductsByNameIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedProduct = productRepository.saveAndFlush(product);
+
+        // Get all the productList where name is not null
+        defaultProductFiltering("name.specified=true", "name.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllProductsByNameContainsSomething() throws Exception {
+        // Initialize the database
+        insertedProduct = productRepository.saveAndFlush(product);
+
+        // Get all the productList where name contains
+        defaultProductFiltering("name.contains=" + DEFAULT_NAME, "name.contains=" + UPDATED_NAME);
+    }
+
+    @Test
+    @Transactional
+    void getAllProductsByNameNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedProduct = productRepository.saveAndFlush(product);
+
+        // Get all the productList where name does not contain
+        defaultProductFiltering("name.doesNotContain=" + UPDATED_NAME, "name.doesNotContain=" + DEFAULT_NAME);
+    }
+
+    @Test
+    @Transactional
+    void getAllProductsByDescriptionIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedProduct = productRepository.saveAndFlush(product);
+
+        // Get all the productList where description equals to
+        defaultProductFiltering("description.equals=" + DEFAULT_DESCRIPTION, "description.equals=" + UPDATED_DESCRIPTION);
+    }
+
+    @Test
+    @Transactional
+    void getAllProductsByDescriptionIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedProduct = productRepository.saveAndFlush(product);
+
+        // Get all the productList where description in
+        defaultProductFiltering(
+            "description.in=" + DEFAULT_DESCRIPTION + "," + UPDATED_DESCRIPTION,
+            "description.in=" + UPDATED_DESCRIPTION
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllProductsByDescriptionIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedProduct = productRepository.saveAndFlush(product);
+
+        // Get all the productList where description is not null
+        defaultProductFiltering("description.specified=true", "description.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllProductsByDescriptionContainsSomething() throws Exception {
+        // Initialize the database
+        insertedProduct = productRepository.saveAndFlush(product);
+
+        // Get all the productList where description contains
+        defaultProductFiltering("description.contains=" + DEFAULT_DESCRIPTION, "description.contains=" + UPDATED_DESCRIPTION);
+    }
+
+    @Test
+    @Transactional
+    void getAllProductsByDescriptionNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedProduct = productRepository.saveAndFlush(product);
+
+        // Get all the productList where description does not contain
+        defaultProductFiltering("description.doesNotContain=" + UPDATED_DESCRIPTION, "description.doesNotContain=" + DEFAULT_DESCRIPTION);
+    }
+
+    @Test
+    @Transactional
+    void getAllProductsByPriceIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedProduct = productRepository.saveAndFlush(product);
+
+        // Get all the productList where price equals to
+        defaultProductFiltering("price.equals=" + DEFAULT_PRICE, "price.equals=" + UPDATED_PRICE);
+    }
+
+    @Test
+    @Transactional
+    void getAllProductsByPriceIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedProduct = productRepository.saveAndFlush(product);
+
+        // Get all the productList where price in
+        defaultProductFiltering("price.in=" + DEFAULT_PRICE + "," + UPDATED_PRICE, "price.in=" + UPDATED_PRICE);
+    }
+
+    @Test
+    @Transactional
+    void getAllProductsByPriceIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedProduct = productRepository.saveAndFlush(product);
+
+        // Get all the productList where price is not null
+        defaultProductFiltering("price.specified=true", "price.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllProductsByPriceIsGreaterThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedProduct = productRepository.saveAndFlush(product);
+
+        // Get all the productList where price is greater than or equal to
+        defaultProductFiltering("price.greaterThanOrEqual=" + DEFAULT_PRICE, "price.greaterThanOrEqual=" + UPDATED_PRICE);
+    }
+
+    @Test
+    @Transactional
+    void getAllProductsByPriceIsLessThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedProduct = productRepository.saveAndFlush(product);
+
+        // Get all the productList where price is less than or equal to
+        defaultProductFiltering("price.lessThanOrEqual=" + DEFAULT_PRICE, "price.lessThanOrEqual=" + SMALLER_PRICE);
+    }
+
+    @Test
+    @Transactional
+    void getAllProductsByPriceIsLessThanSomething() throws Exception {
+        // Initialize the database
+        insertedProduct = productRepository.saveAndFlush(product);
+
+        // Get all the productList where price is less than
+        defaultProductFiltering("price.lessThan=" + UPDATED_PRICE, "price.lessThan=" + DEFAULT_PRICE);
+    }
+
+    @Test
+    @Transactional
+    void getAllProductsByPriceIsGreaterThanSomething() throws Exception {
+        // Initialize the database
+        insertedProduct = productRepository.saveAndFlush(product);
+
+        // Get all the productList where price is greater than
+        defaultProductFiltering("price.greaterThan=" + SMALLER_PRICE, "price.greaterThan=" + DEFAULT_PRICE);
+    }
+
+    @Test
+    @Transactional
+    void getAllProductsByProviderIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedProduct = productRepository.saveAndFlush(product);
+
+        // Get all the productList where provider equals to
+        defaultProductFiltering("provider.equals=" + DEFAULT_PROVIDER, "provider.equals=" + UPDATED_PROVIDER);
+    }
+
+    @Test
+    @Transactional
+    void getAllProductsByProviderIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedProduct = productRepository.saveAndFlush(product);
+
+        // Get all the productList where provider in
+        defaultProductFiltering("provider.in=" + DEFAULT_PROVIDER + "," + UPDATED_PROVIDER, "provider.in=" + UPDATED_PROVIDER);
+    }
+
+    @Test
+    @Transactional
+    void getAllProductsByProviderIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedProduct = productRepository.saveAndFlush(product);
+
+        // Get all the productList where provider is not null
+        defaultProductFiltering("provider.specified=true", "provider.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllProductsByProviderContainsSomething() throws Exception {
+        // Initialize the database
+        insertedProduct = productRepository.saveAndFlush(product);
+
+        // Get all the productList where provider contains
+        defaultProductFiltering("provider.contains=" + DEFAULT_PROVIDER, "provider.contains=" + UPDATED_PROVIDER);
+    }
+
+    @Test
+    @Transactional
+    void getAllProductsByProviderNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedProduct = productRepository.saveAndFlush(product);
+
+        // Get all the productList where provider does not contain
+        defaultProductFiltering("provider.doesNotContain=" + UPDATED_PROVIDER, "provider.doesNotContain=" + DEFAULT_PROVIDER);
+    }
+
+    @Test
+    @Transactional
+    void getAllProductsByTagIsEqualToSomething() throws Exception {
+        Tag tag;
+        if (TestUtil.findAll(em, Tag.class).isEmpty()) {
+            productRepository.saveAndFlush(product);
+            tag = TagResourceIT.createEntity(em);
+        } else {
+            tag = TestUtil.findAll(em, Tag.class).get(0);
+        }
+        em.persist(tag);
+        em.flush();
+        product.addTag(tag);
+        productRepository.saveAndFlush(product);
+        UUID tagId = tag.getId();
+        // Get all the productList where tag equals to tagId
+        defaultProductShouldBeFound("tagId.equals=" + tagId);
+
+        // Get all the productList where tag equals to UUID.randomUUID()
+        defaultProductShouldNotBeFound("tagId.equals=" + UUID.randomUUID());
+    }
+
+    private void defaultProductFiltering(String shouldBeFound, String shouldNotBeFound) throws Exception {
+        defaultProductShouldBeFound(shouldBeFound);
+        defaultProductShouldNotBeFound(shouldNotBeFound);
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is returned.
+     */
+    private void defaultProductShouldBeFound(String filter) throws Exception {
+        restProductMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(product.getId().toString())))
+            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
+            .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION)))
+            .andExpect(jsonPath("$.[*].price").value(hasItem(sameNumber(DEFAULT_PRICE))))
+            .andExpect(jsonPath("$.[*].provider").value(hasItem(DEFAULT_PROVIDER)));
+
+        // Check, that the count call also returns 1
+        restProductMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("1"));
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is not returned.
+     */
+    private void defaultProductShouldNotBeFound(String filter) throws Exception {
+        restProductMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$").isEmpty());
+
+        // Check, that the count call also returns 0
+        restProductMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("0"));
     }
 
     @Test

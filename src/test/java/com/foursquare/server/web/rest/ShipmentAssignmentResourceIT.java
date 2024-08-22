@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foursquare.server.IntegrationTest;
 import com.foursquare.server.domain.ShipmentAssignment;
+import com.foursquare.server.domain.User;
 import com.foursquare.server.domain.enumeration.AssignmentStatus;
 import com.foursquare.server.repository.ShipmentAssignmentRepository;
 import com.foursquare.server.repository.UserRepository;
@@ -238,6 +239,220 @@ class ShipmentAssignmentResourceIT {
             .andExpect(jsonPath("$.status").value(DEFAULT_STATUS.toString()))
             .andExpect(jsonPath("$.note").value(DEFAULT_NOTE))
             .andExpect(jsonPath("$.otherInfo").value(DEFAULT_OTHER_INFO));
+    }
+
+    @Test
+    @Transactional
+    void getShipmentAssignmentsByIdFiltering() throws Exception {
+        // Initialize the database
+        insertedShipmentAssignment = shipmentAssignmentRepository.saveAndFlush(shipmentAssignment);
+
+        UUID id = shipmentAssignment.getId();
+
+        defaultShipmentAssignmentFiltering("id.equals=" + id, "id.notEquals=" + id);
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentAssignmentsByStatusIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedShipmentAssignment = shipmentAssignmentRepository.saveAndFlush(shipmentAssignment);
+
+        // Get all the shipmentAssignmentList where status equals to
+        defaultShipmentAssignmentFiltering("status.equals=" + DEFAULT_STATUS, "status.equals=" + UPDATED_STATUS);
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentAssignmentsByStatusIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedShipmentAssignment = shipmentAssignmentRepository.saveAndFlush(shipmentAssignment);
+
+        // Get all the shipmentAssignmentList where status in
+        defaultShipmentAssignmentFiltering("status.in=" + DEFAULT_STATUS + "," + UPDATED_STATUS, "status.in=" + UPDATED_STATUS);
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentAssignmentsByStatusIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedShipmentAssignment = shipmentAssignmentRepository.saveAndFlush(shipmentAssignment);
+
+        // Get all the shipmentAssignmentList where status is not null
+        defaultShipmentAssignmentFiltering("status.specified=true", "status.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentAssignmentsByNoteIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedShipmentAssignment = shipmentAssignmentRepository.saveAndFlush(shipmentAssignment);
+
+        // Get all the shipmentAssignmentList where note equals to
+        defaultShipmentAssignmentFiltering("note.equals=" + DEFAULT_NOTE, "note.equals=" + UPDATED_NOTE);
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentAssignmentsByNoteIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedShipmentAssignment = shipmentAssignmentRepository.saveAndFlush(shipmentAssignment);
+
+        // Get all the shipmentAssignmentList where note in
+        defaultShipmentAssignmentFiltering("note.in=" + DEFAULT_NOTE + "," + UPDATED_NOTE, "note.in=" + UPDATED_NOTE);
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentAssignmentsByNoteIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedShipmentAssignment = shipmentAssignmentRepository.saveAndFlush(shipmentAssignment);
+
+        // Get all the shipmentAssignmentList where note is not null
+        defaultShipmentAssignmentFiltering("note.specified=true", "note.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentAssignmentsByNoteContainsSomething() throws Exception {
+        // Initialize the database
+        insertedShipmentAssignment = shipmentAssignmentRepository.saveAndFlush(shipmentAssignment);
+
+        // Get all the shipmentAssignmentList where note contains
+        defaultShipmentAssignmentFiltering("note.contains=" + DEFAULT_NOTE, "note.contains=" + UPDATED_NOTE);
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentAssignmentsByNoteNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedShipmentAssignment = shipmentAssignmentRepository.saveAndFlush(shipmentAssignment);
+
+        // Get all the shipmentAssignmentList where note does not contain
+        defaultShipmentAssignmentFiltering("note.doesNotContain=" + UPDATED_NOTE, "note.doesNotContain=" + DEFAULT_NOTE);
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentAssignmentsByOtherInfoIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedShipmentAssignment = shipmentAssignmentRepository.saveAndFlush(shipmentAssignment);
+
+        // Get all the shipmentAssignmentList where otherInfo equals to
+        defaultShipmentAssignmentFiltering("otherInfo.equals=" + DEFAULT_OTHER_INFO, "otherInfo.equals=" + UPDATED_OTHER_INFO);
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentAssignmentsByOtherInfoIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedShipmentAssignment = shipmentAssignmentRepository.saveAndFlush(shipmentAssignment);
+
+        // Get all the shipmentAssignmentList where otherInfo in
+        defaultShipmentAssignmentFiltering(
+            "otherInfo.in=" + DEFAULT_OTHER_INFO + "," + UPDATED_OTHER_INFO,
+            "otherInfo.in=" + UPDATED_OTHER_INFO
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentAssignmentsByOtherInfoIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedShipmentAssignment = shipmentAssignmentRepository.saveAndFlush(shipmentAssignment);
+
+        // Get all the shipmentAssignmentList where otherInfo is not null
+        defaultShipmentAssignmentFiltering("otherInfo.specified=true", "otherInfo.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentAssignmentsByOtherInfoContainsSomething() throws Exception {
+        // Initialize the database
+        insertedShipmentAssignment = shipmentAssignmentRepository.saveAndFlush(shipmentAssignment);
+
+        // Get all the shipmentAssignmentList where otherInfo contains
+        defaultShipmentAssignmentFiltering("otherInfo.contains=" + DEFAULT_OTHER_INFO, "otherInfo.contains=" + UPDATED_OTHER_INFO);
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentAssignmentsByOtherInfoNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedShipmentAssignment = shipmentAssignmentRepository.saveAndFlush(shipmentAssignment);
+
+        // Get all the shipmentAssignmentList where otherInfo does not contain
+        defaultShipmentAssignmentFiltering(
+            "otherInfo.doesNotContain=" + UPDATED_OTHER_INFO,
+            "otherInfo.doesNotContain=" + DEFAULT_OTHER_INFO
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentAssignmentsByUserIsEqualToSomething() throws Exception {
+        User user;
+        if (TestUtil.findAll(em, User.class).isEmpty()) {
+            shipmentAssignmentRepository.saveAndFlush(shipmentAssignment);
+            user = UserResourceIT.createEntity(em);
+        } else {
+            user = TestUtil.findAll(em, User.class).get(0);
+        }
+        em.persist(user);
+        em.flush();
+        shipmentAssignment.setUser(user);
+        shipmentAssignmentRepository.saveAndFlush(shipmentAssignment);
+        Long userId = user.getId();
+        // Get all the shipmentAssignmentList where user equals to userId
+        defaultShipmentAssignmentShouldBeFound("userId.equals=" + userId);
+
+        // Get all the shipmentAssignmentList where user equals to (userId + 1)
+        defaultShipmentAssignmentShouldNotBeFound("userId.equals=" + (userId + 1));
+    }
+
+    private void defaultShipmentAssignmentFiltering(String shouldBeFound, String shouldNotBeFound) throws Exception {
+        defaultShipmentAssignmentShouldBeFound(shouldBeFound);
+        defaultShipmentAssignmentShouldNotBeFound(shouldNotBeFound);
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is returned.
+     */
+    private void defaultShipmentAssignmentShouldBeFound(String filter) throws Exception {
+        restShipmentAssignmentMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(shipmentAssignment.getId().toString())))
+            .andExpect(jsonPath("$.[*].status").value(hasItem(DEFAULT_STATUS.toString())))
+            .andExpect(jsonPath("$.[*].note").value(hasItem(DEFAULT_NOTE)))
+            .andExpect(jsonPath("$.[*].otherInfo").value(hasItem(DEFAULT_OTHER_INFO)));
+
+        // Check, that the count call also returns 1
+        restShipmentAssignmentMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("1"));
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is not returned.
+     */
+    private void defaultShipmentAssignmentShouldNotBeFound(String filter) throws Exception {
+        restShipmentAssignmentMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$").isEmpty());
+
+        // Check, that the count call also returns 0
+        restShipmentAssignmentMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("0"));
     }
 
     @Test

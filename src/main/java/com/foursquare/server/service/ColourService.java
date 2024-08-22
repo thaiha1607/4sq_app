@@ -4,11 +4,8 @@ import com.foursquare.server.domain.Colour;
 import com.foursquare.server.repository.ColourRepository;
 import com.foursquare.server.service.dto.ColourDTO;
 import com.foursquare.server.service.mapper.ColourMapper;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -77,17 +74,6 @@ public class ColourService {
             })
             .map(colourRepository::save)
             .map(colourMapper::toDto);
-    }
-
-    /**
-     * Get all the colours.
-     *
-     * @return the list of entities.
-     */
-    @Transactional(readOnly = true)
-    public List<ColourDTO> findAll() {
-        log.debug("Request to get all Colours");
-        return colourRepository.findAll().stream().map(colourMapper::toDto).collect(Collectors.toCollection(LinkedList::new));
     }
 
     /**

@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
  * Spring Data JPA repository for the Comment entity.
  */
 @Repository
-public interface CommentRepository extends JpaRepository<Comment, UUID> {
+public interface CommentRepository extends JpaRepository<Comment, UUID>, JpaSpecificationExecutor<Comment> {
     @Query("select comment from Comment comment where comment.user.login = ?#{authentication.name}")
     List<Comment> findByUserIsCurrentUser();
 

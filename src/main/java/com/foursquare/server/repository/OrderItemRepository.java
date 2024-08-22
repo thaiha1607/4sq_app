@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
  * Spring Data JPA repository for the OrderItem entity.
  */
 @Repository
-public interface OrderItemRepository extends JpaRepository<OrderItem, UUID> {
+public interface OrderItemRepository extends JpaRepository<OrderItem, UUID>, JpaSpecificationExecutor<OrderItem> {
     default Optional<OrderItem> findOneWithEagerRelationships(UUID id) {
         return this.findOneWithToOneRelationships(id);
     }

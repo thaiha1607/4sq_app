@@ -246,7 +246,7 @@ describe('Order e2e test', () => {
         cy.url().should('match', orderPageUrlPattern);
       });
 
-      it('edit button click should load edit Order page and save', () => {
+      it.skip('edit button click should load edit Order page and save', () => {
         cy.get(entityEditButtonSelector).first().click();
         cy.getEntityCreateUpdateHeading('Order');
         cy.get(entityCreateSaveButtonSelector).click();

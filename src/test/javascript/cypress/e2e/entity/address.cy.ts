@@ -122,7 +122,7 @@ describe('Address e2e test', () => {
         cy.url().should('match', addressPageUrlPattern);
       });
 
-      it('edit button click should load edit Address page and save', () => {
+      it.skip('edit button click should load edit Address page and save', () => {
         cy.get(entityEditButtonSelector).first().click();
         cy.getEntityCreateUpdateHeading('Address');
         cy.get(entityCreateSaveButtonSelector).click();

@@ -54,6 +54,7 @@
       "readonly": true
     }
   ],
+  "jpaMetamodelFiltering": true,
   "name": "Participant",
   "relationships": [
     {
@@ -95,5 +96,6 @@
       "relationshipType": "many-to-many"
     }
   ],
-  "searchEngine": "no"
+  "searchEngine": "no",
+  "service": "serviceClass"
 }

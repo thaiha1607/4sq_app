@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foursquare.server.IntegrationTest;
 import com.foursquare.server.domain.Conversation;
+import com.foursquare.server.domain.Message;
 import com.foursquare.server.domain.Participant;
 import com.foursquare.server.domain.User;
 import com.foursquare.server.repository.ParticipantRepository;
@@ -231,6 +232,156 @@ class ParticipantResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(participant.getId().toString()))
             .andExpect(jsonPath("$.isAdmin").value(DEFAULT_IS_ADMIN.booleanValue()));
+    }
+
+    @Test
+    @Transactional
+    void getParticipantsByIdFiltering() throws Exception {
+        // Initialize the database
+        insertedParticipant = participantRepository.saveAndFlush(participant);
+
+        UUID id = participant.getId();
+
+        defaultParticipantFiltering("id.equals=" + id, "id.notEquals=" + id);
+    }
+
+    @Test
+    @Transactional
+    void getAllParticipantsByIsAdminIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedParticipant = participantRepository.saveAndFlush(participant);
+
+        // Get all the participantList where isAdmin equals to
+        defaultParticipantFiltering("isAdmin.equals=" + DEFAULT_IS_ADMIN, "isAdmin.equals=" + UPDATED_IS_ADMIN);
+    }
+
+    @Test
+    @Transactional
+    void getAllParticipantsByIsAdminIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedParticipant = participantRepository.saveAndFlush(participant);
+
+        // Get all the participantList where isAdmin in
+        defaultParticipantFiltering("isAdmin.in=" + DEFAULT_IS_ADMIN + "," + UPDATED_IS_ADMIN, "isAdmin.in=" + UPDATED_IS_ADMIN);
+    }
+
+    @Test
+    @Transactional
+    void getAllParticipantsByIsAdminIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedParticipant = participantRepository.saveAndFlush(participant);
+
+        // Get all the participantList where isAdmin is not null
+        defaultParticipantFiltering("isAdmin.specified=true", "isAdmin.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllParticipantsByUserIsEqualToSomething() throws Exception {
+        User user;
+        if (TestUtil.findAll(em, User.class).isEmpty()) {
+            participantRepository.saveAndFlush(participant);
+            user = UserResourceIT.createEntity(em);
+        } else {
+            user = TestUtil.findAll(em, User.class).get(0);
+        }
+        em.persist(user);
+        em.flush();
+        participant.setUser(user);
+        participantRepository.saveAndFlush(participant);
+        Long userId = user.getId();
+        // Get all the participantList where user equals to userId
+        defaultParticipantShouldBeFound("userId.equals=" + userId);
+
+        // Get all the participantList where user equals to (userId + 1)
+        defaultParticipantShouldNotBeFound("userId.equals=" + (userId + 1));
+    }
+
+    @Test
+    @Transactional
+    void getAllParticipantsByConversationIsEqualToSomething() throws Exception {
+        Conversation conversation;
+        if (TestUtil.findAll(em, Conversation.class).isEmpty()) {
+            participantRepository.saveAndFlush(participant);
+            conversation = ConversationResourceIT.createEntity(em);
+        } else {
+            conversation = TestUtil.findAll(em, Conversation.class).get(0);
+        }
+        em.persist(conversation);
+        em.flush();
+        participant.setConversation(conversation);
+        participantRepository.saveAndFlush(participant);
+        UUID conversationId = conversation.getId();
+        // Get all the participantList where conversation equals to conversationId
+        defaultParticipantShouldBeFound("conversationId.equals=" + conversationId);
+
+        // Get all the participantList where conversation equals to UUID.randomUUID()
+        defaultParticipantShouldNotBeFound("conversationId.equals=" + UUID.randomUUID());
+    }
+
+    @Test
+    @Transactional
+    void getAllParticipantsBySeenMessageIsEqualToSomething() throws Exception {
+        Message seenMessage;
+        if (TestUtil.findAll(em, Message.class).isEmpty()) {
+            participantRepository.saveAndFlush(participant);
+            seenMessage = MessageResourceIT.createEntity(em);
+        } else {
+            seenMessage = TestUtil.findAll(em, Message.class).get(0);
+        }
+        em.persist(seenMessage);
+        em.flush();
+        participant.addSeenMessage(seenMessage);
+        participantRepository.saveAndFlush(participant);
+        UUID seenMessageId = seenMessage.getId();
+        // Get all the participantList where seenMessage equals to seenMessageId
+        defaultParticipantShouldBeFound("seenMessageId.equals=" + seenMessageId);
+
+        // Get all the participantList where seenMessage equals to UUID.randomUUID()
+        defaultParticipantShouldNotBeFound("seenMessageId.equals=" + UUID.randomUUID());
+    }
+
+    private void defaultParticipantFiltering(String shouldBeFound, String shouldNotBeFound) throws Exception {
+        defaultParticipantShouldBeFound(shouldBeFound);
+        defaultParticipantShouldNotBeFound(shouldNotBeFound);
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is returned.
+     */
+    private void defaultParticipantShouldBeFound(String filter) throws Exception {
+        restParticipantMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(participant.getId().toString())))
+            .andExpect(jsonPath("$.[*].isAdmin").value(hasItem(DEFAULT_IS_ADMIN.booleanValue())));
+
+        // Check, that the count call also returns 1
+        restParticipantMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("1"));
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is not returned.
+     */
+    private void defaultParticipantShouldNotBeFound(String filter) throws Exception {
+        restParticipantMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$").isEmpty());
+
+        // Check, that the count call also returns 0
+        restParticipantMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("0"));
     }
 
     @Test

@@ -52,7 +52,9 @@
       "readonly": true
     }
   ],
+  "jpaMetamodelFiltering": true,
   "name": "OrderStatus",
   "relationships": [],
-  "searchEngine": "no"
+  "searchEngine": "no",
+  "service": "serviceClass"
 }

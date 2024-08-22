@@ -1,7 +1,6 @@
 package com.foursquare.server.service;
 
 import com.foursquare.server.service.dto.UserAddressDTO;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
@@ -34,13 +33,6 @@ public interface UserAddressService {
      * @return the persisted entity.
      */
     Optional<UserAddressDTO> partialUpdate(UserAddressDTO userAddressDTO);
-
-    /**
-     * Get all the userAddresses.
-     *
-     * @return the list of entities.
-     */
-    List<UserAddressDTO> findAll();
 
     /**
      * Get all the userAddresses with eager load of many-to-many relationships.

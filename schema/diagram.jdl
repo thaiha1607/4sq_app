@@ -21,7 +21,7 @@ application {
         websocket spring-websocket
     }
     entities *
-    // filter *
+    filter *
 }
 
 @dto(mapstruct)

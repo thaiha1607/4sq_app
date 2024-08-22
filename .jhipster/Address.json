@@ -75,7 +75,9 @@
       "readonly": true
     }
   ],
+  "jpaMetamodelFiltering": true,
   "name": "Address",
   "relationships": [],
-  "searchEngine": "no"
+  "searchEngine": "no",
+  "service": "serviceClass"
 }

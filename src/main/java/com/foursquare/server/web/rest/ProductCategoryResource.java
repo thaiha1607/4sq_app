@@ -1,7 +1,9 @@
 package com.foursquare.server.web.rest;
 
 import com.foursquare.server.repository.ProductCategoryRepository;
+import com.foursquare.server.service.ProductCategoryQueryService;
 import com.foursquare.server.service.ProductCategoryService;
+import com.foursquare.server.service.criteria.ProductCategoryCriteria;
 import com.foursquare.server.service.dto.ProductCategoryDTO;
 import com.foursquare.server.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
@@ -38,9 +40,16 @@ public class ProductCategoryResource {
 
     private final ProductCategoryRepository productCategoryRepository;
 
-    public ProductCategoryResource(ProductCategoryService productCategoryService, ProductCategoryRepository productCategoryRepository) {
+    private final ProductCategoryQueryService productCategoryQueryService;
+
+    public ProductCategoryResource(
+        ProductCategoryService productCategoryService,
+        ProductCategoryRepository productCategoryRepository,
+        ProductCategoryQueryService productCategoryQueryService
+    ) {
         this.productCategoryService = productCategoryService;
         this.productCategoryRepository = productCategoryRepository;
+        this.productCategoryQueryService = productCategoryQueryService;
     }
 
     /**
@@ -135,15 +144,27 @@ public class ProductCategoryResource {
     /**
      * {@code GET  /product-categories} : get all the productCategories.
      *
-     * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
+     * @param criteria the criteria which the requested entities should match.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of productCategories in body.
      */
     @GetMapping("")
-    public List<ProductCategoryDTO> getAllProductCategories(
-        @RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload
-    ) {
-        log.debug("REST request to get all ProductCategories");
-        return productCategoryService.findAll();
+    public ResponseEntity<List<ProductCategoryDTO>> getAllProductCategories(ProductCategoryCriteria criteria) {
+        log.debug("REST request to get ProductCategories by criteria: {}", criteria);
+
+        List<ProductCategoryDTO> entityList = productCategoryQueryService.findByCriteria(criteria);
+        return ResponseEntity.ok().body(entityList);
+    }
+
+    /**
+     * {@code GET  /product-categories/count} : count all the productCategories.
+     *
+     * @param criteria the criteria which the requested entities should match.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the count in body.
+     */
+    @GetMapping("/count")
+    public ResponseEntity<Long> countProductCategories(ProductCategoryCriteria criteria) {
+        log.debug("REST request to count ProductCategories by criteria: {}", criteria);
+        return ResponseEntity.ok().body(productCategoryQueryService.countByCriteria(criteria));
     }
 
     /**

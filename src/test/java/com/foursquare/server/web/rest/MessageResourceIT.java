@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foursquare.server.IntegrationTest;
 import com.foursquare.server.domain.Message;
+import com.foursquare.server.domain.Participant;
 import com.foursquare.server.domain.enumeration.MessageType;
 import com.foursquare.server.repository.MessageRepository;
 import com.foursquare.server.service.MessageService;
@@ -235,6 +236,185 @@ class MessageResourceIT {
             .andExpect(jsonPath("$.id").value(message.getId().toString()))
             .andExpect(jsonPath("$.type").value(DEFAULT_TYPE.toString()))
             .andExpect(jsonPath("$.content").value(DEFAULT_CONTENT));
+    }
+
+    @Test
+    @Transactional
+    void getMessagesByIdFiltering() throws Exception {
+        // Initialize the database
+        insertedMessage = messageRepository.saveAndFlush(message);
+
+        UUID id = message.getId();
+
+        defaultMessageFiltering("id.equals=" + id, "id.notEquals=" + id);
+    }
+
+    @Test
+    @Transactional
+    void getAllMessagesByTypeIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedMessage = messageRepository.saveAndFlush(message);
+
+        // Get all the messageList where type equals to
+        defaultMessageFiltering("type.equals=" + DEFAULT_TYPE, "type.equals=" + UPDATED_TYPE);
+    }
+
+    @Test
+    @Transactional
+    void getAllMessagesByTypeIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedMessage = messageRepository.saveAndFlush(message);
+
+        // Get all the messageList where type in
+        defaultMessageFiltering("type.in=" + DEFAULT_TYPE + "," + UPDATED_TYPE, "type.in=" + UPDATED_TYPE);
+    }
+
+    @Test
+    @Transactional
+    void getAllMessagesByTypeIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedMessage = messageRepository.saveAndFlush(message);
+
+        // Get all the messageList where type is not null
+        defaultMessageFiltering("type.specified=true", "type.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllMessagesByContentIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedMessage = messageRepository.saveAndFlush(message);
+
+        // Get all the messageList where content equals to
+        defaultMessageFiltering("content.equals=" + DEFAULT_CONTENT, "content.equals=" + UPDATED_CONTENT);
+    }
+
+    @Test
+    @Transactional
+    void getAllMessagesByContentIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedMessage = messageRepository.saveAndFlush(message);
+
+        // Get all the messageList where content in
+        defaultMessageFiltering("content.in=" + DEFAULT_CONTENT + "," + UPDATED_CONTENT, "content.in=" + UPDATED_CONTENT);
+    }
+
+    @Test
+    @Transactional
+    void getAllMessagesByContentIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedMessage = messageRepository.saveAndFlush(message);
+
+        // Get all the messageList where content is not null
+        defaultMessageFiltering("content.specified=true", "content.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllMessagesByContentContainsSomething() throws Exception {
+        // Initialize the database
+        insertedMessage = messageRepository.saveAndFlush(message);
+
+        // Get all the messageList where content contains
+        defaultMessageFiltering("content.contains=" + DEFAULT_CONTENT, "content.contains=" + UPDATED_CONTENT);
+    }
+
+    @Test
+    @Transactional
+    void getAllMessagesByContentNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedMessage = messageRepository.saveAndFlush(message);
+
+        // Get all the messageList where content does not contain
+        defaultMessageFiltering("content.doesNotContain=" + UPDATED_CONTENT, "content.doesNotContain=" + DEFAULT_CONTENT);
+    }
+
+    @Test
+    @Transactional
+    void getAllMessagesByParticipantIsEqualToSomething() throws Exception {
+        Participant participant;
+        if (TestUtil.findAll(em, Participant.class).isEmpty()) {
+            messageRepository.saveAndFlush(message);
+            participant = ParticipantResourceIT.createEntity(em);
+        } else {
+            participant = TestUtil.findAll(em, Participant.class).get(0);
+        }
+        em.persist(participant);
+        em.flush();
+        message.setParticipant(participant);
+        messageRepository.saveAndFlush(message);
+        UUID participantId = participant.getId();
+        // Get all the messageList where participant equals to participantId
+        defaultMessageShouldBeFound("participantId.equals=" + participantId);
+
+        // Get all the messageList where participant equals to UUID.randomUUID()
+        defaultMessageShouldNotBeFound("participantId.equals=" + UUID.randomUUID());
+    }
+
+    @Test
+    @Transactional
+    void getAllMessagesBySeenParticipantIsEqualToSomething() throws Exception {
+        Participant seenParticipant;
+        if (TestUtil.findAll(em, Participant.class).isEmpty()) {
+            messageRepository.saveAndFlush(message);
+            seenParticipant = ParticipantResourceIT.createEntity(em);
+        } else {
+            seenParticipant = TestUtil.findAll(em, Participant.class).get(0);
+        }
+        em.persist(seenParticipant);
+        em.flush();
+        message.addSeenParticipant(seenParticipant);
+        messageRepository.saveAndFlush(message);
+        UUID seenParticipantId = seenParticipant.getId();
+        // Get all the messageList where seenParticipant equals to seenParticipantId
+        defaultMessageShouldBeFound("seenParticipantId.equals=" + seenParticipantId);
+
+        // Get all the messageList where seenParticipant equals to UUID.randomUUID()
+        defaultMessageShouldNotBeFound("seenParticipantId.equals=" + UUID.randomUUID());
+    }
+
+    private void defaultMessageFiltering(String shouldBeFound, String shouldNotBeFound) throws Exception {
+        defaultMessageShouldBeFound(shouldBeFound);
+        defaultMessageShouldNotBeFound(shouldNotBeFound);
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is returned.
+     */
+    private void defaultMessageShouldBeFound(String filter) throws Exception {
+        restMessageMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(message.getId().toString())))
+            .andExpect(jsonPath("$.[*].type").value(hasItem(DEFAULT_TYPE.toString())))
+            .andExpect(jsonPath("$.[*].content").value(hasItem(DEFAULT_CONTENT)));
+
+        // Check, that the count call also returns 1
+        restMessageMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("1"));
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is not returned.
+     */
+    private void defaultMessageShouldNotBeFound(String filter) throws Exception {
+        restMessageMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$").isEmpty());
+
+        // Check, that the count call also returns 0
+        restMessageMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("0"));
     }
 
     @Test

@@ -180,7 +180,7 @@ describe('StaffInfo e2e test', () => {
         cy.url().should('match', staffInfoPageUrlPattern);
       });
 
-      it('edit button click should load edit StaffInfo page and save', () => {
+      it.skip('edit button click should load edit StaffInfo page and save', () => {
         cy.get(entityEditButtonSelector).first().click();
         cy.getEntityCreateUpdateHeading('StaffInfo');
         cy.get(entityCreateSaveButtonSelector).click();

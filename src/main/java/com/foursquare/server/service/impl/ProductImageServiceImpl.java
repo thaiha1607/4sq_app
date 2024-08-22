@@ -5,11 +5,8 @@ import com.foursquare.server.repository.ProductImageRepository;
 import com.foursquare.server.service.ProductImageService;
 import com.foursquare.server.service.dto.ProductImageDTO;
 import com.foursquare.server.service.mapper.ProductImageMapper;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -63,13 +60,6 @@ public class ProductImageServiceImpl implements ProductImageService {
             })
             .map(productImageRepository::save)
             .map(productImageMapper::toDto);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<ProductImageDTO> findAll() {
-        log.debug("Request to get all ProductImages");
-        return productImageRepository.findAll().stream().map(productImageMapper::toDto).collect(Collectors.toCollection(LinkedList::new));
     }
 
     @Override

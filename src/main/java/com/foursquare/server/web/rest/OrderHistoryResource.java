@@ -1,7 +1,9 @@
 package com.foursquare.server.web.rest;
 
 import com.foursquare.server.repository.OrderHistoryRepository;
+import com.foursquare.server.service.OrderHistoryQueryService;
 import com.foursquare.server.service.OrderHistoryService;
+import com.foursquare.server.service.criteria.OrderHistoryCriteria;
 import com.foursquare.server.service.dto.OrderHistoryDTO;
 import com.foursquare.server.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
@@ -38,9 +40,16 @@ public class OrderHistoryResource {
 
     private final OrderHistoryRepository orderHistoryRepository;
 
-    public OrderHistoryResource(OrderHistoryService orderHistoryService, OrderHistoryRepository orderHistoryRepository) {
+    private final OrderHistoryQueryService orderHistoryQueryService;
+
+    public OrderHistoryResource(
+        OrderHistoryService orderHistoryService,
+        OrderHistoryRepository orderHistoryRepository,
+        OrderHistoryQueryService orderHistoryQueryService
+    ) {
         this.orderHistoryService = orderHistoryService;
         this.orderHistoryRepository = orderHistoryRepository;
+        this.orderHistoryQueryService = orderHistoryQueryService;
     }
 
     /**
@@ -135,15 +144,27 @@ public class OrderHistoryResource {
     /**
      * {@code GET  /order-histories} : get all the orderHistories.
      *
-     * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
+     * @param criteria the criteria which the requested entities should match.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of orderHistories in body.
      */
     @GetMapping("")
-    public List<OrderHistoryDTO> getAllOrderHistories(
-        @RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload
-    ) {
-        log.debug("REST request to get all OrderHistories");
-        return orderHistoryService.findAll();
+    public ResponseEntity<List<OrderHistoryDTO>> getAllOrderHistories(OrderHistoryCriteria criteria) {
+        log.debug("REST request to get OrderHistories by criteria: {}", criteria);
+
+        List<OrderHistoryDTO> entityList = orderHistoryQueryService.findByCriteria(criteria);
+        return ResponseEntity.ok().body(entityList);
+    }
+
+    /**
+     * {@code GET  /order-histories/count} : count all the orderHistories.
+     *
+     * @param criteria the criteria which the requested entities should match.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the count in body.
+     */
+    @GetMapping("/count")
+    public ResponseEntity<Long> countOrderHistories(OrderHistoryCriteria criteria) {
+        log.debug("REST request to count OrderHistories by criteria: {}", criteria);
+        return ResponseEntity.ok().body(orderHistoryQueryService.countByCriteria(criteria));
     }
 
     /**

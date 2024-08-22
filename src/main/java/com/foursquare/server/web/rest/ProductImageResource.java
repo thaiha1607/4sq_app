@@ -1,7 +1,9 @@
 package com.foursquare.server.web.rest;
 
 import com.foursquare.server.repository.ProductImageRepository;
+import com.foursquare.server.service.ProductImageQueryService;
 import com.foursquare.server.service.ProductImageService;
+import com.foursquare.server.service.criteria.ProductImageCriteria;
 import com.foursquare.server.service.dto.ProductImageDTO;
 import com.foursquare.server.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
@@ -38,9 +40,16 @@ public class ProductImageResource {
 
     private final ProductImageRepository productImageRepository;
 
-    public ProductImageResource(ProductImageService productImageService, ProductImageRepository productImageRepository) {
+    private final ProductImageQueryService productImageQueryService;
+
+    public ProductImageResource(
+        ProductImageService productImageService,
+        ProductImageRepository productImageRepository,
+        ProductImageQueryService productImageQueryService
+    ) {
         this.productImageService = productImageService;
         this.productImageRepository = productImageRepository;
+        this.productImageQueryService = productImageQueryService;
     }
 
     /**
@@ -135,12 +144,27 @@ public class ProductImageResource {
     /**
      * {@code GET  /product-images} : get all the productImages.
      *
+     * @param criteria the criteria which the requested entities should match.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of productImages in body.
      */
     @GetMapping("")
-    public List<ProductImageDTO> getAllProductImages() {
-        log.debug("REST request to get all ProductImages");
-        return productImageService.findAll();
+    public ResponseEntity<List<ProductImageDTO>> getAllProductImages(ProductImageCriteria criteria) {
+        log.debug("REST request to get ProductImages by criteria: {}", criteria);
+
+        List<ProductImageDTO> entityList = productImageQueryService.findByCriteria(criteria);
+        return ResponseEntity.ok().body(entityList);
+    }
+
+    /**
+     * {@code GET  /product-images/count} : count all the productImages.
+     *
+     * @param criteria the criteria which the requested entities should match.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the count in body.
+     */
+    @GetMapping("/count")
+    public ResponseEntity<Long> countProductImages(ProductImageCriteria criteria) {
+        log.debug("REST request to count ProductImages by criteria: {}", criteria);
+        return ResponseEntity.ok().body(productImageQueryService.countByCriteria(criteria));
     }
 
     /**

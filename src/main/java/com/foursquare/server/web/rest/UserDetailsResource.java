@@ -1,7 +1,9 @@
 package com.foursquare.server.web.rest;
 
 import com.foursquare.server.repository.UserDetailsRepository;
+import com.foursquare.server.service.UserDetailsQueryService;
 import com.foursquare.server.service.UserDetailsService;
+import com.foursquare.server.service.criteria.UserDetailsCriteria;
 import com.foursquare.server.service.dto.UserDetailsDTO;
 import com.foursquare.server.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
@@ -37,9 +39,16 @@ public class UserDetailsResource {
 
     private final UserDetailsRepository userDetailsRepository;
 
-    public UserDetailsResource(UserDetailsService userDetailsService, UserDetailsRepository userDetailsRepository) {
+    private final UserDetailsQueryService userDetailsQueryService;
+
+    public UserDetailsResource(
+        UserDetailsService userDetailsService,
+        UserDetailsRepository userDetailsRepository,
+        UserDetailsQueryService userDetailsQueryService
+    ) {
         this.userDetailsService = userDetailsService;
         this.userDetailsRepository = userDetailsRepository;
+        this.userDetailsQueryService = userDetailsQueryService;
     }
 
     /**
@@ -133,15 +142,27 @@ public class UserDetailsResource {
     /**
      * {@code GET  /user-details} : get all the userDetails.
      *
-     * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
+     * @param criteria the criteria which the requested entities should match.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of userDetails in body.
      */
     @GetMapping("")
-    public List<UserDetailsDTO> getAllUserDetails(
-        @RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload
-    ) {
-        log.debug("REST request to get all UserDetails");
-        return userDetailsService.findAll();
+    public ResponseEntity<List<UserDetailsDTO>> getAllUserDetails(UserDetailsCriteria criteria) {
+        log.debug("REST request to get UserDetails by criteria: {}", criteria);
+
+        List<UserDetailsDTO> entityList = userDetailsQueryService.findByCriteria(criteria);
+        return ResponseEntity.ok().body(entityList);
+    }
+
+    /**
+     * {@code GET  /user-details/count} : count all the userDetails.
+     *
+     * @param criteria the criteria which the requested entities should match.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the count in body.
+     */
+    @GetMapping("/count")
+    public ResponseEntity<Long> countUserDetails(UserDetailsCriteria criteria) {
+        log.debug("REST request to count UserDetails by criteria: {}", criteria);
+        return ResponseEntity.ok().body(userDetailsQueryService.countByCriteria(criteria));
     }
 
     /**

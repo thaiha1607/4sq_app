@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
  * Spring Data JPA repository for the OrderHistory entity.
  */
 @Repository
-public interface OrderHistoryRepository extends JpaRepository<OrderHistory, UUID> {
+public interface OrderHistoryRepository extends JpaRepository<OrderHistory, UUID>, JpaSpecificationExecutor<OrderHistory> {
     default Optional<OrderHistory> findOneWithEagerRelationships(UUID id) {
         return this.findOneWithToOneRelationships(id);
     }

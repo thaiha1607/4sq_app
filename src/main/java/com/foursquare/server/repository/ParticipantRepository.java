@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
  * Spring Data JPA repository for the Participant entity.
  */
 @Repository
-public interface ParticipantRepository extends JpaRepository<Participant, UUID> {
+public interface ParticipantRepository extends JpaRepository<Participant, UUID>, JpaSpecificationExecutor<Participant> {
     @Query("select participant from Participant participant where participant.user.login = ?#{authentication.name}")
     List<Participant> findByUserIsCurrentUser();
 

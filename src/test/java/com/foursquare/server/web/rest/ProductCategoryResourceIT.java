@@ -222,6 +222,132 @@ class ProductCategoryResourceIT {
 
     @Test
     @Transactional
+    void getProductCategoriesByIdFiltering() throws Exception {
+        // Initialize the database
+        insertedProductCategory = productCategoryRepository.saveAndFlush(productCategory);
+
+        UUID id = productCategory.getId();
+
+        defaultProductCategoryFiltering("id.equals=" + id, "id.notEquals=" + id);
+    }
+
+    @Test
+    @Transactional
+    void getAllProductCategoriesByNameIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedProductCategory = productCategoryRepository.saveAndFlush(productCategory);
+
+        // Get all the productCategoryList where name equals to
+        defaultProductCategoryFiltering("name.equals=" + DEFAULT_NAME, "name.equals=" + UPDATED_NAME);
+    }
+
+    @Test
+    @Transactional
+    void getAllProductCategoriesByNameIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedProductCategory = productCategoryRepository.saveAndFlush(productCategory);
+
+        // Get all the productCategoryList where name in
+        defaultProductCategoryFiltering("name.in=" + DEFAULT_NAME + "," + UPDATED_NAME, "name.in=" + UPDATED_NAME);
+    }
+
+    @Test
+    @Transactional
+    void getAllProductCategoriesByNameIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedProductCategory = productCategoryRepository.saveAndFlush(productCategory);
+
+        // Get all the productCategoryList where name is not null
+        defaultProductCategoryFiltering("name.specified=true", "name.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllProductCategoriesByNameContainsSomething() throws Exception {
+        // Initialize the database
+        insertedProductCategory = productCategoryRepository.saveAndFlush(productCategory);
+
+        // Get all the productCategoryList where name contains
+        defaultProductCategoryFiltering("name.contains=" + DEFAULT_NAME, "name.contains=" + UPDATED_NAME);
+    }
+
+    @Test
+    @Transactional
+    void getAllProductCategoriesByNameNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedProductCategory = productCategoryRepository.saveAndFlush(productCategory);
+
+        // Get all the productCategoryList where name does not contain
+        defaultProductCategoryFiltering("name.doesNotContain=" + UPDATED_NAME, "name.doesNotContain=" + DEFAULT_NAME);
+    }
+
+    @Test
+    @Transactional
+    void getAllProductCategoriesByColourIsEqualToSomething() throws Exception {
+        Colour colour;
+        if (TestUtil.findAll(em, Colour.class).isEmpty()) {
+            productCategoryRepository.saveAndFlush(productCategory);
+            colour = ColourResourceIT.createEntity(em);
+        } else {
+            colour = TestUtil.findAll(em, Colour.class).get(0);
+        }
+        em.persist(colour);
+        em.flush();
+        productCategory.setColour(colour);
+        productCategoryRepository.saveAndFlush(productCategory);
+        UUID colourId = colour.getId();
+        // Get all the productCategoryList where colour equals to colourId
+        defaultProductCategoryShouldBeFound("colourId.equals=" + colourId);
+
+        // Get all the productCategoryList where colour equals to UUID.randomUUID()
+        defaultProductCategoryShouldNotBeFound("colourId.equals=" + UUID.randomUUID());
+    }
+
+    private void defaultProductCategoryFiltering(String shouldBeFound, String shouldNotBeFound) throws Exception {
+        defaultProductCategoryShouldBeFound(shouldBeFound);
+        defaultProductCategoryShouldNotBeFound(shouldNotBeFound);
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is returned.
+     */
+    private void defaultProductCategoryShouldBeFound(String filter) throws Exception {
+        restProductCategoryMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(productCategory.getId().toString())))
+            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)));
+
+        // Check, that the count call also returns 1
+        restProductCategoryMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("1"));
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is not returned.
+     */
+    private void defaultProductCategoryShouldNotBeFound(String filter) throws Exception {
+        restProductCategoryMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$").isEmpty());
+
+        // Check, that the count call also returns 0
+        restProductCategoryMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("0"));
+    }
+
+    @Test
+    @Transactional
     void getNonExistingProductCategory() throws Exception {
         // Get the productCategory
         restProductCategoryMockMvc.perform(get(ENTITY_API_URL_ID, UUID.randomUUID().toString())).andExpect(status().isNotFound());

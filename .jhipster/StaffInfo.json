@@ -49,6 +49,7 @@
       "readonly": true
     }
   ],
+  "jpaMetamodelFiltering": true,
   "name": "StaffInfo",
   "relationships": [
     {
@@ -74,5 +75,6 @@
       "relationshipType": "many-to-one"
     }
   ],
-  "searchEngine": "no"
+  "searchEngine": "no",
+  "service": "serviceClass"
 }

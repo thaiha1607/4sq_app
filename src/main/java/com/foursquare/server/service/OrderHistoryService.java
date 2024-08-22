@@ -4,11 +4,8 @@ import com.foursquare.server.domain.OrderHistory;
 import com.foursquare.server.repository.OrderHistoryRepository;
 import com.foursquare.server.service.dto.OrderHistoryDTO;
 import com.foursquare.server.service.mapper.OrderHistoryMapper;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -79,17 +76,6 @@ public class OrderHistoryService {
             })
             .map(orderHistoryRepository::save)
             .map(orderHistoryMapper::toDto);
-    }
-
-    /**
-     * Get all the orderHistories.
-     *
-     * @return the list of entities.
-     */
-    @Transactional(readOnly = true)
-    public List<OrderHistoryDTO> findAll() {
-        log.debug("Request to get all OrderHistories");
-        return orderHistoryRepository.findAll().stream().map(orderHistoryMapper::toDto).collect(Collectors.toCollection(LinkedList::new));
     }
 
     /**

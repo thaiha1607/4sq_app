@@ -1,7 +1,9 @@
 package com.foursquare.server.web.rest;
 
 import com.foursquare.server.repository.InvoiceStatusRepository;
+import com.foursquare.server.service.InvoiceStatusQueryService;
 import com.foursquare.server.service.InvoiceStatusService;
+import com.foursquare.server.service.criteria.InvoiceStatusCriteria;
 import com.foursquare.server.service.dto.InvoiceStatusDTO;
 import com.foursquare.server.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
@@ -37,9 +39,16 @@ public class InvoiceStatusResource {
 
     private final InvoiceStatusRepository invoiceStatusRepository;
 
-    public InvoiceStatusResource(InvoiceStatusService invoiceStatusService, InvoiceStatusRepository invoiceStatusRepository) {
+    private final InvoiceStatusQueryService invoiceStatusQueryService;
+
+    public InvoiceStatusResource(
+        InvoiceStatusService invoiceStatusService,
+        InvoiceStatusRepository invoiceStatusRepository,
+        InvoiceStatusQueryService invoiceStatusQueryService
+    ) {
         this.invoiceStatusService = invoiceStatusService;
         this.invoiceStatusRepository = invoiceStatusRepository;
+        this.invoiceStatusQueryService = invoiceStatusQueryService;
     }
 
     /**
@@ -134,12 +143,27 @@ public class InvoiceStatusResource {
     /**
      * {@code GET  /invoice-statuses} : get all the invoiceStatuses.
      *
+     * @param criteria the criteria which the requested entities should match.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of invoiceStatuses in body.
      */
     @GetMapping("")
-    public List<InvoiceStatusDTO> getAllInvoiceStatuses() {
-        log.debug("REST request to get all InvoiceStatuses");
-        return invoiceStatusService.findAll();
+    public ResponseEntity<List<InvoiceStatusDTO>> getAllInvoiceStatuses(InvoiceStatusCriteria criteria) {
+        log.debug("REST request to get InvoiceStatuses by criteria: {}", criteria);
+
+        List<InvoiceStatusDTO> entityList = invoiceStatusQueryService.findByCriteria(criteria);
+        return ResponseEntity.ok().body(entityList);
+    }
+
+    /**
+     * {@code GET  /invoice-statuses/count} : count all the invoiceStatuses.
+     *
+     * @param criteria the criteria which the requested entities should match.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the count in body.
+     */
+    @GetMapping("/count")
+    public ResponseEntity<Long> countInvoiceStatuses(InvoiceStatusCriteria criteria) {
+        log.debug("REST request to count InvoiceStatuses by criteria: {}", criteria);
+        return ResponseEntity.ok().body(invoiceStatusQueryService.countByCriteria(criteria));
     }
 
     /**

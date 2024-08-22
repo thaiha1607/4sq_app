@@ -52,7 +52,9 @@
       "readonly": true
     }
   ],
+  "jpaMetamodelFiltering": true,
   "name": "InvoiceStatus",
   "relationships": [],
-  "searchEngine": "no"
+  "searchEngine": "no",
+  "service": "serviceClass"
 }

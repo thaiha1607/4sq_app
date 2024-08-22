@@ -100,6 +100,13 @@ export default defineComponent({
       createdDate: {},
       lastModifiedBy: {},
       lastModifiedDate: {},
+      invoices: {},
+      orderItems: {
+        required: validations.required('This field is required.'),
+      },
+      childOrders: {},
+      shipments: {},
+      histories: {},
       customer: {
         required: validations.required('This field is required.'),
       },

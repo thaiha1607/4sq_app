@@ -48,12 +48,15 @@ class OrderItemResourceIT {
 
     private static final Integer DEFAULT_ORDERED_QTY = 0;
     private static final Integer UPDATED_ORDERED_QTY = 1;
+    private static final Integer SMALLER_ORDERED_QTY = 0 - 1;
 
     private static final Integer DEFAULT_RECEIVED_QTY = 0;
     private static final Integer UPDATED_RECEIVED_QTY = 1;
+    private static final Integer SMALLER_RECEIVED_QTY = 0 - 1;
 
     private static final BigDecimal DEFAULT_UNIT_PRICE = new BigDecimal(0);
     private static final BigDecimal UPDATED_UNIT_PRICE = new BigDecimal(1);
+    private static final BigDecimal SMALLER_UNIT_PRICE = new BigDecimal(0 - 1);
 
     private static final String DEFAULT_NOTE = "AAAAAAAAAA";
     private static final String UPDATED_NOTE = "BBBBBBBBBB";
@@ -273,6 +276,341 @@ class OrderItemResourceIT {
             .andExpect(jsonPath("$.receivedQty").value(DEFAULT_RECEIVED_QTY))
             .andExpect(jsonPath("$.unitPrice").value(sameNumber(DEFAULT_UNIT_PRICE)))
             .andExpect(jsonPath("$.note").value(DEFAULT_NOTE));
+    }
+
+    @Test
+    @Transactional
+    void getOrderItemsByIdFiltering() throws Exception {
+        // Initialize the database
+        insertedOrderItem = orderItemRepository.saveAndFlush(orderItem);
+
+        UUID id = orderItem.getId();
+
+        defaultOrderItemFiltering("id.equals=" + id, "id.notEquals=" + id);
+    }
+
+    @Test
+    @Transactional
+    void getAllOrderItemsByOrderedQtyIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedOrderItem = orderItemRepository.saveAndFlush(orderItem);
+
+        // Get all the orderItemList where orderedQty equals to
+        defaultOrderItemFiltering("orderedQty.equals=" + DEFAULT_ORDERED_QTY, "orderedQty.equals=" + UPDATED_ORDERED_QTY);
+    }
+
+    @Test
+    @Transactional
+    void getAllOrderItemsByOrderedQtyIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedOrderItem = orderItemRepository.saveAndFlush(orderItem);
+
+        // Get all the orderItemList where orderedQty in
+        defaultOrderItemFiltering(
+            "orderedQty.in=" + DEFAULT_ORDERED_QTY + "," + UPDATED_ORDERED_QTY,
+            "orderedQty.in=" + UPDATED_ORDERED_QTY
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllOrderItemsByOrderedQtyIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedOrderItem = orderItemRepository.saveAndFlush(orderItem);
+
+        // Get all the orderItemList where orderedQty is not null
+        defaultOrderItemFiltering("orderedQty.specified=true", "orderedQty.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllOrderItemsByOrderedQtyIsGreaterThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedOrderItem = orderItemRepository.saveAndFlush(orderItem);
+
+        // Get all the orderItemList where orderedQty is greater than or equal to
+        defaultOrderItemFiltering(
+            "orderedQty.greaterThanOrEqual=" + DEFAULT_ORDERED_QTY,
+            "orderedQty.greaterThanOrEqual=" + UPDATED_ORDERED_QTY
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllOrderItemsByOrderedQtyIsLessThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedOrderItem = orderItemRepository.saveAndFlush(orderItem);
+
+        // Get all the orderItemList where orderedQty is less than or equal to
+        defaultOrderItemFiltering("orderedQty.lessThanOrEqual=" + DEFAULT_ORDERED_QTY, "orderedQty.lessThanOrEqual=" + SMALLER_ORDERED_QTY);
+    }
+
+    @Test
+    @Transactional
+    void getAllOrderItemsByOrderedQtyIsLessThanSomething() throws Exception {
+        // Initialize the database
+        insertedOrderItem = orderItemRepository.saveAndFlush(orderItem);
+
+        // Get all the orderItemList where orderedQty is less than
+        defaultOrderItemFiltering("orderedQty.lessThan=" + UPDATED_ORDERED_QTY, "orderedQty.lessThan=" + DEFAULT_ORDERED_QTY);
+    }
+
+    @Test
+    @Transactional
+    void getAllOrderItemsByOrderedQtyIsGreaterThanSomething() throws Exception {
+        // Initialize the database
+        insertedOrderItem = orderItemRepository.saveAndFlush(orderItem);
+
+        // Get all the orderItemList where orderedQty is greater than
+        defaultOrderItemFiltering("orderedQty.greaterThan=" + SMALLER_ORDERED_QTY, "orderedQty.greaterThan=" + DEFAULT_ORDERED_QTY);
+    }
+
+    @Test
+    @Transactional
+    void getAllOrderItemsByReceivedQtyIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedOrderItem = orderItemRepository.saveAndFlush(orderItem);
+
+        // Get all the orderItemList where receivedQty equals to
+        defaultOrderItemFiltering("receivedQty.equals=" + DEFAULT_RECEIVED_QTY, "receivedQty.equals=" + UPDATED_RECEIVED_QTY);
+    }
+
+    @Test
+    @Transactional
+    void getAllOrderItemsByReceivedQtyIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedOrderItem = orderItemRepository.saveAndFlush(orderItem);
+
+        // Get all the orderItemList where receivedQty in
+        defaultOrderItemFiltering(
+            "receivedQty.in=" + DEFAULT_RECEIVED_QTY + "," + UPDATED_RECEIVED_QTY,
+            "receivedQty.in=" + UPDATED_RECEIVED_QTY
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllOrderItemsByReceivedQtyIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedOrderItem = orderItemRepository.saveAndFlush(orderItem);
+
+        // Get all the orderItemList where receivedQty is not null
+        defaultOrderItemFiltering("receivedQty.specified=true", "receivedQty.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllOrderItemsByReceivedQtyIsGreaterThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedOrderItem = orderItemRepository.saveAndFlush(orderItem);
+
+        // Get all the orderItemList where receivedQty is greater than or equal to
+        defaultOrderItemFiltering(
+            "receivedQty.greaterThanOrEqual=" + DEFAULT_RECEIVED_QTY,
+            "receivedQty.greaterThanOrEqual=" + UPDATED_RECEIVED_QTY
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllOrderItemsByReceivedQtyIsLessThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedOrderItem = orderItemRepository.saveAndFlush(orderItem);
+
+        // Get all the orderItemList where receivedQty is less than or equal to
+        defaultOrderItemFiltering(
+            "receivedQty.lessThanOrEqual=" + DEFAULT_RECEIVED_QTY,
+            "receivedQty.lessThanOrEqual=" + SMALLER_RECEIVED_QTY
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllOrderItemsByReceivedQtyIsLessThanSomething() throws Exception {
+        // Initialize the database
+        insertedOrderItem = orderItemRepository.saveAndFlush(orderItem);
+
+        // Get all the orderItemList where receivedQty is less than
+        defaultOrderItemFiltering("receivedQty.lessThan=" + UPDATED_RECEIVED_QTY, "receivedQty.lessThan=" + DEFAULT_RECEIVED_QTY);
+    }
+
+    @Test
+    @Transactional
+    void getAllOrderItemsByReceivedQtyIsGreaterThanSomething() throws Exception {
+        // Initialize the database
+        insertedOrderItem = orderItemRepository.saveAndFlush(orderItem);
+
+        // Get all the orderItemList where receivedQty is greater than
+        defaultOrderItemFiltering("receivedQty.greaterThan=" + SMALLER_RECEIVED_QTY, "receivedQty.greaterThan=" + DEFAULT_RECEIVED_QTY);
+    }
+
+    @Test
+    @Transactional
+    void getAllOrderItemsByUnitPriceIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedOrderItem = orderItemRepository.saveAndFlush(orderItem);
+
+        // Get all the orderItemList where unitPrice equals to
+        defaultOrderItemFiltering("unitPrice.equals=" + DEFAULT_UNIT_PRICE, "unitPrice.equals=" + UPDATED_UNIT_PRICE);
+    }
+
+    @Test
+    @Transactional
+    void getAllOrderItemsByUnitPriceIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedOrderItem = orderItemRepository.saveAndFlush(orderItem);
+
+        // Get all the orderItemList where unitPrice in
+        defaultOrderItemFiltering("unitPrice.in=" + DEFAULT_UNIT_PRICE + "," + UPDATED_UNIT_PRICE, "unitPrice.in=" + UPDATED_UNIT_PRICE);
+    }
+
+    @Test
+    @Transactional
+    void getAllOrderItemsByUnitPriceIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedOrderItem = orderItemRepository.saveAndFlush(orderItem);
+
+        // Get all the orderItemList where unitPrice is not null
+        defaultOrderItemFiltering("unitPrice.specified=true", "unitPrice.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllOrderItemsByUnitPriceIsGreaterThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedOrderItem = orderItemRepository.saveAndFlush(orderItem);
+
+        // Get all the orderItemList where unitPrice is greater than or equal to
+        defaultOrderItemFiltering(
+            "unitPrice.greaterThanOrEqual=" + DEFAULT_UNIT_PRICE,
+            "unitPrice.greaterThanOrEqual=" + UPDATED_UNIT_PRICE
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllOrderItemsByUnitPriceIsLessThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedOrderItem = orderItemRepository.saveAndFlush(orderItem);
+
+        // Get all the orderItemList where unitPrice is less than or equal to
+        defaultOrderItemFiltering("unitPrice.lessThanOrEqual=" + DEFAULT_UNIT_PRICE, "unitPrice.lessThanOrEqual=" + SMALLER_UNIT_PRICE);
+    }
+
+    @Test
+    @Transactional
+    void getAllOrderItemsByUnitPriceIsLessThanSomething() throws Exception {
+        // Initialize the database
+        insertedOrderItem = orderItemRepository.saveAndFlush(orderItem);
+
+        // Get all the orderItemList where unitPrice is less than
+        defaultOrderItemFiltering("unitPrice.lessThan=" + UPDATED_UNIT_PRICE, "unitPrice.lessThan=" + DEFAULT_UNIT_PRICE);
+    }
+
+    @Test
+    @Transactional
+    void getAllOrderItemsByUnitPriceIsGreaterThanSomething() throws Exception {
+        // Initialize the database
+        insertedOrderItem = orderItemRepository.saveAndFlush(orderItem);
+
+        // Get all the orderItemList where unitPrice is greater than
+        defaultOrderItemFiltering("unitPrice.greaterThan=" + SMALLER_UNIT_PRICE, "unitPrice.greaterThan=" + DEFAULT_UNIT_PRICE);
+    }
+
+    @Test
+    @Transactional
+    void getAllOrderItemsByNoteIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedOrderItem = orderItemRepository.saveAndFlush(orderItem);
+
+        // Get all the orderItemList where note equals to
+        defaultOrderItemFiltering("note.equals=" + DEFAULT_NOTE, "note.equals=" + UPDATED_NOTE);
+    }
+
+    @Test
+    @Transactional
+    void getAllOrderItemsByNoteIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedOrderItem = orderItemRepository.saveAndFlush(orderItem);
+
+        // Get all the orderItemList where note in
+        defaultOrderItemFiltering("note.in=" + DEFAULT_NOTE + "," + UPDATED_NOTE, "note.in=" + UPDATED_NOTE);
+    }
+
+    @Test
+    @Transactional
+    void getAllOrderItemsByNoteIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedOrderItem = orderItemRepository.saveAndFlush(orderItem);
+
+        // Get all the orderItemList where note is not null
+        defaultOrderItemFiltering("note.specified=true", "note.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllOrderItemsByNoteContainsSomething() throws Exception {
+        // Initialize the database
+        insertedOrderItem = orderItemRepository.saveAndFlush(orderItem);
+
+        // Get all the orderItemList where note contains
+        defaultOrderItemFiltering("note.contains=" + DEFAULT_NOTE, "note.contains=" + UPDATED_NOTE);
+    }
+
+    @Test
+    @Transactional
+    void getAllOrderItemsByNoteNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedOrderItem = orderItemRepository.saveAndFlush(orderItem);
+
+        // Get all the orderItemList where note does not contain
+        defaultOrderItemFiltering("note.doesNotContain=" + UPDATED_NOTE, "note.doesNotContain=" + DEFAULT_NOTE);
+    }
+
+    private void defaultOrderItemFiltering(String shouldBeFound, String shouldNotBeFound) throws Exception {
+        defaultOrderItemShouldBeFound(shouldBeFound);
+        defaultOrderItemShouldNotBeFound(shouldNotBeFound);
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is returned.
+     */
+    private void defaultOrderItemShouldBeFound(String filter) throws Exception {
+        restOrderItemMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(orderItem.getId().toString())))
+            .andExpect(jsonPath("$.[*].orderedQty").value(hasItem(DEFAULT_ORDERED_QTY)))
+            .andExpect(jsonPath("$.[*].receivedQty").value(hasItem(DEFAULT_RECEIVED_QTY)))
+            .andExpect(jsonPath("$.[*].unitPrice").value(hasItem(sameNumber(DEFAULT_UNIT_PRICE))))
+            .andExpect(jsonPath("$.[*].note").value(hasItem(DEFAULT_NOTE)));
+
+        // Check, that the count call also returns 1
+        restOrderItemMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("1"));
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is not returned.
+     */
+    private void defaultOrderItemShouldNotBeFound(String filter) throws Exception {
+        restOrderItemMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$").isEmpty());
+
+        // Check, that the count call also returns 0
+        restOrderItemMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("0"));
     }
 
     @Test

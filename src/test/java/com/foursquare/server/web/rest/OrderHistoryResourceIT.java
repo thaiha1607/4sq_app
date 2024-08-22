@@ -222,6 +222,132 @@ class OrderHistoryResourceIT {
 
     @Test
     @Transactional
+    void getOrderHistoriesByIdFiltering() throws Exception {
+        // Initialize the database
+        insertedOrderHistory = orderHistoryRepository.saveAndFlush(orderHistory);
+
+        UUID id = orderHistory.getId();
+
+        defaultOrderHistoryFiltering("id.equals=" + id, "id.notEquals=" + id);
+    }
+
+    @Test
+    @Transactional
+    void getAllOrderHistoriesByCommentsIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedOrderHistory = orderHistoryRepository.saveAndFlush(orderHistory);
+
+        // Get all the orderHistoryList where comments equals to
+        defaultOrderHistoryFiltering("comments.equals=" + DEFAULT_COMMENTS, "comments.equals=" + UPDATED_COMMENTS);
+    }
+
+    @Test
+    @Transactional
+    void getAllOrderHistoriesByCommentsIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedOrderHistory = orderHistoryRepository.saveAndFlush(orderHistory);
+
+        // Get all the orderHistoryList where comments in
+        defaultOrderHistoryFiltering("comments.in=" + DEFAULT_COMMENTS + "," + UPDATED_COMMENTS, "comments.in=" + UPDATED_COMMENTS);
+    }
+
+    @Test
+    @Transactional
+    void getAllOrderHistoriesByCommentsIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedOrderHistory = orderHistoryRepository.saveAndFlush(orderHistory);
+
+        // Get all the orderHistoryList where comments is not null
+        defaultOrderHistoryFiltering("comments.specified=true", "comments.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllOrderHistoriesByCommentsContainsSomething() throws Exception {
+        // Initialize the database
+        insertedOrderHistory = orderHistoryRepository.saveAndFlush(orderHistory);
+
+        // Get all the orderHistoryList where comments contains
+        defaultOrderHistoryFiltering("comments.contains=" + DEFAULT_COMMENTS, "comments.contains=" + UPDATED_COMMENTS);
+    }
+
+    @Test
+    @Transactional
+    void getAllOrderHistoriesByCommentsNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedOrderHistory = orderHistoryRepository.saveAndFlush(orderHistory);
+
+        // Get all the orderHistoryList where comments does not contain
+        defaultOrderHistoryFiltering("comments.doesNotContain=" + UPDATED_COMMENTS, "comments.doesNotContain=" + DEFAULT_COMMENTS);
+    }
+
+    @Test
+    @Transactional
+    void getAllOrderHistoriesByStatusIsEqualToSomething() throws Exception {
+        OrderStatus status;
+        if (TestUtil.findAll(em, OrderStatus.class).isEmpty()) {
+            orderHistoryRepository.saveAndFlush(orderHistory);
+            status = OrderStatusResourceIT.createEntity(em);
+        } else {
+            status = TestUtil.findAll(em, OrderStatus.class).get(0);
+        }
+        em.persist(status);
+        em.flush();
+        orderHistory.setStatus(status);
+        orderHistoryRepository.saveAndFlush(orderHistory);
+        Long statusId = status.getId();
+        // Get all the orderHistoryList where status equals to statusId
+        defaultOrderHistoryShouldBeFound("statusId.equals=" + statusId);
+
+        // Get all the orderHistoryList where status equals to (statusId + 1)
+        defaultOrderHistoryShouldNotBeFound("statusId.equals=" + (statusId + 1));
+    }
+
+    private void defaultOrderHistoryFiltering(String shouldBeFound, String shouldNotBeFound) throws Exception {
+        defaultOrderHistoryShouldBeFound(shouldBeFound);
+        defaultOrderHistoryShouldNotBeFound(shouldNotBeFound);
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is returned.
+     */
+    private void defaultOrderHistoryShouldBeFound(String filter) throws Exception {
+        restOrderHistoryMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(orderHistory.getId().toString())))
+            .andExpect(jsonPath("$.[*].comments").value(hasItem(DEFAULT_COMMENTS)));
+
+        // Check, that the count call also returns 1
+        restOrderHistoryMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("1"));
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is not returned.
+     */
+    private void defaultOrderHistoryShouldNotBeFound(String filter) throws Exception {
+        restOrderHistoryMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$").isEmpty());
+
+        // Check, that the count call also returns 0
+        restOrderHistoryMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("0"));
+    }
+
+    @Test
+    @Transactional
     void getNonExistingOrderHistory() throws Exception {
         // Get the orderHistory
         restOrderHistoryMockMvc.perform(get(ENTITY_API_URL_ID, UUID.randomUUID().toString())).andExpect(status().isNotFound());

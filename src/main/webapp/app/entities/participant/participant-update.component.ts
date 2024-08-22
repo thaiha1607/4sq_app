@@ -87,6 +87,7 @@ export default defineComponent({
       conversation: {
         required: validations.required('This field is required.'),
       },
+      messages: {},
       seenMessages: {},
     };
     const v$ = useVuelidate(validationRules, participant as any);

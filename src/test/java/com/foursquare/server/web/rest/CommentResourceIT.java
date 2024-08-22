@@ -48,6 +48,7 @@ class CommentResourceIT {
 
     private static final Integer DEFAULT_RATING = 1;
     private static final Integer UPDATED_RATING = 2;
+    private static final Integer SMALLER_RATING = 1 - 1;
 
     private static final String DEFAULT_CONTENT = "AAAAAAAAAA";
     private static final String UPDATED_CONTENT = "BBBBBBBBBB";
@@ -234,6 +235,203 @@ class CommentResourceIT {
             .andExpect(jsonPath("$.id").value(comment.getId().toString()))
             .andExpect(jsonPath("$.rating").value(DEFAULT_RATING))
             .andExpect(jsonPath("$.content").value(DEFAULT_CONTENT));
+    }
+
+    @Test
+    @Transactional
+    void getCommentsByIdFiltering() throws Exception {
+        // Initialize the database
+        insertedComment = commentRepository.saveAndFlush(comment);
+
+        UUID id = comment.getId();
+
+        defaultCommentFiltering("id.equals=" + id, "id.notEquals=" + id);
+    }
+
+    @Test
+    @Transactional
+    void getAllCommentsByRatingIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedComment = commentRepository.saveAndFlush(comment);
+
+        // Get all the commentList where rating equals to
+        defaultCommentFiltering("rating.equals=" + DEFAULT_RATING, "rating.equals=" + UPDATED_RATING);
+    }
+
+    @Test
+    @Transactional
+    void getAllCommentsByRatingIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedComment = commentRepository.saveAndFlush(comment);
+
+        // Get all the commentList where rating in
+        defaultCommentFiltering("rating.in=" + DEFAULT_RATING + "," + UPDATED_RATING, "rating.in=" + UPDATED_RATING);
+    }
+
+    @Test
+    @Transactional
+    void getAllCommentsByRatingIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedComment = commentRepository.saveAndFlush(comment);
+
+        // Get all the commentList where rating is not null
+        defaultCommentFiltering("rating.specified=true", "rating.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllCommentsByRatingIsGreaterThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedComment = commentRepository.saveAndFlush(comment);
+
+        // Get all the commentList where rating is greater than or equal to
+        defaultCommentFiltering("rating.greaterThanOrEqual=" + DEFAULT_RATING, "rating.greaterThanOrEqual=" + (DEFAULT_RATING + 1));
+    }
+
+    @Test
+    @Transactional
+    void getAllCommentsByRatingIsLessThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedComment = commentRepository.saveAndFlush(comment);
+
+        // Get all the commentList where rating is less than or equal to
+        defaultCommentFiltering("rating.lessThanOrEqual=" + DEFAULT_RATING, "rating.lessThanOrEqual=" + SMALLER_RATING);
+    }
+
+    @Test
+    @Transactional
+    void getAllCommentsByRatingIsLessThanSomething() throws Exception {
+        // Initialize the database
+        insertedComment = commentRepository.saveAndFlush(comment);
+
+        // Get all the commentList where rating is less than
+        defaultCommentFiltering("rating.lessThan=" + (DEFAULT_RATING + 1), "rating.lessThan=" + DEFAULT_RATING);
+    }
+
+    @Test
+    @Transactional
+    void getAllCommentsByRatingIsGreaterThanSomething() throws Exception {
+        // Initialize the database
+        insertedComment = commentRepository.saveAndFlush(comment);
+
+        // Get all the commentList where rating is greater than
+        defaultCommentFiltering("rating.greaterThan=" + SMALLER_RATING, "rating.greaterThan=" + DEFAULT_RATING);
+    }
+
+    @Test
+    @Transactional
+    void getAllCommentsByContentIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedComment = commentRepository.saveAndFlush(comment);
+
+        // Get all the commentList where content equals to
+        defaultCommentFiltering("content.equals=" + DEFAULT_CONTENT, "content.equals=" + UPDATED_CONTENT);
+    }
+
+    @Test
+    @Transactional
+    void getAllCommentsByContentIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedComment = commentRepository.saveAndFlush(comment);
+
+        // Get all the commentList where content in
+        defaultCommentFiltering("content.in=" + DEFAULT_CONTENT + "," + UPDATED_CONTENT, "content.in=" + UPDATED_CONTENT);
+    }
+
+    @Test
+    @Transactional
+    void getAllCommentsByContentIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedComment = commentRepository.saveAndFlush(comment);
+
+        // Get all the commentList where content is not null
+        defaultCommentFiltering("content.specified=true", "content.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllCommentsByContentContainsSomething() throws Exception {
+        // Initialize the database
+        insertedComment = commentRepository.saveAndFlush(comment);
+
+        // Get all the commentList where content contains
+        defaultCommentFiltering("content.contains=" + DEFAULT_CONTENT, "content.contains=" + UPDATED_CONTENT);
+    }
+
+    @Test
+    @Transactional
+    void getAllCommentsByContentNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedComment = commentRepository.saveAndFlush(comment);
+
+        // Get all the commentList where content does not contain
+        defaultCommentFiltering("content.doesNotContain=" + UPDATED_CONTENT, "content.doesNotContain=" + DEFAULT_CONTENT);
+    }
+
+    @Test
+    @Transactional
+    void getAllCommentsByUserIsEqualToSomething() throws Exception {
+        User user;
+        if (TestUtil.findAll(em, User.class).isEmpty()) {
+            commentRepository.saveAndFlush(comment);
+            user = UserResourceIT.createEntity(em);
+        } else {
+            user = TestUtil.findAll(em, User.class).get(0);
+        }
+        em.persist(user);
+        em.flush();
+        comment.setUser(user);
+        commentRepository.saveAndFlush(comment);
+        Long userId = user.getId();
+        // Get all the commentList where user equals to userId
+        defaultCommentShouldBeFound("userId.equals=" + userId);
+
+        // Get all the commentList where user equals to (userId + 1)
+        defaultCommentShouldNotBeFound("userId.equals=" + (userId + 1));
+    }
+
+    private void defaultCommentFiltering(String shouldBeFound, String shouldNotBeFound) throws Exception {
+        defaultCommentShouldBeFound(shouldBeFound);
+        defaultCommentShouldNotBeFound(shouldNotBeFound);
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is returned.
+     */
+    private void defaultCommentShouldBeFound(String filter) throws Exception {
+        restCommentMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(comment.getId().toString())))
+            .andExpect(jsonPath("$.[*].rating").value(hasItem(DEFAULT_RATING)))
+            .andExpect(jsonPath("$.[*].content").value(hasItem(DEFAULT_CONTENT)));
+
+        // Check, that the count call also returns 1
+        restCommentMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("1"));
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is not returned.
+     */
+    private void defaultCommentShouldNotBeFound(String filter) throws Exception {
+        restCommentMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$").isEmpty());
+
+        // Check, that the count call also returns 0
+        restCommentMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("0"));
     }
 
     @Test

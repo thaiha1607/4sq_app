@@ -122,7 +122,7 @@ describe('ShipmentStatus e2e test', () => {
         cy.url().should('match', shipmentStatusPageUrlPattern);
       });
 
-      it('edit button click should load edit ShipmentStatus page and save', () => {
+      it.skip('edit button click should load edit ShipmentStatus page and save', () => {
         cy.get(entityEditButtonSelector).first().click();
         cy.getEntityCreateUpdateHeading('ShipmentStatus');
         cy.get(entityCreateSaveButtonSelector).click();

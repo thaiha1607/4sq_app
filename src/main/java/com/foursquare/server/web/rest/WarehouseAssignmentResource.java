@@ -1,7 +1,9 @@
 package com.foursquare.server.web.rest;
 
 import com.foursquare.server.repository.WarehouseAssignmentRepository;
+import com.foursquare.server.service.WarehouseAssignmentQueryService;
 import com.foursquare.server.service.WarehouseAssignmentService;
+import com.foursquare.server.service.criteria.WarehouseAssignmentCriteria;
 import com.foursquare.server.service.dto.WarehouseAssignmentDTO;
 import com.foursquare.server.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
@@ -38,12 +40,16 @@ public class WarehouseAssignmentResource {
 
     private final WarehouseAssignmentRepository warehouseAssignmentRepository;
 
+    private final WarehouseAssignmentQueryService warehouseAssignmentQueryService;
+
     public WarehouseAssignmentResource(
         WarehouseAssignmentService warehouseAssignmentService,
-        WarehouseAssignmentRepository warehouseAssignmentRepository
+        WarehouseAssignmentRepository warehouseAssignmentRepository,
+        WarehouseAssignmentQueryService warehouseAssignmentQueryService
     ) {
         this.warehouseAssignmentService = warehouseAssignmentService;
         this.warehouseAssignmentRepository = warehouseAssignmentRepository;
+        this.warehouseAssignmentQueryService = warehouseAssignmentQueryService;
     }
 
     /**
@@ -139,15 +145,27 @@ public class WarehouseAssignmentResource {
     /**
      * {@code GET  /warehouse-assignments} : get all the warehouseAssignments.
      *
-     * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
+     * @param criteria the criteria which the requested entities should match.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of warehouseAssignments in body.
      */
     @GetMapping("")
-    public List<WarehouseAssignmentDTO> getAllWarehouseAssignments(
-        @RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload
-    ) {
-        log.debug("REST request to get all WarehouseAssignments");
-        return warehouseAssignmentService.findAll();
+    public ResponseEntity<List<WarehouseAssignmentDTO>> getAllWarehouseAssignments(WarehouseAssignmentCriteria criteria) {
+        log.debug("REST request to get WarehouseAssignments by criteria: {}", criteria);
+
+        List<WarehouseAssignmentDTO> entityList = warehouseAssignmentQueryService.findByCriteria(criteria);
+        return ResponseEntity.ok().body(entityList);
+    }
+
+    /**
+     * {@code GET  /warehouse-assignments/count} : count all the warehouseAssignments.
+     *
+     * @param criteria the criteria which the requested entities should match.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the count in body.
+     */
+    @GetMapping("/count")
+    public ResponseEntity<Long> countWarehouseAssignments(WarehouseAssignmentCriteria criteria) {
+        log.debug("REST request to count WarehouseAssignments by criteria: {}", criteria);
+        return ResponseEntity.ok().body(warehouseAssignmentQueryService.countByCriteria(criteria));
     }
 
     /**

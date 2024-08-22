@@ -58,6 +58,7 @@
       "readonly": true
     }
   ],
+  "jpaMetamodelFiltering": true,
   "name": "Message",
   "relationships": [
     {
@@ -78,5 +79,6 @@
       "relationshipType": "many-to-many"
     }
   ],
-  "searchEngine": "no"
+  "searchEngine": "no",
+  "service": "serviceClass"
 }

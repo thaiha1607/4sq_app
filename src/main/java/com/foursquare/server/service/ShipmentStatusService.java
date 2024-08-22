@@ -4,10 +4,7 @@ import com.foursquare.server.domain.ShipmentStatus;
 import com.foursquare.server.repository.ShipmentStatusRepository;
 import com.foursquare.server.service.dto.ShipmentStatusDTO;
 import com.foursquare.server.service.mapper.ShipmentStatusMapper;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -76,21 +73,6 @@ public class ShipmentStatusService {
             })
             .map(shipmentStatusRepository::save)
             .map(shipmentStatusMapper::toDto);
-    }
-
-    /**
-     * Get all the shipmentStatuses.
-     *
-     * @return the list of entities.
-     */
-    @Transactional(readOnly = true)
-    public List<ShipmentStatusDTO> findAll() {
-        log.debug("Request to get all ShipmentStatuses");
-        return shipmentStatusRepository
-            .findAll()
-            .stream()
-            .map(shipmentStatusMapper::toDto)
-            .collect(Collectors.toCollection(LinkedList::new));
     }
 
     /**

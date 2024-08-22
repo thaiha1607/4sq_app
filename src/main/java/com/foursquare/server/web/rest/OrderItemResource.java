@@ -1,7 +1,9 @@
 package com.foursquare.server.web.rest;
 
 import com.foursquare.server.repository.OrderItemRepository;
+import com.foursquare.server.service.OrderItemQueryService;
 import com.foursquare.server.service.OrderItemService;
+import com.foursquare.server.service.criteria.OrderItemCriteria;
 import com.foursquare.server.service.dto.OrderItemDTO;
 import com.foursquare.server.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
@@ -38,9 +40,16 @@ public class OrderItemResource {
 
     private final OrderItemRepository orderItemRepository;
 
-    public OrderItemResource(OrderItemService orderItemService, OrderItemRepository orderItemRepository) {
+    private final OrderItemQueryService orderItemQueryService;
+
+    public OrderItemResource(
+        OrderItemService orderItemService,
+        OrderItemRepository orderItemRepository,
+        OrderItemQueryService orderItemQueryService
+    ) {
         this.orderItemService = orderItemService;
         this.orderItemRepository = orderItemRepository;
+        this.orderItemQueryService = orderItemQueryService;
     }
 
     /**
@@ -134,15 +143,27 @@ public class OrderItemResource {
     /**
      * {@code GET  /order-items} : get all the orderItems.
      *
-     * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
+     * @param criteria the criteria which the requested entities should match.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of orderItems in body.
      */
     @GetMapping("")
-    public List<OrderItemDTO> getAllOrderItems(
-        @RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload
-    ) {
-        log.debug("REST request to get all OrderItems");
-        return orderItemService.findAll();
+    public ResponseEntity<List<OrderItemDTO>> getAllOrderItems(OrderItemCriteria criteria) {
+        log.debug("REST request to get OrderItems by criteria: {}", criteria);
+
+        List<OrderItemDTO> entityList = orderItemQueryService.findByCriteria(criteria);
+        return ResponseEntity.ok().body(entityList);
+    }
+
+    /**
+     * {@code GET  /order-items/count} : count all the orderItems.
+     *
+     * @param criteria the criteria which the requested entities should match.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the count in body.
+     */
+    @GetMapping("/count")
+    public ResponseEntity<Long> countOrderItems(OrderItemCriteria criteria) {
+        log.debug("REST request to count OrderItems by criteria: {}", criteria);
+        return ResponseEntity.ok().body(orderItemQueryService.countByCriteria(criteria));
     }
 
     /**

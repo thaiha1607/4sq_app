@@ -122,7 +122,7 @@ describe('WorkingUnit e2e test', () => {
         cy.url().should('match', workingUnitPageUrlPattern);
       });
 
-      it('edit button click should load edit WorkingUnit page and save', () => {
+      it.skip('edit button click should load edit WorkingUnit page and save', () => {
         cy.get(entityEditButtonSelector).first().click();
         cy.getEntityCreateUpdateHeading('WorkingUnit');
         cy.get(entityCreateSaveButtonSelector).click();

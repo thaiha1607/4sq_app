@@ -1,7 +1,9 @@
 package com.foursquare.server.web.rest;
 
 import com.foursquare.server.repository.CommentRepository;
+import com.foursquare.server.service.CommentQueryService;
 import com.foursquare.server.service.CommentService;
+import com.foursquare.server.service.criteria.CommentCriteria;
 import com.foursquare.server.service.dto.CommentDTO;
 import com.foursquare.server.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
@@ -38,9 +40,12 @@ public class CommentResource {
 
     private final CommentRepository commentRepository;
 
-    public CommentResource(CommentService commentService, CommentRepository commentRepository) {
+    private final CommentQueryService commentQueryService;
+
+    public CommentResource(CommentService commentService, CommentRepository commentRepository, CommentQueryService commentQueryService) {
         this.commentService = commentService;
         this.commentRepository = commentRepository;
+        this.commentQueryService = commentQueryService;
     }
 
     /**
@@ -134,13 +139,27 @@ public class CommentResource {
     /**
      * {@code GET  /comments} : get all the comments.
      *
-     * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
+     * @param criteria the criteria which the requested entities should match.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of comments in body.
      */
     @GetMapping("")
-    public List<CommentDTO> getAllComments(@RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload) {
-        log.debug("REST request to get all Comments");
-        return commentService.findAll();
+    public ResponseEntity<List<CommentDTO>> getAllComments(CommentCriteria criteria) {
+        log.debug("REST request to get Comments by criteria: {}", criteria);
+
+        List<CommentDTO> entityList = commentQueryService.findByCriteria(criteria);
+        return ResponseEntity.ok().body(entityList);
+    }
+
+    /**
+     * {@code GET  /comments/count} : count all the comments.
+     *
+     * @param criteria the criteria which the requested entities should match.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the count in body.
+     */
+    @GetMapping("/count")
+    public ResponseEntity<Long> countComments(CommentCriteria criteria) {
+        log.debug("REST request to count Comments by criteria: {}", criteria);
+        return ResponseEntity.ok().body(commentQueryService.countByCriteria(criteria));
     }
 
     /**

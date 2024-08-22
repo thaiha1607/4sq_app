@@ -1,7 +1,9 @@
 package com.foursquare.server.web.rest;
 
 import com.foursquare.server.repository.TagRepository;
+import com.foursquare.server.service.TagQueryService;
 import com.foursquare.server.service.TagService;
+import com.foursquare.server.service.criteria.TagCriteria;
 import com.foursquare.server.service.dto.TagDTO;
 import com.foursquare.server.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
@@ -38,9 +40,12 @@ public class TagResource {
 
     private final TagRepository tagRepository;
 
-    public TagResource(TagService tagService, TagRepository tagRepository) {
+    private final TagQueryService tagQueryService;
+
+    public TagResource(TagService tagService, TagRepository tagRepository, TagQueryService tagQueryService) {
         this.tagService = tagService;
         this.tagRepository = tagRepository;
+        this.tagQueryService = tagQueryService;
     }
 
     /**
@@ -132,12 +137,27 @@ public class TagResource {
     /**
      * {@code GET  /tags} : get all the tags.
      *
+     * @param criteria the criteria which the requested entities should match.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of tags in body.
      */
     @GetMapping("")
-    public List<TagDTO> getAllTags() {
-        log.debug("REST request to get all Tags");
-        return tagService.findAll();
+    public ResponseEntity<List<TagDTO>> getAllTags(TagCriteria criteria) {
+        log.debug("REST request to get Tags by criteria: {}", criteria);
+
+        List<TagDTO> entityList = tagQueryService.findByCriteria(criteria);
+        return ResponseEntity.ok().body(entityList);
+    }
+
+    /**
+     * {@code GET  /tags/count} : count all the tags.
+     *
+     * @param criteria the criteria which the requested entities should match.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the count in body.
+     */
+    @GetMapping("/count")
+    public ResponseEntity<Long> countTags(TagCriteria criteria) {
+        log.debug("REST request to count Tags by criteria: {}", criteria);
+        return ResponseEntity.ok().body(tagQueryService.countByCriteria(criteria));
     }
 
     /**

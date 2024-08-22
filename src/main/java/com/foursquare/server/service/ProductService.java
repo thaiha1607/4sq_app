@@ -4,11 +4,8 @@ import com.foursquare.server.domain.Product;
 import com.foursquare.server.repository.ProductRepository;
 import com.foursquare.server.service.dto.ProductDTO;
 import com.foursquare.server.service.mapper.ProductMapper;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -79,17 +76,6 @@ public class ProductService {
             })
             .map(productRepository::save)
             .map(productMapper::toDto);
-    }
-
-    /**
-     * Get all the products.
-     *
-     * @return the list of entities.
-     */
-    @Transactional(readOnly = true)
-    public List<ProductDTO> findAll() {
-        log.debug("Request to get all Products");
-        return productRepository.findAll().stream().map(productMapper::toDto).collect(Collectors.toCollection(LinkedList::new));
     }
 
     /**

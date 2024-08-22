@@ -4,11 +4,8 @@ import com.foursquare.server.domain.Comment;
 import com.foursquare.server.repository.CommentRepository;
 import com.foursquare.server.service.dto.CommentDTO;
 import com.foursquare.server.service.mapper.CommentMapper;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -79,17 +76,6 @@ public class CommentService {
             })
             .map(commentRepository::save)
             .map(commentMapper::toDto);
-    }
-
-    /**
-     * Get all the comments.
-     *
-     * @return the list of entities.
-     */
-    @Transactional(readOnly = true)
-    public List<CommentDTO> findAll() {
-        log.debug("Request to get all Comments");
-        return commentRepository.findAll().stream().map(commentMapper::toDto).collect(Collectors.toCollection(LinkedList::new));
     }
 
     /**

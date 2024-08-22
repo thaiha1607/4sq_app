@@ -218,6 +218,128 @@ class UserDetailsResourceIT {
 
     @Test
     @Transactional
+    void getUserDetailsByIdFiltering() throws Exception {
+        // Initialize the database
+        insertedUserDetails = userDetailsRepository.saveAndFlush(userDetails);
+
+        Long id = userDetails.getId();
+
+        defaultUserDetailsFiltering("id.equals=" + id, "id.notEquals=" + id);
+
+        defaultUserDetailsFiltering("id.greaterThanOrEqual=" + id, "id.greaterThan=" + id);
+
+        defaultUserDetailsFiltering("id.lessThanOrEqual=" + id, "id.lessThan=" + id);
+    }
+
+    @Test
+    @Transactional
+    void getAllUserDetailsByPhoneIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedUserDetails = userDetailsRepository.saveAndFlush(userDetails);
+
+        // Get all the userDetailsList where phone equals to
+        defaultUserDetailsFiltering("phone.equals=" + DEFAULT_PHONE, "phone.equals=" + UPDATED_PHONE);
+    }
+
+    @Test
+    @Transactional
+    void getAllUserDetailsByPhoneIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedUserDetails = userDetailsRepository.saveAndFlush(userDetails);
+
+        // Get all the userDetailsList where phone in
+        defaultUserDetailsFiltering("phone.in=" + DEFAULT_PHONE + "," + UPDATED_PHONE, "phone.in=" + UPDATED_PHONE);
+    }
+
+    @Test
+    @Transactional
+    void getAllUserDetailsByPhoneIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedUserDetails = userDetailsRepository.saveAndFlush(userDetails);
+
+        // Get all the userDetailsList where phone is not null
+        defaultUserDetailsFiltering("phone.specified=true", "phone.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllUserDetailsByPhoneContainsSomething() throws Exception {
+        // Initialize the database
+        insertedUserDetails = userDetailsRepository.saveAndFlush(userDetails);
+
+        // Get all the userDetailsList where phone contains
+        defaultUserDetailsFiltering("phone.contains=" + DEFAULT_PHONE, "phone.contains=" + UPDATED_PHONE);
+    }
+
+    @Test
+    @Transactional
+    void getAllUserDetailsByPhoneNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedUserDetails = userDetailsRepository.saveAndFlush(userDetails);
+
+        // Get all the userDetailsList where phone does not contain
+        defaultUserDetailsFiltering("phone.doesNotContain=" + UPDATED_PHONE, "phone.doesNotContain=" + DEFAULT_PHONE);
+    }
+
+    @Test
+    @Transactional
+    void getAllUserDetailsByUserIsEqualToSomething() throws Exception {
+        // Get already existing entity
+        User user = userDetails.getUser();
+        userDetailsRepository.saveAndFlush(userDetails);
+        Long userId = user.getId();
+        // Get all the userDetailsList where user equals to userId
+        defaultUserDetailsShouldBeFound("userId.equals=" + userId);
+
+        // Get all the userDetailsList where user equals to (userId + 1)
+        defaultUserDetailsShouldNotBeFound("userId.equals=" + (userId + 1));
+    }
+
+    private void defaultUserDetailsFiltering(String shouldBeFound, String shouldNotBeFound) throws Exception {
+        defaultUserDetailsShouldBeFound(shouldBeFound);
+        defaultUserDetailsShouldNotBeFound(shouldNotBeFound);
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is returned.
+     */
+    private void defaultUserDetailsShouldBeFound(String filter) throws Exception {
+        restUserDetailsMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(userDetails.getId().intValue())))
+            .andExpect(jsonPath("$.[*].phone").value(hasItem(DEFAULT_PHONE)));
+
+        // Check, that the count call also returns 1
+        restUserDetailsMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("1"));
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is not returned.
+     */
+    private void defaultUserDetailsShouldNotBeFound(String filter) throws Exception {
+        restUserDetailsMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$").isEmpty());
+
+        // Check, that the count call also returns 0
+        restUserDetailsMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("0"));
+    }
+
+    @Test
+    @Transactional
     void getNonExistingUserDetails() throws Exception {
         // Get the userDetails
         restUserDetailsMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());

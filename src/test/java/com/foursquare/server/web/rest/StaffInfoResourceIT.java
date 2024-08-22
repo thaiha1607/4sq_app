@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foursquare.server.IntegrationTest;
 import com.foursquare.server.domain.StaffInfo;
 import com.foursquare.server.domain.User;
+import com.foursquare.server.domain.WorkingUnit;
 import com.foursquare.server.domain.enumeration.StaffStatus;
 import com.foursquare.server.repository.StaffInfoRepository;
 import com.foursquare.server.repository.UserRepository;
@@ -21,6 +22,7 @@ import com.foursquare.server.service.mapper.StaffInfoMapper;
 import jakarta.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -232,6 +234,130 @@ class StaffInfoResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(staffInfo.getId().intValue()))
             .andExpect(jsonPath("$.status").value(DEFAULT_STATUS.toString()));
+    }
+
+    @Test
+    @Transactional
+    void getStaffInfosByIdFiltering() throws Exception {
+        // Initialize the database
+        insertedStaffInfo = staffInfoRepository.saveAndFlush(staffInfo);
+
+        Long id = staffInfo.getId();
+
+        defaultStaffInfoFiltering("id.equals=" + id, "id.notEquals=" + id);
+
+        defaultStaffInfoFiltering("id.greaterThanOrEqual=" + id, "id.greaterThan=" + id);
+
+        defaultStaffInfoFiltering("id.lessThanOrEqual=" + id, "id.lessThan=" + id);
+    }
+
+    @Test
+    @Transactional
+    void getAllStaffInfosByStatusIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedStaffInfo = staffInfoRepository.saveAndFlush(staffInfo);
+
+        // Get all the staffInfoList where status equals to
+        defaultStaffInfoFiltering("status.equals=" + DEFAULT_STATUS, "status.equals=" + UPDATED_STATUS);
+    }
+
+    @Test
+    @Transactional
+    void getAllStaffInfosByStatusIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedStaffInfo = staffInfoRepository.saveAndFlush(staffInfo);
+
+        // Get all the staffInfoList where status in
+        defaultStaffInfoFiltering("status.in=" + DEFAULT_STATUS + "," + UPDATED_STATUS, "status.in=" + UPDATED_STATUS);
+    }
+
+    @Test
+    @Transactional
+    void getAllStaffInfosByStatusIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedStaffInfo = staffInfoRepository.saveAndFlush(staffInfo);
+
+        // Get all the staffInfoList where status is not null
+        defaultStaffInfoFiltering("status.specified=true", "status.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllStaffInfosByUserIsEqualToSomething() throws Exception {
+        // Get already existing entity
+        User user = staffInfo.getUser();
+        staffInfoRepository.saveAndFlush(staffInfo);
+        Long userId = user.getId();
+        // Get all the staffInfoList where user equals to userId
+        defaultStaffInfoShouldBeFound("userId.equals=" + userId);
+
+        // Get all the staffInfoList where user equals to (userId + 1)
+        defaultStaffInfoShouldNotBeFound("userId.equals=" + (userId + 1));
+    }
+
+    @Test
+    @Transactional
+    void getAllStaffInfosByWorkingUnitIsEqualToSomething() throws Exception {
+        WorkingUnit workingUnit;
+        if (TestUtil.findAll(em, WorkingUnit.class).isEmpty()) {
+            staffInfoRepository.saveAndFlush(staffInfo);
+            workingUnit = WorkingUnitResourceIT.createEntity(em);
+        } else {
+            workingUnit = TestUtil.findAll(em, WorkingUnit.class).get(0);
+        }
+        em.persist(workingUnit);
+        em.flush();
+        staffInfo.setWorkingUnit(workingUnit);
+        staffInfoRepository.saveAndFlush(staffInfo);
+        UUID workingUnitId = workingUnit.getId();
+        // Get all the staffInfoList where workingUnit equals to workingUnitId
+        defaultStaffInfoShouldBeFound("workingUnitId.equals=" + workingUnitId);
+
+        // Get all the staffInfoList where workingUnit equals to UUID.randomUUID()
+        defaultStaffInfoShouldNotBeFound("workingUnitId.equals=" + UUID.randomUUID());
+    }
+
+    private void defaultStaffInfoFiltering(String shouldBeFound, String shouldNotBeFound) throws Exception {
+        defaultStaffInfoShouldBeFound(shouldBeFound);
+        defaultStaffInfoShouldNotBeFound(shouldNotBeFound);
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is returned.
+     */
+    private void defaultStaffInfoShouldBeFound(String filter) throws Exception {
+        restStaffInfoMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(staffInfo.getId().intValue())))
+            .andExpect(jsonPath("$.[*].status").value(hasItem(DEFAULT_STATUS.toString())));
+
+        // Check, that the count call also returns 1
+        restStaffInfoMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("1"));
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is not returned.
+     */
+    private void defaultStaffInfoShouldNotBeFound(String filter) throws Exception {
+        restStaffInfoMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$").isEmpty());
+
+        // Check, that the count call also returns 0
+        restStaffInfoMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("0"));
     }
 
     @Test

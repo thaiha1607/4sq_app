@@ -1,7 +1,9 @@
 package com.foursquare.server.web.rest;
 
 import com.foursquare.server.repository.WorkingUnitRepository;
+import com.foursquare.server.service.WorkingUnitQueryService;
 import com.foursquare.server.service.WorkingUnitService;
+import com.foursquare.server.service.criteria.WorkingUnitCriteria;
 import com.foursquare.server.service.dto.WorkingUnitDTO;
 import com.foursquare.server.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
@@ -38,9 +40,16 @@ public class WorkingUnitResource {
 
     private final WorkingUnitRepository workingUnitRepository;
 
-    public WorkingUnitResource(WorkingUnitService workingUnitService, WorkingUnitRepository workingUnitRepository) {
+    private final WorkingUnitQueryService workingUnitQueryService;
+
+    public WorkingUnitResource(
+        WorkingUnitService workingUnitService,
+        WorkingUnitRepository workingUnitRepository,
+        WorkingUnitQueryService workingUnitQueryService
+    ) {
         this.workingUnitService = workingUnitService;
         this.workingUnitRepository = workingUnitRepository;
+        this.workingUnitQueryService = workingUnitQueryService;
     }
 
     /**
@@ -134,12 +143,27 @@ public class WorkingUnitResource {
     /**
      * {@code GET  /working-units} : get all the workingUnits.
      *
+     * @param criteria the criteria which the requested entities should match.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of workingUnits in body.
      */
     @GetMapping("")
-    public List<WorkingUnitDTO> getAllWorkingUnits() {
-        log.debug("REST request to get all WorkingUnits");
-        return workingUnitService.findAll();
+    public ResponseEntity<List<WorkingUnitDTO>> getAllWorkingUnits(WorkingUnitCriteria criteria) {
+        log.debug("REST request to get WorkingUnits by criteria: {}", criteria);
+
+        List<WorkingUnitDTO> entityList = workingUnitQueryService.findByCriteria(criteria);
+        return ResponseEntity.ok().body(entityList);
+    }
+
+    /**
+     * {@code GET  /working-units/count} : count all the workingUnits.
+     *
+     * @param criteria the criteria which the requested entities should match.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the count in body.
+     */
+    @GetMapping("/count")
+    public ResponseEntity<Long> countWorkingUnits(WorkingUnitCriteria criteria) {
+        log.debug("REST request to count WorkingUnits by criteria: {}", criteria);
+        return ResponseEntity.ok().body(workingUnitQueryService.countByCriteria(criteria));
     }
 
     /**

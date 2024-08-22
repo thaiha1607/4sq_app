@@ -1,7 +1,9 @@
 package com.foursquare.server.web.rest;
 
 import com.foursquare.server.repository.MessageRepository;
+import com.foursquare.server.service.MessageQueryService;
 import com.foursquare.server.service.MessageService;
+import com.foursquare.server.service.criteria.MessageCriteria;
 import com.foursquare.server.service.dto.MessageDTO;
 import com.foursquare.server.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
@@ -38,9 +40,12 @@ public class MessageResource {
 
     private final MessageRepository messageRepository;
 
-    public MessageResource(MessageService messageService, MessageRepository messageRepository) {
+    private final MessageQueryService messageQueryService;
+
+    public MessageResource(MessageService messageService, MessageRepository messageRepository, MessageQueryService messageQueryService) {
         this.messageService = messageService;
         this.messageRepository = messageRepository;
+        this.messageQueryService = messageQueryService;
     }
 
     /**
@@ -134,13 +139,27 @@ public class MessageResource {
     /**
      * {@code GET  /messages} : get all the messages.
      *
-     * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
+     * @param criteria the criteria which the requested entities should match.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of messages in body.
      */
     @GetMapping("")
-    public List<MessageDTO> getAllMessages(@RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload) {
-        log.debug("REST request to get all Messages");
-        return messageService.findAll();
+    public ResponseEntity<List<MessageDTO>> getAllMessages(MessageCriteria criteria) {
+        log.debug("REST request to get Messages by criteria: {}", criteria);
+
+        List<MessageDTO> entityList = messageQueryService.findByCriteria(criteria);
+        return ResponseEntity.ok().body(entityList);
+    }
+
+    /**
+     * {@code GET  /messages/count} : count all the messages.
+     *
+     * @param criteria the criteria which the requested entities should match.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the count in body.
+     */
+    @GetMapping("/count")
+    public ResponseEntity<Long> countMessages(MessageCriteria criteria) {
+        log.debug("REST request to count Messages by criteria: {}", criteria);
+        return ResponseEntity.ok().body(messageQueryService.countByCriteria(criteria));
     }
 
     /**

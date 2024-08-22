@@ -66,6 +66,7 @@
       "readonly": true
     }
   ],
+  "jpaMetamodelFiltering": true,
   "name": "Product",
   "relationships": [
     {
@@ -100,5 +101,6 @@
       "relationshipType": "many-to-many"
     }
   ],
-  "searchEngine": "no"
+  "searchEngine": "no",
+  "service": "serviceClass"
 }

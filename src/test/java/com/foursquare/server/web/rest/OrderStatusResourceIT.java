@@ -193,6 +193,174 @@ class OrderStatusResourceIT {
 
     @Test
     @Transactional
+    void getOrderStatusesByIdFiltering() throws Exception {
+        // Initialize the database
+        insertedOrderStatus = orderStatusRepository.saveAndFlush(orderStatus);
+
+        Long id = orderStatus.getId();
+
+        defaultOrderStatusFiltering("id.equals=" + id, "id.notEquals=" + id);
+
+        defaultOrderStatusFiltering("id.greaterThanOrEqual=" + id, "id.greaterThan=" + id);
+
+        defaultOrderStatusFiltering("id.lessThanOrEqual=" + id, "id.lessThan=" + id);
+    }
+
+    @Test
+    @Transactional
+    void getAllOrderStatusesByStatusCodeIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedOrderStatus = orderStatusRepository.saveAndFlush(orderStatus);
+
+        // Get all the orderStatusList where statusCode equals to
+        defaultOrderStatusFiltering("statusCode.equals=" + DEFAULT_STATUS_CODE, "statusCode.equals=" + UPDATED_STATUS_CODE);
+    }
+
+    @Test
+    @Transactional
+    void getAllOrderStatusesByStatusCodeIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedOrderStatus = orderStatusRepository.saveAndFlush(orderStatus);
+
+        // Get all the orderStatusList where statusCode in
+        defaultOrderStatusFiltering(
+            "statusCode.in=" + DEFAULT_STATUS_CODE + "," + UPDATED_STATUS_CODE,
+            "statusCode.in=" + UPDATED_STATUS_CODE
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllOrderStatusesByStatusCodeIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedOrderStatus = orderStatusRepository.saveAndFlush(orderStatus);
+
+        // Get all the orderStatusList where statusCode is not null
+        defaultOrderStatusFiltering("statusCode.specified=true", "statusCode.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllOrderStatusesByStatusCodeContainsSomething() throws Exception {
+        // Initialize the database
+        insertedOrderStatus = orderStatusRepository.saveAndFlush(orderStatus);
+
+        // Get all the orderStatusList where statusCode contains
+        defaultOrderStatusFiltering("statusCode.contains=" + DEFAULT_STATUS_CODE, "statusCode.contains=" + UPDATED_STATUS_CODE);
+    }
+
+    @Test
+    @Transactional
+    void getAllOrderStatusesByStatusCodeNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedOrderStatus = orderStatusRepository.saveAndFlush(orderStatus);
+
+        // Get all the orderStatusList where statusCode does not contain
+        defaultOrderStatusFiltering("statusCode.doesNotContain=" + UPDATED_STATUS_CODE, "statusCode.doesNotContain=" + DEFAULT_STATUS_CODE);
+    }
+
+    @Test
+    @Transactional
+    void getAllOrderStatusesByDescriptionIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedOrderStatus = orderStatusRepository.saveAndFlush(orderStatus);
+
+        // Get all the orderStatusList where description equals to
+        defaultOrderStatusFiltering("description.equals=" + DEFAULT_DESCRIPTION, "description.equals=" + UPDATED_DESCRIPTION);
+    }
+
+    @Test
+    @Transactional
+    void getAllOrderStatusesByDescriptionIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedOrderStatus = orderStatusRepository.saveAndFlush(orderStatus);
+
+        // Get all the orderStatusList where description in
+        defaultOrderStatusFiltering(
+            "description.in=" + DEFAULT_DESCRIPTION + "," + UPDATED_DESCRIPTION,
+            "description.in=" + UPDATED_DESCRIPTION
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllOrderStatusesByDescriptionIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedOrderStatus = orderStatusRepository.saveAndFlush(orderStatus);
+
+        // Get all the orderStatusList where description is not null
+        defaultOrderStatusFiltering("description.specified=true", "description.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllOrderStatusesByDescriptionContainsSomething() throws Exception {
+        // Initialize the database
+        insertedOrderStatus = orderStatusRepository.saveAndFlush(orderStatus);
+
+        // Get all the orderStatusList where description contains
+        defaultOrderStatusFiltering("description.contains=" + DEFAULT_DESCRIPTION, "description.contains=" + UPDATED_DESCRIPTION);
+    }
+
+    @Test
+    @Transactional
+    void getAllOrderStatusesByDescriptionNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedOrderStatus = orderStatusRepository.saveAndFlush(orderStatus);
+
+        // Get all the orderStatusList where description does not contain
+        defaultOrderStatusFiltering(
+            "description.doesNotContain=" + UPDATED_DESCRIPTION,
+            "description.doesNotContain=" + DEFAULT_DESCRIPTION
+        );
+    }
+
+    private void defaultOrderStatusFiltering(String shouldBeFound, String shouldNotBeFound) throws Exception {
+        defaultOrderStatusShouldBeFound(shouldBeFound);
+        defaultOrderStatusShouldNotBeFound(shouldNotBeFound);
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is returned.
+     */
+    private void defaultOrderStatusShouldBeFound(String filter) throws Exception {
+        restOrderStatusMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(orderStatus.getId().intValue())))
+            .andExpect(jsonPath("$.[*].statusCode").value(hasItem(DEFAULT_STATUS_CODE)))
+            .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION)));
+
+        // Check, that the count call also returns 1
+        restOrderStatusMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("1"));
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is not returned.
+     */
+    private void defaultOrderStatusShouldNotBeFound(String filter) throws Exception {
+        restOrderStatusMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$").isEmpty());
+
+        // Check, that the count call also returns 0
+        restOrderStatusMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("0"));
+    }
+
+    @Test
+    @Transactional
     void getNonExistingOrderStatus() throws Exception {
         // Get the orderStatus
         restOrderStatusMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());

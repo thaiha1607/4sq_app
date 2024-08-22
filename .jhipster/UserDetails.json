@@ -50,6 +50,7 @@
       "readonly": true
     }
   ],
+  "jpaMetamodelFiltering": true,
   "name": "UserDetails",
   "relationships": [
     {
@@ -65,5 +66,6 @@
       "relationshipWithBuiltInEntity": true
     }
   ],
-  "searchEngine": "no"
+  "searchEngine": "no",
+  "service": "serviceClass"
 }

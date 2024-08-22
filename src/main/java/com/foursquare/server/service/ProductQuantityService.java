@@ -4,11 +4,8 @@ import com.foursquare.server.domain.ProductQuantity;
 import com.foursquare.server.repository.ProductQuantityRepository;
 import com.foursquare.server.service.dto.ProductQuantityDTO;
 import com.foursquare.server.service.mapper.ProductQuantityMapper;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -79,21 +76,6 @@ public class ProductQuantityService {
             })
             .map(productQuantityRepository::save)
             .map(productQuantityMapper::toDto);
-    }
-
-    /**
-     * Get all the productQuantities.
-     *
-     * @return the list of entities.
-     */
-    @Transactional(readOnly = true)
-    public List<ProductQuantityDTO> findAll() {
-        log.debug("Request to get all ProductQuantities");
-        return productQuantityRepository
-            .findAll()
-            .stream()
-            .map(productQuantityMapper::toDto)
-            .collect(Collectors.toCollection(LinkedList::new));
     }
 
     /**

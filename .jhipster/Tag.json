@@ -52,6 +52,7 @@
       "readonly": true
     }
   ],
+  "jpaMetamodelFiltering": true,
   "name": "Tag",
   "relationships": [
     {
@@ -62,5 +63,6 @@
       "relationshipType": "many-to-many"
     }
   ],
-  "searchEngine": "no"
+  "searchEngine": "no",
+  "service": "serviceClass"
 }

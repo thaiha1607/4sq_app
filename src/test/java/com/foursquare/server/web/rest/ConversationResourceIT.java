@@ -184,6 +184,110 @@ class ConversationResourceIT {
 
     @Test
     @Transactional
+    void getConversationsByIdFiltering() throws Exception {
+        // Initialize the database
+        insertedConversation = conversationRepository.saveAndFlush(conversation);
+
+        UUID id = conversation.getId();
+
+        defaultConversationFiltering("id.equals=" + id, "id.notEquals=" + id);
+    }
+
+    @Test
+    @Transactional
+    void getAllConversationsByTitleIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedConversation = conversationRepository.saveAndFlush(conversation);
+
+        // Get all the conversationList where title equals to
+        defaultConversationFiltering("title.equals=" + DEFAULT_TITLE, "title.equals=" + UPDATED_TITLE);
+    }
+
+    @Test
+    @Transactional
+    void getAllConversationsByTitleIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedConversation = conversationRepository.saveAndFlush(conversation);
+
+        // Get all the conversationList where title in
+        defaultConversationFiltering("title.in=" + DEFAULT_TITLE + "," + UPDATED_TITLE, "title.in=" + UPDATED_TITLE);
+    }
+
+    @Test
+    @Transactional
+    void getAllConversationsByTitleIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedConversation = conversationRepository.saveAndFlush(conversation);
+
+        // Get all the conversationList where title is not null
+        defaultConversationFiltering("title.specified=true", "title.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllConversationsByTitleContainsSomething() throws Exception {
+        // Initialize the database
+        insertedConversation = conversationRepository.saveAndFlush(conversation);
+
+        // Get all the conversationList where title contains
+        defaultConversationFiltering("title.contains=" + DEFAULT_TITLE, "title.contains=" + UPDATED_TITLE);
+    }
+
+    @Test
+    @Transactional
+    void getAllConversationsByTitleNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedConversation = conversationRepository.saveAndFlush(conversation);
+
+        // Get all the conversationList where title does not contain
+        defaultConversationFiltering("title.doesNotContain=" + UPDATED_TITLE, "title.doesNotContain=" + DEFAULT_TITLE);
+    }
+
+    private void defaultConversationFiltering(String shouldBeFound, String shouldNotBeFound) throws Exception {
+        defaultConversationShouldBeFound(shouldBeFound);
+        defaultConversationShouldNotBeFound(shouldNotBeFound);
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is returned.
+     */
+    private void defaultConversationShouldBeFound(String filter) throws Exception {
+        restConversationMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(conversation.getId().toString())))
+            .andExpect(jsonPath("$.[*].title").value(hasItem(DEFAULT_TITLE)));
+
+        // Check, that the count call also returns 1
+        restConversationMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("1"));
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is not returned.
+     */
+    private void defaultConversationShouldNotBeFound(String filter) throws Exception {
+        restConversationMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$").isEmpty());
+
+        // Check, that the count call also returns 0
+        restConversationMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("0"));
+    }
+
+    @Test
+    @Transactional
     void getNonExistingConversation() throws Exception {
         // Get the conversation
         restConversationMockMvc.perform(get(ENTITY_API_URL_ID, UUID.randomUUID().toString())).andExpect(status().isNotFound());

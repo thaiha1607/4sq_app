@@ -193,6 +193,177 @@ class InvoiceStatusResourceIT {
 
     @Test
     @Transactional
+    void getInvoiceStatusesByIdFiltering() throws Exception {
+        // Initialize the database
+        insertedInvoiceStatus = invoiceStatusRepository.saveAndFlush(invoiceStatus);
+
+        Long id = invoiceStatus.getId();
+
+        defaultInvoiceStatusFiltering("id.equals=" + id, "id.notEquals=" + id);
+
+        defaultInvoiceStatusFiltering("id.greaterThanOrEqual=" + id, "id.greaterThan=" + id);
+
+        defaultInvoiceStatusFiltering("id.lessThanOrEqual=" + id, "id.lessThan=" + id);
+    }
+
+    @Test
+    @Transactional
+    void getAllInvoiceStatusesByStatusCodeIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedInvoiceStatus = invoiceStatusRepository.saveAndFlush(invoiceStatus);
+
+        // Get all the invoiceStatusList where statusCode equals to
+        defaultInvoiceStatusFiltering("statusCode.equals=" + DEFAULT_STATUS_CODE, "statusCode.equals=" + UPDATED_STATUS_CODE);
+    }
+
+    @Test
+    @Transactional
+    void getAllInvoiceStatusesByStatusCodeIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedInvoiceStatus = invoiceStatusRepository.saveAndFlush(invoiceStatus);
+
+        // Get all the invoiceStatusList where statusCode in
+        defaultInvoiceStatusFiltering(
+            "statusCode.in=" + DEFAULT_STATUS_CODE + "," + UPDATED_STATUS_CODE,
+            "statusCode.in=" + UPDATED_STATUS_CODE
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllInvoiceStatusesByStatusCodeIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedInvoiceStatus = invoiceStatusRepository.saveAndFlush(invoiceStatus);
+
+        // Get all the invoiceStatusList where statusCode is not null
+        defaultInvoiceStatusFiltering("statusCode.specified=true", "statusCode.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllInvoiceStatusesByStatusCodeContainsSomething() throws Exception {
+        // Initialize the database
+        insertedInvoiceStatus = invoiceStatusRepository.saveAndFlush(invoiceStatus);
+
+        // Get all the invoiceStatusList where statusCode contains
+        defaultInvoiceStatusFiltering("statusCode.contains=" + DEFAULT_STATUS_CODE, "statusCode.contains=" + UPDATED_STATUS_CODE);
+    }
+
+    @Test
+    @Transactional
+    void getAllInvoiceStatusesByStatusCodeNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedInvoiceStatus = invoiceStatusRepository.saveAndFlush(invoiceStatus);
+
+        // Get all the invoiceStatusList where statusCode does not contain
+        defaultInvoiceStatusFiltering(
+            "statusCode.doesNotContain=" + UPDATED_STATUS_CODE,
+            "statusCode.doesNotContain=" + DEFAULT_STATUS_CODE
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllInvoiceStatusesByDescriptionIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedInvoiceStatus = invoiceStatusRepository.saveAndFlush(invoiceStatus);
+
+        // Get all the invoiceStatusList where description equals to
+        defaultInvoiceStatusFiltering("description.equals=" + DEFAULT_DESCRIPTION, "description.equals=" + UPDATED_DESCRIPTION);
+    }
+
+    @Test
+    @Transactional
+    void getAllInvoiceStatusesByDescriptionIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedInvoiceStatus = invoiceStatusRepository.saveAndFlush(invoiceStatus);
+
+        // Get all the invoiceStatusList where description in
+        defaultInvoiceStatusFiltering(
+            "description.in=" + DEFAULT_DESCRIPTION + "," + UPDATED_DESCRIPTION,
+            "description.in=" + UPDATED_DESCRIPTION
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllInvoiceStatusesByDescriptionIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedInvoiceStatus = invoiceStatusRepository.saveAndFlush(invoiceStatus);
+
+        // Get all the invoiceStatusList where description is not null
+        defaultInvoiceStatusFiltering("description.specified=true", "description.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllInvoiceStatusesByDescriptionContainsSomething() throws Exception {
+        // Initialize the database
+        insertedInvoiceStatus = invoiceStatusRepository.saveAndFlush(invoiceStatus);
+
+        // Get all the invoiceStatusList where description contains
+        defaultInvoiceStatusFiltering("description.contains=" + DEFAULT_DESCRIPTION, "description.contains=" + UPDATED_DESCRIPTION);
+    }
+
+    @Test
+    @Transactional
+    void getAllInvoiceStatusesByDescriptionNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedInvoiceStatus = invoiceStatusRepository.saveAndFlush(invoiceStatus);
+
+        // Get all the invoiceStatusList where description does not contain
+        defaultInvoiceStatusFiltering(
+            "description.doesNotContain=" + UPDATED_DESCRIPTION,
+            "description.doesNotContain=" + DEFAULT_DESCRIPTION
+        );
+    }
+
+    private void defaultInvoiceStatusFiltering(String shouldBeFound, String shouldNotBeFound) throws Exception {
+        defaultInvoiceStatusShouldBeFound(shouldBeFound);
+        defaultInvoiceStatusShouldNotBeFound(shouldNotBeFound);
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is returned.
+     */
+    private void defaultInvoiceStatusShouldBeFound(String filter) throws Exception {
+        restInvoiceStatusMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(invoiceStatus.getId().intValue())))
+            .andExpect(jsonPath("$.[*].statusCode").value(hasItem(DEFAULT_STATUS_CODE)))
+            .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION)));
+
+        // Check, that the count call also returns 1
+        restInvoiceStatusMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("1"));
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is not returned.
+     */
+    private void defaultInvoiceStatusShouldNotBeFound(String filter) throws Exception {
+        restInvoiceStatusMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$").isEmpty());
+
+        // Check, that the count call also returns 0
+        restInvoiceStatusMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("0"));
+    }
+
+    @Test
+    @Transactional
     void getNonExistingInvoiceStatus() throws Exception {
         // Get the invoiceStatus
         restInvoiceStatusMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());

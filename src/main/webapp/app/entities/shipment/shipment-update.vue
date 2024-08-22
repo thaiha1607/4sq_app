@@ -110,6 +110,9 @@
               />
             </div>
           </div>
+          <div v-if="v$.items.$anyDirty && v$.items.$invalid">
+            <small class="form-text text-danger" v-for="error of v$.items.$errors" :key="error.$uid">{{ error.$message }}</small>
+          </div>
           <div class="form-group">
             <label class="form-control-label" for="shipment-status">Status</label>
             <select class="form-control" id="shipment-status" data-cy="status" name="status" v-model="shipment.status" required>

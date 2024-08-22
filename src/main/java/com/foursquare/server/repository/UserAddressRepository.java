@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
  * Spring Data JPA repository for the UserAddress entity.
  */
 @Repository
-public interface UserAddressRepository extends JpaRepository<UserAddress, UUID> {
+public interface UserAddressRepository extends JpaRepository<UserAddress, UUID>, JpaSpecificationExecutor<UserAddress> {
     @Query("select userAddress from UserAddress userAddress where userAddress.user.login = ?#{authentication.name}")
     List<UserAddress> findByUserIsCurrentUser();
 

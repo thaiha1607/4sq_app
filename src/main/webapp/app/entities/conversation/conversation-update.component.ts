@@ -39,6 +39,10 @@ export default defineComponent({
       retrieveConversation(route.params.conversationId);
     }
 
+    const initRelationships = () => {};
+
+    initRelationships();
+
     const validations = useValidation();
     const validationRules = {
       title: {
@@ -49,6 +53,7 @@ export default defineComponent({
       createdDate: {},
       lastModifiedBy: {},
       lastModifiedDate: {},
+      participants: {},
     };
     const v$ = useVuelidate(validationRules, conversation as any);
     v$.value.$validate();
