@@ -103,6 +103,10 @@ const Comment = () => import('@/entities/comment/comment.vue');
 const CommentUpdate = () => import('@/entities/comment/comment-update.vue');
 const CommentDetails = () => import('@/entities/comment/comment-details.vue');
 
+const OrderHistory = () => import('@/entities/order-history/order-history.vue');
+const OrderHistoryUpdate = () => import('@/entities/order-history/order-history-update.vue');
+const OrderHistoryDetails = () => import('@/entities/order-history/order-history-details.vue');
+
 // jhipster-needle-add-entity-to-router-import - JHipster will import entities to the router here
 
 export default {
@@ -707,6 +711,30 @@ export default {
       path: 'comment/:commentId/view',
       name: 'CommentView',
       component: CommentDetails,
+      meta: { authorities: [Authority.USER] },
+    },
+    {
+      path: 'order-history',
+      name: 'OrderHistory',
+      component: OrderHistory,
+      meta: { authorities: [Authority.USER] },
+    },
+    {
+      path: 'order-history/new',
+      name: 'OrderHistoryCreate',
+      component: OrderHistoryUpdate,
+      meta: { authorities: [Authority.USER] },
+    },
+    {
+      path: 'order-history/:orderHistoryId/edit',
+      name: 'OrderHistoryEdit',
+      component: OrderHistoryUpdate,
+      meta: { authorities: [Authority.USER] },
+    },
+    {
+      path: 'order-history/:orderHistoryId/view',
+      name: 'OrderHistoryView',
+      component: OrderHistoryDetails,
       meta: { authorities: [Authority.USER] },
     },
     // jhipster-needle-add-entity-to-router - JHipster will add entities to the router here

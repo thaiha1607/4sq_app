@@ -33,15 +33,7 @@ describe('Service Tests', () => {
     beforeEach(() => {
       service = new ProductCategoryService();
       currentDate = new Date();
-      elemDefault = new ProductCategory(
-        '9fec3727-3421-4967-b213-ba36557ca194',
-        'AAAAAAA',
-        'AAAAAAA',
-        'AAAAAAA',
-        currentDate,
-        'AAAAAAA',
-        currentDate,
-      );
+      elemDefault = new ProductCategory('9fec3727-3421-4967-b213-ba36557ca194', 'AAAAAAA', 'AAAAAAA', currentDate, 'AAAAAAA', currentDate);
     });
 
     describe('Service methods', () => {
@@ -108,7 +100,6 @@ describe('Service Tests', () => {
         const returnedFromService = Object.assign(
           {
             name: 'BBBBBB',
-            imageUri: 'BBBBBB',
             createdBy: 'BBBBBB',
             createdDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
             lastModifiedBy: 'BBBBBB',
@@ -148,7 +139,6 @@ describe('Service Tests', () => {
             name: 'BBBBBB',
             createdBy: 'BBBBBB',
             lastModifiedBy: 'BBBBBB',
-            lastModifiedDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
           },
           new ProductCategory(),
         );
@@ -183,7 +173,6 @@ describe('Service Tests', () => {
         const returnedFromService = Object.assign(
           {
             name: 'BBBBBB',
-            imageUri: 'BBBBBB',
             createdBy: 'BBBBBB',
             createdDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
             lastModifiedBy: 'BBBBBB',

@@ -61,7 +61,7 @@ public class WarehouseAssignment extends AbstractAuditingEntity<UUID> implements
     @ManyToOne(optional = false)
     @NotNull
     @JsonIgnoreProperties(
-        value = { "invoices", "orderItems", "childOrders", "shipments", "customer", "status", "address", "parentOrder" },
+        value = { "invoices", "orderItems", "childOrders", "shipments", "histories", "customer", "status", "address", "parentOrder" },
         allowSetters = true
     )
     private Order order;

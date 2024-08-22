@@ -105,6 +105,7 @@ public class CacheConfiguration {
             createCache(cm, com.foursquare.server.domain.Order.class.getName() + ".orderItems", jcacheConfiguration);
             createCache(cm, com.foursquare.server.domain.Order.class.getName() + ".childOrders", jcacheConfiguration);
             createCache(cm, com.foursquare.server.domain.Order.class.getName() + ".shipments", jcacheConfiguration);
+            createCache(cm, com.foursquare.server.domain.Order.class.getName() + ".histories", jcacheConfiguration);
             createCache(cm, com.foursquare.server.domain.ProductQuantity.class.getName(), jcacheConfiguration);
             createCache(cm, com.foursquare.server.domain.ProductCategory.class.getName(), jcacheConfiguration);
             createCache(cm, com.foursquare.server.domain.Product.class.getName(), jcacheConfiguration);
@@ -125,6 +126,7 @@ public class CacheConfiguration {
             createCache(cm, com.foursquare.server.domain.WarehouseAssignment.class.getName(), jcacheConfiguration);
             createCache(cm, com.foursquare.server.domain.WorkingUnit.class.getName(), jcacheConfiguration);
             createCache(cm, com.foursquare.server.domain.Comment.class.getName(), jcacheConfiguration);
+            createCache(cm, com.foursquare.server.domain.OrderHistory.class.getName(), jcacheConfiguration);
             // jhipster-needle-redis-add-entry
         };
     }

@@ -39,7 +39,7 @@ describe('ProductQuantity e2e test', () => {
     cy.authenticatedRequest({
       method: 'POST',
       url: '/api/product-categories',
-      body: {"name":"traffic essay","imageUri":"eek"},
+      body: {"name":"emancipate trophy"},
     }).then(({ body }) => {
       productCategory = body;
     });

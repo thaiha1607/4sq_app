@@ -69,7 +69,7 @@ public class Order extends AbstractAuditingEntity<UUID> implements Serializable,
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "parentOrder")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonIgnoreProperties(
-        value = { "invoices", "orderItems", "childOrders", "shipments", "customer", "status", "address", "parentOrder" },
+        value = { "invoices", "orderItems", "childOrders", "shipments", "histories", "customer", "status", "address", "parentOrder" },
         allowSetters = true
     )
     private Set<Order> childOrders = new HashSet<>();
@@ -78,6 +78,11 @@ public class Order extends AbstractAuditingEntity<UUID> implements Serializable,
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonIgnoreProperties(value = { "assignments", "items", "status", "order", "invoice" }, allowSetters = true)
     private Set<Shipment> shipments = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "order")
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @JsonIgnoreProperties(value = { "status", "order" }, allowSetters = true)
+    private Set<OrderHistory> histories = new HashSet<>();
 
     @ManyToOne(optional = false)
     @NotNull
@@ -92,7 +97,7 @@ public class Order extends AbstractAuditingEntity<UUID> implements Serializable,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties(
-        value = { "invoices", "orderItems", "childOrders", "shipments", "customer", "status", "address", "parentOrder" },
+        value = { "invoices", "orderItems", "childOrders", "shipments", "histories", "customer", "status", "address", "parentOrder" },
         allowSetters = true
     )
     private Order parentOrder;
@@ -339,6 +344,37 @@ public class Order extends AbstractAuditingEntity<UUID> implements Serializable,
     public Order removeShipment(Shipment shipment) {
         this.shipments.remove(shipment);
         shipment.setOrder(null);
+        return this;
+    }
+
+    public Set<OrderHistory> getHistories() {
+        return this.histories;
+    }
+
+    public void setHistories(Set<OrderHistory> orderHistories) {
+        if (this.histories != null) {
+            this.histories.forEach(i -> i.setOrder(null));
+        }
+        if (orderHistories != null) {
+            orderHistories.forEach(i -> i.setOrder(this));
+        }
+        this.histories = orderHistories;
+    }
+
+    public Order histories(Set<OrderHistory> orderHistories) {
+        this.setHistories(orderHistories);
+        return this;
+    }
+
+    public Order addHistory(OrderHistory orderHistory) {
+        this.histories.add(orderHistory);
+        orderHistory.setOrder(this);
+        return this;
+    }
+
+    public Order removeHistory(OrderHistory orderHistory) {
+        this.histories.remove(orderHistory);
+        orderHistory.setOrder(null);
         return this;
     }
 

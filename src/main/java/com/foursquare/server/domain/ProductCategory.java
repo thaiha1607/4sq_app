@@ -30,9 +30,6 @@ public class ProductCategory extends AbstractAuditingEntity<UUID> implements Ser
     @Column(name = "name")
     private String name;
 
-    @Column(name = "image_uri")
-    private String imageUri;
-
     // Inherited createdBy definition
     // Inherited createdDate definition
     // Inherited lastModifiedBy definition
@@ -75,19 +72,6 @@ public class ProductCategory extends AbstractAuditingEntity<UUID> implements Ser
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getImageUri() {
-        return this.imageUri;
-    }
-
-    public ProductCategory imageUri(String imageUri) {
-        this.setImageUri(imageUri);
-        return this;
-    }
-
-    public void setImageUri(String imageUri) {
-        this.imageUri = imageUri;
     }
 
     // Inherited createdBy methods
@@ -182,7 +166,6 @@ public class ProductCategory extends AbstractAuditingEntity<UUID> implements Ser
         return "ProductCategory{" +
             "id=" + getId() +
             ", name='" + getName() + "'" +
-            ", imageUri='" + getImageUri() + "'" +
             ", createdBy='" + getCreatedBy() + "'" +
             ", createdDate='" + getCreatedDate() + "'" +
             ", lastModifiedBy='" + getLastModifiedBy() + "'" +

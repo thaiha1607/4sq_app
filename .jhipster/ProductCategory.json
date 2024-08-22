@@ -2,7 +2,6 @@
   "annotations": {
     "changelogDate": "20240821083732",
     "dto": "mapstruct",
-    "filter": true,
     "paginate": "pagination",
     "service": "serviceClass"
   },
@@ -15,10 +14,6 @@
     },
     {
       "fieldName": "name",
-      "fieldType": "String"
-    },
-    {
-      "fieldName": "imageUri",
       "fieldType": "String"
     },
     {

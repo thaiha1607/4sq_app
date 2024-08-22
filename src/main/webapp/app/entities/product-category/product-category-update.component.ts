@@ -69,7 +69,6 @@ export default defineComponent({
     const validations = useValidation();
     const validationRules = {
       name: {},
-      imageUri: {},
       createdBy: {},
       createdDate: {},
       lastModifiedBy: {},

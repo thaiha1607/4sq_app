@@ -2,7 +2,6 @@
   "annotations": {
     "changelogDate": "20240821083532",
     "dto": "mapstruct",
-    "filter": true,
     "paginate": "pagination",
     "service": "serviceClass"
   },
@@ -108,6 +107,13 @@
       "otherEntityName": "shipment",
       "otherEntityRelationshipName": "order",
       "relationshipName": "shipment",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "orderHistory",
+      "otherEntityRelationshipName": "order",
+      "relationshipName": "history",
       "relationshipSide": "left",
       "relationshipType": "one-to-many"
     },

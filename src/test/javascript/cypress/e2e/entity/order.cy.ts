@@ -84,6 +84,11 @@ describe('Order e2e test', () => {
       body: [],
     });
 
+    cy.intercept('GET', '/api/order-histories', {
+      statusCode: 200,
+      body: [],
+    });
+
     cy.intercept('GET', '/api/users', {
       statusCode: 200,
       body: [user],

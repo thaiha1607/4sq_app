@@ -14,6 +14,7 @@
     "clientFramework": "vue",
     "clientTheme": "litera",
     "clientThemeVariant": "primary",
+    "creationTimestamp": 1724330756593,
     "databaseType": "sql",
     "devDatabaseType": "postgresql",
     "devServerPort": 9060,
@@ -44,12 +45,13 @@
       "UserAddress",
       "WarehouseAssignment",
       "WorkingUnit",
-      "Comment"
+      "Comment",
+      "OrderHistory"
     ],
     "jhipsterVersion": "8.6.0",
     "jwtSecretKey": "MjlkMjdlMzQ0YTA4NDQ5MWJkMWY1ZWZlYjM5NzVkMTZiNTFhMTM0ZGRjNDEyZWY1MjI1MDU4OGM3ZWZjODk5MmUwYWU5ZjBhZjIyYTUwMWNjYjFlNTY1ZGVhYzNmNjZkODZlN2M3MWQyMTYzMDExYWY1MjVlZjdkZDZmNGM4NGE=",
     "languages": ["en", "vi"],
-    "lastLiquibaseTimestamp": 1724230112000,
+    "lastLiquibaseTimestamp": 1724330764000,
     "nativeLanguage": "en",
     "packageFolder": "com/foursquare/server",
     "packageName": "com.foursquare.server",
@@ -61,6 +63,6 @@
   "generator-jhipster-entity-audit": {
     "auditFramework": "custom",
     "auditPage": true,
-    "entityAuditEventChangelogDate": "20240821082332"
+    "entityAuditEventChangelogDate": "20240822124603"
   }
 }

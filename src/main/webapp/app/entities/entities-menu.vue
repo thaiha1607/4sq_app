@@ -100,6 +100,10 @@
       <font-awesome-icon icon="asterisk" />
       <span>Comment</span>
     </b-dropdown-item>
+    <b-dropdown-item to="/order-history">
+      <font-awesome-icon icon="asterisk" />
+      <span>Order History</span>
+    </b-dropdown-item>
     <!-- jhipster-needle-add-entity-to-menu - JHipster will add entities to the menu here -->
   </div>
 </template>

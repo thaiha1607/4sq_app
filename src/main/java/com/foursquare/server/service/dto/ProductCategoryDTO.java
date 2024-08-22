@@ -16,8 +16,6 @@ public class ProductCategoryDTO implements Serializable {
 
     private String name;
 
-    private String imageUri;
-
     private String createdBy;
 
     private Instant createdDate;
@@ -46,14 +44,6 @@ public class ProductCategoryDTO implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getImageUri() {
-        return imageUri;
-    }
-
-    public void setImageUri(String imageUri) {
-        this.imageUri = imageUri;
     }
 
     public String getCreatedBy() {
@@ -131,7 +121,6 @@ public class ProductCategoryDTO implements Serializable {
         return "ProductCategoryDTO{" +
             "id='" + getId() + "'" +
             ", name='" + getName() + "'" +
-            ", imageUri='" + getImageUri() + "'" +
             ", createdBy='" + getCreatedBy() + "'" +
             ", createdDate='" + getCreatedDate() + "'" +
             ", lastModifiedBy='" + getLastModifiedBy() + "'" +

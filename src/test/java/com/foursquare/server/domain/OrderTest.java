@@ -2,6 +2,7 @@ package com.foursquare.server.domain;
 
 import static com.foursquare.server.domain.AddressTestSamples.*;
 import static com.foursquare.server.domain.InvoiceTestSamples.*;
+import static com.foursquare.server.domain.OrderHistoryTestSamples.*;
 import static com.foursquare.server.domain.OrderItemTestSamples.*;
 import static com.foursquare.server.domain.OrderStatusTestSamples.*;
 import static com.foursquare.server.domain.OrderTestSamples.*;
@@ -116,6 +117,28 @@ class OrderTest {
         order.setShipments(new HashSet<>());
         assertThat(order.getShipments()).doesNotContain(shipmentBack);
         assertThat(shipmentBack.getOrder()).isNull();
+    }
+
+    @Test
+    void historyTest() {
+        Order order = getOrderRandomSampleGenerator();
+        OrderHistory orderHistoryBack = getOrderHistoryRandomSampleGenerator();
+
+        order.addHistory(orderHistoryBack);
+        assertThat(order.getHistories()).containsOnly(orderHistoryBack);
+        assertThat(orderHistoryBack.getOrder()).isEqualTo(order);
+
+        order.removeHistory(orderHistoryBack);
+        assertThat(order.getHistories()).doesNotContain(orderHistoryBack);
+        assertThat(orderHistoryBack.getOrder()).isNull();
+
+        order.histories(new HashSet<>(Set.of(orderHistoryBack)));
+        assertThat(order.getHistories()).containsOnly(orderHistoryBack);
+        assertThat(orderHistoryBack.getOrder()).isEqualTo(order);
+
+        order.setHistories(new HashSet<>());
+        assertThat(order.getHistories()).doesNotContain(orderHistoryBack);
+        assertThat(orderHistoryBack.getOrder()).isNull();
     }
 
     @Test

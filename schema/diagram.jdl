@@ -21,9 +21,9 @@ application {
         websocket spring-websocket
     }
     entities *
+    // filter *
 }
 
-@filter
 @dto(mapstruct)
 @service(serviceImpl)
 @paginate(no)
@@ -38,14 +38,12 @@ enum StaffStatus {
     TERMINATED,
     OTHER
 }
-@filter
 @dto(mapstruct)
 @service(serviceImpl)
 @paginate(no)
 entity StaffInfo {
     status StaffStatus required
 }
-@filter
 @dto(mapstruct)
 @service(serviceClass)
 @paginate(no)
@@ -58,7 +56,6 @@ entity Address {
     country String required
     zipOrPostalCode String
 }
-@filter
 @dto(mapstruct)
 @service(serviceClass)
 @paginate(pagination)
@@ -69,7 +66,6 @@ entity Colour {
     /** Hexadecimal colour code. RGB */
     hexCode String required pattern(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/)
 }
-@filter
 @dto(mapstruct)
 @service(serviceClass)
 @paginate(pagination)
@@ -77,7 +73,6 @@ entity Conversation {
     id UUID
     title String required maxlength(100)
 }
-@filter
 @dto(mapstruct)
 @service(serviceClass)
 @paginate(pagination)
@@ -85,7 +80,6 @@ entity Participant {
     id UUID
     @defaultValue(false) isAdmin Boolean
 }
-@filter
 @dto(mapstruct)
 @service(serviceClass)
 @paginate(pagination)
@@ -93,7 +87,6 @@ entity InvoiceStatus {
     statusCode String required
     description String
 }
-@filter
 @dto(mapstruct)
 @service(serviceClass)
 @paginate(pagination)
@@ -128,7 +121,6 @@ enum PaymentMethod {
     CHECK,
     OTHER
 }
-@filter
 @dto(mapstruct)
 @service(serviceClass)
 @paginate(pagination)
@@ -142,7 +134,6 @@ enum MessageType {
     IMAGE,
     OTHER
 }
-@filter
 @dto(mapstruct)
 @service(serviceClass)
 @paginate(pagination)
@@ -153,7 +144,6 @@ entity OrderItem {
     unitPrice BigDecimal required min(0)
     note String
 }
-@filter
 @dto(mapstruct)
 @service(serviceClass)
 @paginate(pagination)
@@ -161,7 +151,6 @@ entity OrderStatus {
     statusCode String required
     description String
 }
-@filter
 @dto(mapstruct)
 @service(serviceClass)
 @paginate(pagination)
@@ -180,7 +169,6 @@ enum OrderType {
     TRANSFER,
     OTHER
 }
-@filter
 @dto(mapstruct)
 @service(serviceClass)
 @paginate(pagination)
@@ -188,7 +176,6 @@ entity ProductQuantity {
     id UUID
     qty Integer required min(0)
 }
-@filter
 @dto(mapstruct)
 @service(serviceClass)
 @paginate(pagination)
@@ -202,9 +189,7 @@ entity ProductCategory {
     // We also won't include the discount start date, end date, and conditions.
     // Discount in percentage. Max 100%. Applied only to the product.
     // discount BigDecimal min(0) max(100)
-    imageUri String
 }
-@filter
 @dto(mapstruct)
 @service(serviceClass)
 @paginate(pagination)
@@ -234,7 +219,6 @@ enum AssignmentStatus {
     FAILED,
     OTHER
 }
-@filter
 @dto(mapstruct)
 @service(serviceClass)
 @paginate(pagination)
@@ -244,7 +228,6 @@ entity ShipmentAssignment {
     note String
     otherInfo String
 }
-@filter
 @dto(mapstruct)
 @service(serviceClass)
 @paginate(pagination)
@@ -254,7 +237,6 @@ entity ShipmentItem {
     total BigDecimal required min(0)
     rollQty Integer required min(0)
 }
-@filter
 @dto(mapstruct)
 @service(serviceClass)
 @paginate(pagination)
@@ -262,7 +244,6 @@ entity ShipmentStatus {
     statusCode String required
     description String
 }
-@filter
 @dto(mapstruct)
 @service(serviceClass)
 @paginate(pagination)
@@ -281,7 +262,6 @@ enum ShipmentType {
     EXCHANGE,
     OTHER
 }
-@filter
 @dto(mapstruct)
 @service(serviceClass)
 @paginate(pagination)
@@ -289,7 +269,6 @@ entity Tag {
     id UUID
     name String required
 }
-@filter
 @dto(mapstruct)
 @service(serviceImpl)
 @paginate(no)
@@ -306,7 +285,6 @@ enum AddressType {
     SHIPPING,
     OTHER
 }
-@filter
 @dto(mapstruct)
 @service(serviceClass)
 @paginate(pagination)
@@ -316,7 +294,6 @@ entity WarehouseAssignment {
     note String
     otherInfo String
 }
-@filter
 @dto(mapstruct)
 @service(serviceClass)
 @paginate(pagination)
@@ -332,7 +309,6 @@ enum WorkingUnitType {
     DELIVERY,
     OTHER
 }
-@filter
 @dto(mapstruct)
 @service(serviceClass)
 @paginate(pagination)
@@ -340,6 +316,13 @@ entity Comment {
     id UUID
     rating Integer min(1) max(5) required
     content String
+}
+@dto(mapstruct)
+@service(serviceClass)
+@paginate(pagination)
+entity OrderHistory {
+    id UUID
+    comments String
 }
 /**
  * One to one relationship.
@@ -362,6 +345,7 @@ relationship OneToMany {
     Order{shipment} to Shipment{order required}
     Invoice{shipment} to Shipment{invoice required}
     @OnDelete("CASCADE") Product{comment} to Comment{product required}
+    @OnDelete("CASCADE") Order{history} to OrderHistory{order required}
 }
 /**
  * Many to one relationship.
@@ -390,6 +374,7 @@ relationship ManyToOne {
     WarehouseAssignment{order required} to Order
     WorkingUnit{address} to Address
     Comment{user(login) required} to @OnDelete("CASCADE") User with builtInEntity
+    OrderHistory{status(statusCode) required} to OrderStatus
 }
 /**
  * Many to many relationship.

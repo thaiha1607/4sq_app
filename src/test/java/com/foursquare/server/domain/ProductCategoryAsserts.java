@@ -49,8 +49,7 @@ public class ProductCategoryAsserts {
     public static void assertProductCategoryUpdatableFieldsEquals(ProductCategory expected, ProductCategory actual) {
         assertThat(expected)
             .as("Verify ProductCategory relevant properties")
-            .satisfies(e -> assertThat(e.getName()).as("check name").isEqualTo(actual.getName()))
-            .satisfies(e -> assertThat(e.getImageUri()).as("check imageUri").isEqualTo(actual.getImageUri()));
+            .satisfies(e -> assertThat(e.getName()).as("check name").isEqualTo(actual.getName()));
     }
 
     /**

@@ -2,7 +2,6 @@
   "annotations": {
     "changelogDate": "20240821083132",
     "dto": "mapstruct",
-    "filter": true,
     "paginate": "pagination",
     "service": "serviceClass"
   },

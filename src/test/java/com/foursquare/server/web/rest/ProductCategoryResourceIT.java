@@ -48,9 +48,6 @@ class ProductCategoryResourceIT {
     private static final String DEFAULT_NAME = "AAAAAAAAAA";
     private static final String UPDATED_NAME = "BBBBBBBBBB";
 
-    private static final String DEFAULT_IMAGE_URI = "AAAAAAAAAA";
-    private static final String UPDATED_IMAGE_URI = "BBBBBBBBBB";
-
     private static final String ENTITY_API_URL = "/api/product-categories";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
 
@@ -86,7 +83,7 @@ class ProductCategoryResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static ProductCategory createEntity(EntityManager em) {
-        ProductCategory productCategory = new ProductCategory().name(DEFAULT_NAME).imageUri(DEFAULT_IMAGE_URI);
+        ProductCategory productCategory = new ProductCategory().name(DEFAULT_NAME);
         // Add required entity
         Colour colour;
         if (TestUtil.findAll(em, Colour.class).isEmpty()) {
@@ -107,7 +104,7 @@ class ProductCategoryResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static ProductCategory createUpdatedEntity(EntityManager em) {
-        ProductCategory productCategory = new ProductCategory().name(UPDATED_NAME).imageUri(UPDATED_IMAGE_URI);
+        ProductCategory productCategory = new ProductCategory().name(UPDATED_NAME);
         // Add required entity
         Colour colour;
         if (TestUtil.findAll(em, Colour.class).isEmpty()) {
@@ -188,8 +185,7 @@ class ProductCategoryResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(productCategory.getId().toString())))
-            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
-            .andExpect(jsonPath("$.[*].imageUri").value(hasItem(DEFAULT_IMAGE_URI)));
+            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)));
     }
 
     @SuppressWarnings({ "unchecked" })
@@ -221,8 +217,7 @@ class ProductCategoryResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(productCategory.getId().toString()))
-            .andExpect(jsonPath("$.name").value(DEFAULT_NAME))
-            .andExpect(jsonPath("$.imageUri").value(DEFAULT_IMAGE_URI));
+            .andExpect(jsonPath("$.name").value(DEFAULT_NAME));
     }
 
     @Test
@@ -244,7 +239,7 @@ class ProductCategoryResourceIT {
         ProductCategory updatedProductCategory = productCategoryRepository.findById(productCategory.getId()).orElseThrow();
         // Disconnect from session so that the updates on updatedProductCategory are not directly saved in db
         em.detach(updatedProductCategory);
-        updatedProductCategory.name(UPDATED_NAME).imageUri(UPDATED_IMAGE_URI);
+        updatedProductCategory.name(UPDATED_NAME);
         ProductCategoryDTO productCategoryDTO = productCategoryMapper.toDto(updatedProductCategory);
 
         restProductCategoryMockMvc
@@ -334,8 +329,6 @@ class ProductCategoryResourceIT {
         ProductCategory partialUpdatedProductCategory = new ProductCategory();
         partialUpdatedProductCategory.setId(productCategory.getId());
 
-        partialUpdatedProductCategory.imageUri(UPDATED_IMAGE_URI);
-
         restProductCategoryMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, partialUpdatedProductCategory.getId())
@@ -365,7 +358,7 @@ class ProductCategoryResourceIT {
         ProductCategory partialUpdatedProductCategory = new ProductCategory();
         partialUpdatedProductCategory.setId(productCategory.getId());
 
-        partialUpdatedProductCategory.name(UPDATED_NAME).imageUri(UPDATED_IMAGE_URI);
+        partialUpdatedProductCategory.name(UPDATED_NAME);
 
         restProductCategoryMockMvc
             .perform(
