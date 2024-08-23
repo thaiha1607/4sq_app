@@ -29,6 +29,7 @@
           <tr>
             <th scope="row"><span>ID</span></th>
             <th scope="row"><span>Status</span></th>
+            <th scope="row"><span>Role</span></th>
             <th scope="row"><span>Created By</span></th>
             <th scope="row"><span>Created Date</span></th>
             <th scope="row"><span>Last Modified By</span></th>
@@ -44,6 +45,7 @@
               <router-link :to="{ name: 'StaffInfoView', params: { staffInfoId: staffInfo.id } }">{{ staffInfo.id }}</router-link>
             </td>
             <td>{{ staffInfo.status }}</td>
+            <td>{{ staffInfo.role }}</td>
             <td>{{ staffInfo.createdBy }}</td>
             <td>{{ formatDateShort(staffInfo.createdDate) || '' }}</td>
             <td>{{ staffInfo.lastModifiedBy }}</td>

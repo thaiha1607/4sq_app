@@ -1,0 +1,11 @@
+export enum StaffRole {
+  SALESPERSON = 'SALESPERSON',
+
+  WAREHOUSE = 'WAREHOUSE',
+
+  DELIVERY = 'DELIVERY',
+
+  MANAGER = 'MANAGER',
+
+  OTHER = 'OTHER',
+}

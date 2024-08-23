@@ -78,6 +78,9 @@ public class StaffInfoQueryService extends QueryService<StaffInfo> {
             if (criteria.getStatus() != null) {
                 specification = specification.and(buildSpecification(criteria.getStatus(), StaffInfo_.status));
             }
+            if (criteria.getRole() != null) {
+                specification = specification.and(buildSpecification(criteria.getRole(), StaffInfo_.role));
+            }
             if (criteria.getCreatedBy() != null) {
                 specification = specification.and(buildStringSpecification(criteria.getCreatedBy(), StaffInfo_.createdBy));
             }

@@ -38,11 +38,19 @@ enum StaffStatus {
     TERMINATED,
     OTHER
 }
+enum StaffRole {
+    SALESPERSON,
+    WAREHOUSE,
+    DELIVERY,
+    MANAGER,
+    OTHER
+}
 @dto(mapstruct)
 @service(serviceImpl)
 @paginate(no)
 entity StaffInfo {
     status StaffStatus required
+    role StaffRole required
 }
 @dto(mapstruct)
 @service(serviceClass)

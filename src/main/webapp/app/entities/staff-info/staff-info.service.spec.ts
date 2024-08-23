@@ -33,7 +33,7 @@ describe('Service Tests', () => {
     beforeEach(() => {
       service = new StaffInfoService();
       currentDate = new Date();
-      elemDefault = new StaffInfo(123, 'ACTIVE', 'AAAAAAA', currentDate, 'AAAAAAA', currentDate);
+      elemDefault = new StaffInfo(123, 'ACTIVE', 'SALESPERSON', 'AAAAAAA', currentDate, 'AAAAAAA', currentDate);
     });
 
     describe('Service methods', () => {
@@ -100,6 +100,7 @@ describe('Service Tests', () => {
         const returnedFromService = Object.assign(
           {
             status: 'BBBBBB',
+            role: 'BBBBBB',
             createdBy: 'BBBBBB',
             createdDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
             lastModifiedBy: 'BBBBBB',
@@ -137,10 +138,10 @@ describe('Service Tests', () => {
         const patchObject = Object.assign(
           {
             status: 'BBBBBB',
+            role: 'BBBBBB',
             createdBy: 'BBBBBB',
             createdDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
             lastModifiedBy: 'BBBBBB',
-            lastModifiedDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
           },
           new StaffInfo(),
         );
@@ -175,6 +176,7 @@ describe('Service Tests', () => {
         const returnedFromService = Object.assign(
           {
             status: 'BBBBBB',
+            role: 'BBBBBB',
             createdBy: 'BBBBBB',
             createdDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
             lastModifiedBy: 'BBBBBB',

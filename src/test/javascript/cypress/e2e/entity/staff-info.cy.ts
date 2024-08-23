@@ -15,7 +15,7 @@ describe('StaffInfo e2e test', () => {
   const staffInfoPageUrlPattern = new RegExp('/staff-info(\\?.*)?$');
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
-  // const staffInfoSample = {"status":"INACTIVE"};
+  // const staffInfoSample = {"status":"TERMINATED","role":"MANAGER"};
 
   let staffInfo;
   // let user;
@@ -216,6 +216,8 @@ describe('StaffInfo e2e test', () => {
 
     it.skip('should create an instance of StaffInfo', () => {
       cy.get(`[data-cy="status"]`).select('INACTIVE');
+
+      cy.get(`[data-cy="role"]`).select('OTHER');
 
       cy.get(`[data-cy="user"]`).select(1);
 

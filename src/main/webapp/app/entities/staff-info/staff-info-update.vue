@@ -26,6 +26,23 @@
             </div>
           </div>
           <div class="form-group">
+            <label class="form-control-label" for="staff-info-role">Role</label>
+            <select
+              class="form-control"
+              name="role"
+              :class="{ valid: !v$.role.$invalid, invalid: v$.role.$invalid }"
+              v-model="v$.role.$model"
+              id="staff-info-role"
+              data-cy="role"
+              required
+            >
+              <option v-for="staffRole in staffRoleValues" :key="staffRole" v-bind:value="staffRole">{{ staffRole }}</option>
+            </select>
+            <div v-if="v$.role.$anyDirty && v$.role.$invalid">
+              <small class="form-text text-danger" v-for="error of v$.role.$errors" :key="error.$uid">{{ error.$message }}</small>
+            </div>
+          </div>
+          <div class="form-group">
             <label class="form-control-label" for="staff-info-createdBy">Created By</label>
             <input
               type="text"

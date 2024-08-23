@@ -1,3 +1,3 @@
-id;status;created_by;created_date;last_modified_by;last_modified_date;user_id
-1;SUSPENDED;whereas;2024-08-21T07:31:23;bare;2024-08-20T09:59:40;1
-2;ACTIVE;compare;2024-08-21T01:38:03;arrogantly ferociously whoa;2024-08-21T04:49:22;2
+id;status;role;created_by;created_date;last_modified_by;last_modified_date;user_id
+1;SUSPENDED;SALESPERSON;oh through;2024-08-21T06:56:00;dude vice who;2024-08-20T20:04:17;1
+2;INACTIVE;SALESPERSON;whoa;2024-08-21T04:49:22;obnoxiously clerk;2024-08-20T17:35:39;2

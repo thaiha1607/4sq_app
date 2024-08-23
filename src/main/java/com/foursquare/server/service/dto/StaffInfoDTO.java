@@ -1,5 +1,6 @@
 package com.foursquare.server.service.dto;
 
+import com.foursquare.server.domain.enumeration.StaffRole;
 import com.foursquare.server.domain.enumeration.StaffStatus;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
@@ -16,6 +17,9 @@ public class StaffInfoDTO implements Serializable {
 
     @NotNull
     private StaffStatus status;
+
+    @NotNull
+    private StaffRole role;
 
     private String createdBy;
 
@@ -44,6 +48,14 @@ public class StaffInfoDTO implements Serializable {
 
     public void setStatus(StaffStatus status) {
         this.status = status;
+    }
+
+    public StaffRole getRole() {
+        return role;
+    }
+
+    public void setRole(StaffRole role) {
+        this.role = role;
     }
 
     public String getCreatedBy() {
@@ -121,6 +133,7 @@ public class StaffInfoDTO implements Serializable {
         return "StaffInfoDTO{" +
             "id=" + getId() +
             ", status='" + getStatus() + "'" +
+            ", role='" + getRole() + "'" +
             ", createdBy='" + getCreatedBy() + "'" +
             ", createdDate='" + getCreatedDate() + "'" +
             ", lastModifiedBy='" + getLastModifiedBy() + "'" +

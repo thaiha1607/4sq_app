@@ -13,6 +13,7 @@ import com.foursquare.server.IntegrationTest;
 import com.foursquare.server.domain.StaffInfo;
 import com.foursquare.server.domain.User;
 import com.foursquare.server.domain.WorkingUnit;
+import com.foursquare.server.domain.enumeration.StaffRole;
 import com.foursquare.server.domain.enumeration.StaffStatus;
 import com.foursquare.server.repository.StaffInfoRepository;
 import com.foursquare.server.repository.UserRepository;
@@ -50,6 +51,9 @@ class StaffInfoResourceIT {
 
     private static final StaffStatus DEFAULT_STATUS = StaffStatus.ACTIVE;
     private static final StaffStatus UPDATED_STATUS = StaffStatus.INACTIVE;
+
+    private static final StaffRole DEFAULT_ROLE = StaffRole.SALESPERSON;
+    private static final StaffRole UPDATED_ROLE = StaffRole.WAREHOUSE;
 
     private static final String ENTITY_API_URL = "/api/staff-infos";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
@@ -92,7 +96,7 @@ class StaffInfoResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static StaffInfo createEntity(EntityManager em) {
-        StaffInfo staffInfo = new StaffInfo().status(DEFAULT_STATUS);
+        StaffInfo staffInfo = new StaffInfo().status(DEFAULT_STATUS).role(DEFAULT_ROLE);
         // Add required entity
         User user = UserResourceIT.createEntity(em);
         em.persist(user);
@@ -108,7 +112,7 @@ class StaffInfoResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static StaffInfo createUpdatedEntity(EntityManager em) {
-        StaffInfo staffInfo = new StaffInfo().status(UPDATED_STATUS);
+        StaffInfo staffInfo = new StaffInfo().status(UPDATED_STATUS).role(UPDATED_ROLE);
         // Add required entity
         User user = UserResourceIT.createEntity(em);
         em.persist(user);
@@ -191,6 +195,23 @@ class StaffInfoResourceIT {
 
     @Test
     @Transactional
+    void checkRoleIsRequired() throws Exception {
+        long databaseSizeBeforeTest = getRepositoryCount();
+        // set the field null
+        staffInfo.setRole(null);
+
+        // Create the StaffInfo, which fails.
+        StaffInfoDTO staffInfoDTO = staffInfoMapper.toDto(staffInfo);
+
+        restStaffInfoMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(staffInfoDTO)))
+            .andExpect(status().isBadRequest());
+
+        assertSameRepositoryCount(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
     void getAllStaffInfos() throws Exception {
         // Initialize the database
         insertedStaffInfo = staffInfoRepository.saveAndFlush(staffInfo);
@@ -201,7 +222,8 @@ class StaffInfoResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(staffInfo.getId().intValue())))
-            .andExpect(jsonPath("$.[*].status").value(hasItem(DEFAULT_STATUS.toString())));
+            .andExpect(jsonPath("$.[*].status").value(hasItem(DEFAULT_STATUS.toString())))
+            .andExpect(jsonPath("$.[*].role").value(hasItem(DEFAULT_ROLE.toString())));
     }
 
     @SuppressWarnings({ "unchecked" })
@@ -233,7 +255,8 @@ class StaffInfoResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(staffInfo.getId().intValue()))
-            .andExpect(jsonPath("$.status").value(DEFAULT_STATUS.toString()));
+            .andExpect(jsonPath("$.status").value(DEFAULT_STATUS.toString()))
+            .andExpect(jsonPath("$.role").value(DEFAULT_ROLE.toString()));
     }
 
     @Test
@@ -279,6 +302,36 @@ class StaffInfoResourceIT {
 
         // Get all the staffInfoList where status is not null
         defaultStaffInfoFiltering("status.specified=true", "status.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllStaffInfosByRoleIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedStaffInfo = staffInfoRepository.saveAndFlush(staffInfo);
+
+        // Get all the staffInfoList where role equals to
+        defaultStaffInfoFiltering("role.equals=" + DEFAULT_ROLE, "role.equals=" + UPDATED_ROLE);
+    }
+
+    @Test
+    @Transactional
+    void getAllStaffInfosByRoleIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedStaffInfo = staffInfoRepository.saveAndFlush(staffInfo);
+
+        // Get all the staffInfoList where role in
+        defaultStaffInfoFiltering("role.in=" + DEFAULT_ROLE + "," + UPDATED_ROLE, "role.in=" + UPDATED_ROLE);
+    }
+
+    @Test
+    @Transactional
+    void getAllStaffInfosByRoleIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedStaffInfo = staffInfoRepository.saveAndFlush(staffInfo);
+
+        // Get all the staffInfoList where role is not null
+        defaultStaffInfoFiltering("role.specified=true", "role.specified=false");
     }
 
     @Test
@@ -331,7 +384,8 @@ class StaffInfoResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(staffInfo.getId().intValue())))
-            .andExpect(jsonPath("$.[*].status").value(hasItem(DEFAULT_STATUS.toString())));
+            .andExpect(jsonPath("$.[*].status").value(hasItem(DEFAULT_STATUS.toString())))
+            .andExpect(jsonPath("$.[*].role").value(hasItem(DEFAULT_ROLE.toString())));
 
         // Check, that the count call also returns 1
         restStaffInfoMockMvc
@@ -379,7 +433,7 @@ class StaffInfoResourceIT {
         StaffInfo updatedStaffInfo = staffInfoRepository.findById(staffInfo.getId()).orElseThrow();
         // Disconnect from session so that the updates on updatedStaffInfo are not directly saved in db
         em.detach(updatedStaffInfo);
-        updatedStaffInfo.status(UPDATED_STATUS);
+        updatedStaffInfo.status(UPDATED_STATUS).role(UPDATED_ROLE);
         StaffInfoDTO staffInfoDTO = staffInfoMapper.toDto(updatedStaffInfo);
 
         restStaffInfoMockMvc
@@ -469,7 +523,7 @@ class StaffInfoResourceIT {
         StaffInfo partialUpdatedStaffInfo = new StaffInfo();
         partialUpdatedStaffInfo.setId(staffInfo.getId());
 
-        partialUpdatedStaffInfo.status(UPDATED_STATUS);
+        partialUpdatedStaffInfo.status(UPDATED_STATUS).role(UPDATED_ROLE);
 
         restStaffInfoMockMvc
             .perform(
@@ -500,7 +554,7 @@ class StaffInfoResourceIT {
         StaffInfo partialUpdatedStaffInfo = new StaffInfo();
         partialUpdatedStaffInfo.setId(staffInfo.getId());
 
-        partialUpdatedStaffInfo.status(UPDATED_STATUS);
+        partialUpdatedStaffInfo.status(UPDATED_STATUS).role(UPDATED_ROLE);
 
         restStaffInfoMockMvc
             .perform(

@@ -1,6 +1,7 @@
 package com.foursquare.server.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.foursquare.server.domain.enumeration.StaffRole;
 import com.foursquare.server.domain.enumeration.StaffStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -32,6 +33,11 @@ public class StaffInfo extends AbstractAuditingEntity<Long> implements Serializa
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private StaffStatus status;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false)
+    private StaffRole role;
 
     // Inherited createdBy definition
     // Inherited createdDate definition
@@ -75,6 +81,19 @@ public class StaffInfo extends AbstractAuditingEntity<Long> implements Serializa
 
     public void setStatus(StaffStatus status) {
         this.status = status;
+    }
+
+    public StaffRole getRole() {
+        return this.role;
+    }
+
+    public StaffInfo role(StaffRole role) {
+        this.setRole(role);
+        return this;
+    }
+
+    public void setRole(StaffRole role) {
+        this.role = role;
     }
 
     // Inherited createdBy methods
@@ -169,6 +188,7 @@ public class StaffInfo extends AbstractAuditingEntity<Long> implements Serializa
         return "StaffInfo{" +
             "id=" + getId() +
             ", status='" + getStatus() + "'" +
+            ", role='" + getRole() + "'" +
             ", createdBy='" + getCreatedBy() + "'" +
             ", createdDate='" + getCreatedDate() + "'" +
             ", lastModifiedBy='" + getLastModifiedBy() + "'" +

@@ -11,6 +11,7 @@ import WorkingUnitService from '@/entities/working-unit/working-unit.service';
 import { type IWorkingUnit } from '@/shared/model/working-unit.model';
 import { type IStaffInfo, StaffInfo } from '@/shared/model/staff-info.model';
 import { StaffStatus } from '@/shared/model/enumerations/staff-status.model';
+import { StaffRole } from '@/shared/model/enumerations/staff-role.model';
 
 export default defineComponent({
   compatConfig: { MODE: 3 },
@@ -27,6 +28,7 @@ export default defineComponent({
 
     const workingUnits: Ref<IWorkingUnit[]> = ref([]);
     const staffStatusValues: Ref<string[]> = ref(Object.keys(StaffStatus));
+    const staffRoleValues: Ref<string[]> = ref(Object.keys(StaffRole));
     const isSaving = ref(false);
     const currentLanguage = inject('currentLanguage', () => computed(() => navigator.language ?? 'en'), true);
 
@@ -70,6 +72,9 @@ export default defineComponent({
       status: {
         required: validations.required('This field is required.'),
       },
+      role: {
+        required: validations.required('This field is required.'),
+      },
       createdBy: {},
       createdDate: {},
       lastModifiedBy: {},
@@ -88,6 +93,7 @@ export default defineComponent({
       staffInfo,
       previousState,
       staffStatusValues,
+      staffRoleValues,
       isSaving,
       currentLanguage,
       users,

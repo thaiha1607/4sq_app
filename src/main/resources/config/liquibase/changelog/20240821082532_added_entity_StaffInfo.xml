@@ -17,6 +17,9 @@
             <column name="status" type="varchar(255)">
                 <constraints nullable="false" />
             </column>
+            <column name="role" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
             <column name="created_by" type="varchar(50)">
                 <constraints nullable="false" />
             </column>
@@ -59,6 +62,7 @@
                   usePreparedStatements="true">
             <column name="id" type="numeric"/>
             <column name="status" type="string"/>
+            <column name="role" type="string"/>
             <column name="created_by" type="string"/>
             <column name="created_date" type="date"/>
             <column name="last_modified_by" type="string"/>

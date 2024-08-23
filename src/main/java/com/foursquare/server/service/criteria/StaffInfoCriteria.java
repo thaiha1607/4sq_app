@@ -1,5 +1,6 @@
 package com.foursquare.server.service.criteria;
 
+import com.foursquare.server.domain.enumeration.StaffRole;
 import com.foursquare.server.domain.enumeration.StaffStatus;
 import java.io.Serializable;
 import java.util.Objects;
@@ -38,11 +39,30 @@ public class StaffInfoCriteria implements Serializable, Criteria {
         }
     }
 
+    /**
+     * Class for filtering StaffRole
+     */
+    public static class StaffRoleFilter extends Filter<StaffRole> {
+
+        public StaffRoleFilter() {}
+
+        public StaffRoleFilter(StaffRoleFilter filter) {
+            super(filter);
+        }
+
+        @Override
+        public StaffRoleFilter copy() {
+            return new StaffRoleFilter(this);
+        }
+    }
+
     private static final long serialVersionUID = 1L;
 
     private LongFilter id;
 
     private StaffStatusFilter status;
+
+    private StaffRoleFilter role;
 
     private StringFilter createdBy;
 
@@ -63,6 +83,7 @@ public class StaffInfoCriteria implements Serializable, Criteria {
     public StaffInfoCriteria(StaffInfoCriteria other) {
         this.id = other.optionalId().map(LongFilter::copy).orElse(null);
         this.status = other.optionalStatus().map(StaffStatusFilter::copy).orElse(null);
+        this.role = other.optionalRole().map(StaffRoleFilter::copy).orElse(null);
         this.createdBy = other.optionalCreatedBy().map(StringFilter::copy).orElse(null);
         this.createdDate = other.optionalCreatedDate().map(InstantFilter::copy).orElse(null);
         this.lastModifiedBy = other.optionalLastModifiedBy().map(StringFilter::copy).orElse(null);
@@ -113,6 +134,25 @@ public class StaffInfoCriteria implements Serializable, Criteria {
 
     public void setStatus(StaffStatusFilter status) {
         this.status = status;
+    }
+
+    public StaffRoleFilter getRole() {
+        return role;
+    }
+
+    public Optional<StaffRoleFilter> optionalRole() {
+        return Optional.ofNullable(role);
+    }
+
+    public StaffRoleFilter role() {
+        if (role == null) {
+            setRole(new StaffRoleFilter());
+        }
+        return role;
+    }
+
+    public void setRole(StaffRoleFilter role) {
+        this.role = role;
     }
 
     public StringFilter getCreatedBy() {
@@ -260,6 +300,7 @@ public class StaffInfoCriteria implements Serializable, Criteria {
         return (
             Objects.equals(id, that.id) &&
             Objects.equals(status, that.status) &&
+            Objects.equals(role, that.role) &&
             Objects.equals(createdBy, that.createdBy) &&
             Objects.equals(createdDate, that.createdDate) &&
             Objects.equals(lastModifiedBy, that.lastModifiedBy) &&
@@ -272,7 +313,7 @@ public class StaffInfoCriteria implements Serializable, Criteria {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, status, createdBy, createdDate, lastModifiedBy, lastModifiedDate, userId, workingUnitId, distinct);
+        return Objects.hash(id, status, role, createdBy, createdDate, lastModifiedBy, lastModifiedDate, userId, workingUnitId, distinct);
     }
 
     // prettier-ignore
@@ -281,6 +322,7 @@ public class StaffInfoCriteria implements Serializable, Criteria {
         return "StaffInfoCriteria{" +
             optionalId().map(f -> "id=" + f + ", ").orElse("") +
             optionalStatus().map(f -> "status=" + f + ", ").orElse("") +
+            optionalRole().map(f -> "role=" + f + ", ").orElse("") +
             optionalCreatedBy().map(f -> "createdBy=" + f + ", ").orElse("") +
             optionalCreatedDate().map(f -> "createdDate=" + f + ", ").orElse("") +
             optionalLastModifiedBy().map(f -> "lastModifiedBy=" + f + ", ").orElse("") +

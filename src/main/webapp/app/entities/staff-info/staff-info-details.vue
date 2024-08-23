@@ -11,6 +11,12 @@
             <span>{{ staffInfo.status }}</span>
           </dd>
           <dt>
+            <span>Role</span>
+          </dt>
+          <dd>
+            <span>{{ staffInfo.role }}</span>
+          </dd>
+          <dt>
             <span>Created By</span>
           </dt>
           <dd>

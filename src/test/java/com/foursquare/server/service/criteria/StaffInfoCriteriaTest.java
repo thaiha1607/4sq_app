@@ -76,6 +76,7 @@ class StaffInfoCriteriaTest {
     private static void setAllFilters(StaffInfoCriteria staffInfoCriteria) {
         staffInfoCriteria.id();
         staffInfoCriteria.status();
+        staffInfoCriteria.role();
         staffInfoCriteria.createdBy();
         staffInfoCriteria.createdDate();
         staffInfoCriteria.lastModifiedBy();
@@ -90,6 +91,7 @@ class StaffInfoCriteriaTest {
             criteria ->
                 condition.apply(criteria.getId()) &&
                 condition.apply(criteria.getStatus()) &&
+                condition.apply(criteria.getRole()) &&
                 condition.apply(criteria.getCreatedBy()) &&
                 condition.apply(criteria.getCreatedDate()) &&
                 condition.apply(criteria.getLastModifiedBy()) &&
@@ -106,6 +108,7 @@ class StaffInfoCriteriaTest {
             criteria ->
                 condition.apply(criteria.getId(), copy.getId()) &&
                 condition.apply(criteria.getStatus(), copy.getStatus()) &&
+                condition.apply(criteria.getRole(), copy.getRole()) &&
                 condition.apply(criteria.getCreatedBy(), copy.getCreatedBy()) &&
                 condition.apply(criteria.getCreatedDate(), copy.getCreatedDate()) &&
                 condition.apply(criteria.getLastModifiedBy(), copy.getLastModifiedBy()) &&

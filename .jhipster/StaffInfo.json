@@ -15,6 +15,12 @@
       "fieldValues": "ACTIVE,INACTIVE,SUSPENDED,TERMINATED,OTHER"
     },
     {
+      "fieldName": "role",
+      "fieldType": "StaffRole",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "SALESPERSON,WAREHOUSE,DELIVERY,MANAGER,OTHER"
+    },
+    {
       "auditField": true,
       "autoGenerate": true,
       "columnType": "varchar(50)",

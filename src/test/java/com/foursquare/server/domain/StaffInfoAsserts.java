@@ -49,7 +49,8 @@ public class StaffInfoAsserts {
     public static void assertStaffInfoUpdatableFieldsEquals(StaffInfo expected, StaffInfo actual) {
         assertThat(expected)
             .as("Verify StaffInfo relevant properties")
-            .satisfies(e -> assertThat(e.getStatus()).as("check status").isEqualTo(actual.getStatus()));
+            .satisfies(e -> assertThat(e.getStatus()).as("check status").isEqualTo(actual.getStatus()))
+            .satisfies(e -> assertThat(e.getRole()).as("check role").isEqualTo(actual.getRole()));
     }
 
     /**
