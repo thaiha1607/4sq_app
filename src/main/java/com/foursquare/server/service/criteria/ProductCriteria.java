@@ -28,7 +28,7 @@ public class ProductCriteria implements Serializable, Criteria {
 
     private StringFilter description;
 
-    private BigDecimalFilter price;
+    private BigDecimalFilter expectedPrice;
 
     private StringFilter provider;
 
@@ -56,7 +56,7 @@ public class ProductCriteria implements Serializable, Criteria {
         this.id = other.optionalId().map(UUIDFilter::copy).orElse(null);
         this.name = other.optionalName().map(StringFilter::copy).orElse(null);
         this.description = other.optionalDescription().map(StringFilter::copy).orElse(null);
-        this.price = other.optionalPrice().map(BigDecimalFilter::copy).orElse(null);
+        this.expectedPrice = other.optionalExpectedPrice().map(BigDecimalFilter::copy).orElse(null);
         this.provider = other.optionalProvider().map(StringFilter::copy).orElse(null);
         this.createdBy = other.optionalCreatedBy().map(StringFilter::copy).orElse(null);
         this.createdDate = other.optionalCreatedDate().map(InstantFilter::copy).orElse(null);
@@ -131,23 +131,23 @@ public class ProductCriteria implements Serializable, Criteria {
         this.description = description;
     }
 
-    public BigDecimalFilter getPrice() {
-        return price;
+    public BigDecimalFilter getExpectedPrice() {
+        return expectedPrice;
     }
 
-    public Optional<BigDecimalFilter> optionalPrice() {
-        return Optional.ofNullable(price);
+    public Optional<BigDecimalFilter> optionalExpectedPrice() {
+        return Optional.ofNullable(expectedPrice);
     }
 
-    public BigDecimalFilter price() {
-        if (price == null) {
-            setPrice(new BigDecimalFilter());
+    public BigDecimalFilter expectedPrice() {
+        if (expectedPrice == null) {
+            setExpectedPrice(new BigDecimalFilter());
         }
-        return price;
+        return expectedPrice;
     }
 
-    public void setPrice(BigDecimalFilter price) {
-        this.price = price;
+    public void setExpectedPrice(BigDecimalFilter expectedPrice) {
+        this.expectedPrice = expectedPrice;
     }
 
     public StringFilter getProvider() {
@@ -353,7 +353,7 @@ public class ProductCriteria implements Serializable, Criteria {
             Objects.equals(id, that.id) &&
             Objects.equals(name, that.name) &&
             Objects.equals(description, that.description) &&
-            Objects.equals(price, that.price) &&
+            Objects.equals(expectedPrice, that.expectedPrice) &&
             Objects.equals(provider, that.provider) &&
             Objects.equals(createdBy, that.createdBy) &&
             Objects.equals(createdDate, that.createdDate) &&
@@ -373,7 +373,7 @@ public class ProductCriteria implements Serializable, Criteria {
             id,
             name,
             description,
-            price,
+            expectedPrice,
             provider,
             createdBy,
             createdDate,
@@ -394,7 +394,7 @@ public class ProductCriteria implements Serializable, Criteria {
             optionalId().map(f -> "id=" + f + ", ").orElse("") +
             optionalName().map(f -> "name=" + f + ", ").orElse("") +
             optionalDescription().map(f -> "description=" + f + ", ").orElse("") +
-            optionalPrice().map(f -> "price=" + f + ", ").orElse("") +
+            optionalExpectedPrice().map(f -> "expectedPrice=" + f + ", ").orElse("") +
             optionalProvider().map(f -> "provider=" + f + ", ").orElse("") +
             optionalCreatedBy().map(f -> "createdBy=" + f + ", ").orElse("") +
             optionalCreatedDate().map(f -> "createdDate=" + f + ", ").orElse("") +

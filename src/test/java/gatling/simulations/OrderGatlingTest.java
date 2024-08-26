@@ -70,7 +70,6 @@ public class OrderGatlingTest extends Simulation {
                                 "{" +
                                 "\"type\": \"SALE\"" +
                                 ", \"priority\": 0" +
-                                ", \"isInternal\": null" +
                                 ", \"note\": \"SAMPLE_TEXT\"" +
                                 ", \"otherInfo\": \"SAMPLE_TEXT\"" +
                                 ", \"createdBy\": \"SAMPLE_TEXT\"" +

@@ -27,8 +27,8 @@ public class OrderHistory extends AbstractAuditingEntity<UUID> implements Serial
     @Column(name = "id")
     private UUID id;
 
-    @Column(name = "comments")
-    private String comments;
+    @Column(name = "note")
+    private String note;
 
     // Inherited createdBy definition
     // Inherited createdDate definition
@@ -44,7 +44,18 @@ public class OrderHistory extends AbstractAuditingEntity<UUID> implements Serial
     @ManyToOne(optional = false)
     @NotNull
     @JsonIgnoreProperties(
-        value = { "invoices", "orderItems", "childOrders", "shipments", "histories", "customer", "status", "address", "parentOrder" },
+        value = {
+            "invoices",
+            "orderItems",
+            "childOrders",
+            "internalOrders",
+            "shipments",
+            "histories",
+            "customer",
+            "status",
+            "address",
+            "rootOrder",
+        },
         allowSetters = true
     )
     private Order order;
@@ -64,17 +75,17 @@ public class OrderHistory extends AbstractAuditingEntity<UUID> implements Serial
         this.id = id;
     }
 
-    public String getComments() {
-        return this.comments;
+    public String getNote() {
+        return this.note;
     }
 
-    public OrderHistory comments(String comments) {
-        this.setComments(comments);
+    public OrderHistory note(String note) {
+        this.setNote(note);
         return this;
     }
 
-    public void setComments(String comments) {
-        this.comments = comments;
+    public void setNote(String note) {
+        this.note = note;
     }
 
     // Inherited createdBy methods
@@ -168,7 +179,7 @@ public class OrderHistory extends AbstractAuditingEntity<UUID> implements Serial
     public String toString() {
         return "OrderHistory{" +
             "id=" + getId() +
-            ", comments='" + getComments() + "'" +
+            ", note='" + getNote() + "'" +
             ", createdBy='" + getCreatedBy() + "'" +
             ", createdDate='" + getCreatedDate() + "'" +
             ", lastModifiedBy='" + getLastModifiedBy() + "'" +

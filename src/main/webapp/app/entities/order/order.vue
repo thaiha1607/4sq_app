@@ -30,7 +30,6 @@
             <th scope="row"><span>ID</span></th>
             <th scope="row"><span>Type</span></th>
             <th scope="row"><span>Priority</span></th>
-            <th scope="row"><span>Is Internal</span></th>
             <th scope="row"><span>Note</span></th>
             <th scope="row"><span>Other Info</span></th>
             <th scope="row"><span>Created By</span></th>
@@ -40,7 +39,7 @@
             <th scope="row"><span>Customer</span></th>
             <th scope="row"><span>Status</span></th>
             <th scope="row"><span>Address</span></th>
-            <th scope="row"><span>Parent Order</span></th>
+            <th scope="row"><span>Root Order</span></th>
             <th scope="row"></th>
           </tr>
         </thead>
@@ -51,7 +50,6 @@
             </td>
             <td>{{ order.type }}</td>
             <td>{{ order.priority }}</td>
-            <td>{{ order.isInternal }}</td>
             <td>{{ order.note }}</td>
             <td>{{ order.otherInfo }}</td>
             <td>{{ order.createdBy }}</td>
@@ -74,8 +72,8 @@
               </div>
             </td>
             <td>
-              <div v-if="order.parentOrder">
-                <router-link :to="{ name: 'OrderView', params: { orderId: order.parentOrder.id } }">{{ order.parentOrder.id }}</router-link>
+              <div v-if="order.rootOrder">
+                <router-link :to="{ name: 'OrderView', params: { orderId: order.rootOrder.id } }">{{ order.rootOrder.id }}</router-link>
               </div>
             </td>
             <td class="text-right">

@@ -65,6 +65,6 @@ public class WarehouseAssignmentAsserts {
             .as("Verify WarehouseAssignment relationships")
             .satisfies(e -> assertThat(e.getSourceWorkingUnit()).as("check sourceWorkingUnit").isEqualTo(actual.getSourceWorkingUnit()))
             .satisfies(e -> assertThat(e.getTargetWorkingUnit()).as("check targetWorkingUnit").isEqualTo(actual.getTargetWorkingUnit()))
-            .satisfies(e -> assertThat(e.getOrder()).as("check order").isEqualTo(actual.getOrder()));
+            .satisfies(e -> assertThat(e.getInternalOrder()).as("check internalOrder").isEqualTo(actual.getInternalOrder()));
     }
 }

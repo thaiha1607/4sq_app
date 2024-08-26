@@ -38,7 +38,7 @@ describe('ProductCategory e2e test', () => {
     cy.authenticatedRequest({
       method: 'POST',
       url: '/api/products',
-      body: { name: 'majestic', description: 'overcharge if within', price: 26526.95, provider: 'bah since uselessly' },
+      body: { name: 'majestic', description: 'overcharge if within', expectedPrice: 26526.95, provider: 'bah since uselessly' },
     }).then(({ body }) => {
       product = body;
     });

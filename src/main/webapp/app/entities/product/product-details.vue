@@ -17,10 +17,10 @@
             <span>{{ product.description }}</span>
           </dd>
           <dt>
-            <span>Price</span>
+            <span>Expected Price</span>
           </dt>
           <dd>
-            <span>{{ product.price }}</span>
+            <span>{{ product.expectedPrice }}</span>
           </dd>
           <dt>
             <span>Provider</span>

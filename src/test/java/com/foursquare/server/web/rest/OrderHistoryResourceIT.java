@@ -44,8 +44,8 @@ import org.springframework.transaction.annotation.Transactional;
 @WithMockUser
 class OrderHistoryResourceIT {
 
-    private static final String DEFAULT_COMMENTS = "AAAAAAAAAA";
-    private static final String UPDATED_COMMENTS = "BBBBBBBBBB";
+    private static final String DEFAULT_NOTE = "AAAAAAAAAA";
+    private static final String UPDATED_NOTE = "BBBBBBBBBB";
 
     private static final String ENTITY_API_URL = "/api/order-histories";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
@@ -82,7 +82,7 @@ class OrderHistoryResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static OrderHistory createEntity(EntityManager em) {
-        OrderHistory orderHistory = new OrderHistory().comments(DEFAULT_COMMENTS);
+        OrderHistory orderHistory = new OrderHistory().note(DEFAULT_NOTE);
         // Add required entity
         OrderStatus orderStatus;
         if (TestUtil.findAll(em, OrderStatus.class).isEmpty()) {
@@ -113,7 +113,7 @@ class OrderHistoryResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static OrderHistory createUpdatedEntity(EntityManager em) {
-        OrderHistory orderHistory = new OrderHistory().comments(UPDATED_COMMENTS);
+        OrderHistory orderHistory = new OrderHistory().note(UPDATED_NOTE);
         // Add required entity
         OrderStatus orderStatus;
         if (TestUtil.findAll(em, OrderStatus.class).isEmpty()) {
@@ -204,7 +204,7 @@ class OrderHistoryResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(orderHistory.getId().toString())))
-            .andExpect(jsonPath("$.[*].comments").value(hasItem(DEFAULT_COMMENTS)));
+            .andExpect(jsonPath("$.[*].note").value(hasItem(DEFAULT_NOTE)));
     }
 
     @SuppressWarnings({ "unchecked" })
@@ -236,7 +236,7 @@ class OrderHistoryResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(orderHistory.getId().toString()))
-            .andExpect(jsonPath("$.comments").value(DEFAULT_COMMENTS));
+            .andExpect(jsonPath("$.note").value(DEFAULT_NOTE));
     }
 
     @Test
@@ -252,52 +252,52 @@ class OrderHistoryResourceIT {
 
     @Test
     @Transactional
-    void getAllOrderHistoriesByCommentsIsEqualToSomething() throws Exception {
+    void getAllOrderHistoriesByNoteIsEqualToSomething() throws Exception {
         // Initialize the database
         insertedOrderHistory = orderHistoryRepository.saveAndFlush(orderHistory);
 
-        // Get all the orderHistoryList where comments equals to
-        defaultOrderHistoryFiltering("comments.equals=" + DEFAULT_COMMENTS, "comments.equals=" + UPDATED_COMMENTS);
+        // Get all the orderHistoryList where note equals to
+        defaultOrderHistoryFiltering("note.equals=" + DEFAULT_NOTE, "note.equals=" + UPDATED_NOTE);
     }
 
     @Test
     @Transactional
-    void getAllOrderHistoriesByCommentsIsInShouldWork() throws Exception {
+    void getAllOrderHistoriesByNoteIsInShouldWork() throws Exception {
         // Initialize the database
         insertedOrderHistory = orderHistoryRepository.saveAndFlush(orderHistory);
 
-        // Get all the orderHistoryList where comments in
-        defaultOrderHistoryFiltering("comments.in=" + DEFAULT_COMMENTS + "," + UPDATED_COMMENTS, "comments.in=" + UPDATED_COMMENTS);
+        // Get all the orderHistoryList where note in
+        defaultOrderHistoryFiltering("note.in=" + DEFAULT_NOTE + "," + UPDATED_NOTE, "note.in=" + UPDATED_NOTE);
     }
 
     @Test
     @Transactional
-    void getAllOrderHistoriesByCommentsIsNullOrNotNull() throws Exception {
+    void getAllOrderHistoriesByNoteIsNullOrNotNull() throws Exception {
         // Initialize the database
         insertedOrderHistory = orderHistoryRepository.saveAndFlush(orderHistory);
 
-        // Get all the orderHistoryList where comments is not null
-        defaultOrderHistoryFiltering("comments.specified=true", "comments.specified=false");
+        // Get all the orderHistoryList where note is not null
+        defaultOrderHistoryFiltering("note.specified=true", "note.specified=false");
     }
 
     @Test
     @Transactional
-    void getAllOrderHistoriesByCommentsContainsSomething() throws Exception {
+    void getAllOrderHistoriesByNoteContainsSomething() throws Exception {
         // Initialize the database
         insertedOrderHistory = orderHistoryRepository.saveAndFlush(orderHistory);
 
-        // Get all the orderHistoryList where comments contains
-        defaultOrderHistoryFiltering("comments.contains=" + DEFAULT_COMMENTS, "comments.contains=" + UPDATED_COMMENTS);
+        // Get all the orderHistoryList where note contains
+        defaultOrderHistoryFiltering("note.contains=" + DEFAULT_NOTE, "note.contains=" + UPDATED_NOTE);
     }
 
     @Test
     @Transactional
-    void getAllOrderHistoriesByCommentsNotContainsSomething() throws Exception {
+    void getAllOrderHistoriesByNoteNotContainsSomething() throws Exception {
         // Initialize the database
         insertedOrderHistory = orderHistoryRepository.saveAndFlush(orderHistory);
 
-        // Get all the orderHistoryList where comments does not contain
-        defaultOrderHistoryFiltering("comments.doesNotContain=" + UPDATED_COMMENTS, "comments.doesNotContain=" + DEFAULT_COMMENTS);
+        // Get all the orderHistoryList where note does not contain
+        defaultOrderHistoryFiltering("note.doesNotContain=" + UPDATED_NOTE, "note.doesNotContain=" + DEFAULT_NOTE);
     }
 
     @Test
@@ -358,7 +358,7 @@ class OrderHistoryResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(orderHistory.getId().toString())))
-            .andExpect(jsonPath("$.[*].comments").value(hasItem(DEFAULT_COMMENTS)));
+            .andExpect(jsonPath("$.[*].note").value(hasItem(DEFAULT_NOTE)));
 
         // Check, that the count call also returns 1
         restOrderHistoryMockMvc
@@ -406,7 +406,7 @@ class OrderHistoryResourceIT {
         OrderHistory updatedOrderHistory = orderHistoryRepository.findById(orderHistory.getId()).orElseThrow();
         // Disconnect from session so that the updates on updatedOrderHistory are not directly saved in db
         em.detach(updatedOrderHistory);
-        updatedOrderHistory.comments(UPDATED_COMMENTS);
+        updatedOrderHistory.note(UPDATED_NOTE);
         OrderHistoryDTO orderHistoryDTO = orderHistoryMapper.toDto(updatedOrderHistory);
 
         restOrderHistoryMockMvc
@@ -525,7 +525,7 @@ class OrderHistoryResourceIT {
         OrderHistory partialUpdatedOrderHistory = new OrderHistory();
         partialUpdatedOrderHistory.setId(orderHistory.getId());
 
-        partialUpdatedOrderHistory.comments(UPDATED_COMMENTS);
+        partialUpdatedOrderHistory.note(UPDATED_NOTE);
 
         restOrderHistoryMockMvc
             .perform(

@@ -75,7 +75,7 @@ class OrderHistoryCriteriaTest {
 
     private static void setAllFilters(OrderHistoryCriteria orderHistoryCriteria) {
         orderHistoryCriteria.id();
-        orderHistoryCriteria.comments();
+        orderHistoryCriteria.note();
         orderHistoryCriteria.createdBy();
         orderHistoryCriteria.createdDate();
         orderHistoryCriteria.lastModifiedBy();
@@ -89,7 +89,7 @@ class OrderHistoryCriteriaTest {
         return new Condition<>(
             criteria ->
                 condition.apply(criteria.getId()) &&
-                condition.apply(criteria.getComments()) &&
+                condition.apply(criteria.getNote()) &&
                 condition.apply(criteria.getCreatedBy()) &&
                 condition.apply(criteria.getCreatedDate()) &&
                 condition.apply(criteria.getLastModifiedBy()) &&
@@ -108,7 +108,7 @@ class OrderHistoryCriteriaTest {
         return new Condition<>(
             criteria ->
                 condition.apply(criteria.getId(), copy.getId()) &&
-                condition.apply(criteria.getComments(), copy.getComments()) &&
+                condition.apply(criteria.getNote(), copy.getNote()) &&
                 condition.apply(criteria.getCreatedBy(), copy.getCreatedBy()) &&
                 condition.apply(criteria.getCreatedDate(), copy.getCreatedDate()) &&
                 condition.apply(criteria.getLastModifiedBy(), copy.getLastModifiedBy()) &&

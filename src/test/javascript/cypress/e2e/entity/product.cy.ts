@@ -15,7 +15,7 @@ describe('Product e2e test', () => {
   const productPageUrlPattern = new RegExp('/product(\\?.*)?$');
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
-  const productSample = { name: 'whoever shadow er', price: 29233.89 };
+  const productSample = { name: 'whoever shadow er', expectedPrice: 29233.89 };
 
   let product;
 
@@ -163,8 +163,8 @@ describe('Product e2e test', () => {
       cy.get(`[data-cy="description"]`).type('once');
       cy.get(`[data-cy="description"]`).should('have.value', 'once');
 
-      cy.get(`[data-cy="price"]`).type('7416.03');
-      cy.get(`[data-cy="price"]`).should('have.value', '7416.03');
+      cy.get(`[data-cy="expectedPrice"]`).type('7416.03');
+      cy.get(`[data-cy="expectedPrice"]`).should('have.value', '7416.03');
 
       cy.get(`[data-cy="provider"]`).type('amidst doubtfully');
       cy.get(`[data-cy="provider"]`).should('have.value', 'amidst doubtfully');

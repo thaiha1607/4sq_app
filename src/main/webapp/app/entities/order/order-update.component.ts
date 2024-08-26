@@ -93,7 +93,6 @@ export default defineComponent({
         min: validations.minValue('This field should be at least 0.', 0),
         max: validations.maxValue('This field cannot be more than 100.', 100),
       },
-      isInternal: {},
       note: {},
       otherInfo: {},
       createdBy: {},
@@ -103,6 +102,7 @@ export default defineComponent({
       invoices: {},
       orderItems: {},
       childOrders: {},
+      internalOrders: {},
       shipments: {},
       histories: {},
       customer: {
@@ -112,7 +112,7 @@ export default defineComponent({
         required: validations.required('This field is required.'),
       },
       address: {},
-      parentOrder: {},
+      rootOrder: {},
     };
     const v$ = useVuelidate(validationRules, order as any);
     v$.value.$validate();

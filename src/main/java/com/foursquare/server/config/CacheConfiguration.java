@@ -95,15 +95,18 @@ public class CacheConfiguration {
             createCache(cm, com.foursquare.server.domain.Participant.class.getName() + ".seenMessages", jcacheConfiguration);
             createCache(cm, com.foursquare.server.domain.InvoiceStatus.class.getName(), jcacheConfiguration);
             createCache(cm, com.foursquare.server.domain.Invoice.class.getName(), jcacheConfiguration);
+            createCache(cm, com.foursquare.server.domain.Invoice.class.getName() + ".childInvoices", jcacheConfiguration);
             createCache(cm, com.foursquare.server.domain.Invoice.class.getName() + ".shipments", jcacheConfiguration);
             createCache(cm, com.foursquare.server.domain.Message.class.getName(), jcacheConfiguration);
             createCache(cm, com.foursquare.server.domain.Message.class.getName() + ".seenParticipants", jcacheConfiguration);
             createCache(cm, com.foursquare.server.domain.OrderItem.class.getName(), jcacheConfiguration);
+            createCache(cm, com.foursquare.server.domain.OrderItem.class.getName() + ".internalOrderItems", jcacheConfiguration);
             createCache(cm, com.foursquare.server.domain.OrderStatus.class.getName(), jcacheConfiguration);
             createCache(cm, com.foursquare.server.domain.Order.class.getName(), jcacheConfiguration);
             createCache(cm, com.foursquare.server.domain.Order.class.getName() + ".invoices", jcacheConfiguration);
             createCache(cm, com.foursquare.server.domain.Order.class.getName() + ".orderItems", jcacheConfiguration);
             createCache(cm, com.foursquare.server.domain.Order.class.getName() + ".childOrders", jcacheConfiguration);
+            createCache(cm, com.foursquare.server.domain.Order.class.getName() + ".internalOrders", jcacheConfiguration);
             createCache(cm, com.foursquare.server.domain.Order.class.getName() + ".shipments", jcacheConfiguration);
             createCache(cm, com.foursquare.server.domain.Order.class.getName() + ".histories", jcacheConfiguration);
             createCache(cm, com.foursquare.server.domain.ProductQuantity.class.getName(), jcacheConfiguration);
@@ -127,6 +130,10 @@ public class CacheConfiguration {
             createCache(cm, com.foursquare.server.domain.WorkingUnit.class.getName(), jcacheConfiguration);
             createCache(cm, com.foursquare.server.domain.Comment.class.getName(), jcacheConfiguration);
             createCache(cm, com.foursquare.server.domain.OrderHistory.class.getName(), jcacheConfiguration);
+            createCache(cm, com.foursquare.server.domain.InternalOrder.class.getName(), jcacheConfiguration);
+            createCache(cm, com.foursquare.server.domain.InternalOrder.class.getName() + ".histories", jcacheConfiguration);
+            createCache(cm, com.foursquare.server.domain.InternalOrderItem.class.getName(), jcacheConfiguration);
+            createCache(cm, com.foursquare.server.domain.InternalOrderHistory.class.getName(), jcacheConfiguration);
             // jhipster-needle-redis-add-entry
         };
     }

@@ -57,6 +57,11 @@ public class Invoice extends AbstractAuditingEntity<UUID> implements Serializabl
     @Transient
     private boolean isPersisted;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "rootInvoice")
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @JsonIgnoreProperties(value = { "childInvoices", "shipments", "status", "order", "rootInvoice" }, allowSetters = true)
+    private Set<Invoice> childInvoices = new HashSet<>();
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "invoice")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonIgnoreProperties(value = { "assignments", "items", "status", "order", "invoice" }, allowSetters = true)
@@ -69,10 +74,25 @@ public class Invoice extends AbstractAuditingEntity<UUID> implements Serializabl
     @ManyToOne(optional = false)
     @NotNull
     @JsonIgnoreProperties(
-        value = { "invoices", "orderItems", "childOrders", "shipments", "histories", "customer", "status", "address", "parentOrder" },
+        value = {
+            "invoices",
+            "orderItems",
+            "childOrders",
+            "internalOrders",
+            "shipments",
+            "histories",
+            "customer",
+            "status",
+            "address",
+            "rootOrder",
+        },
         allowSetters = true
     )
     private Order order;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value = { "childInvoices", "shipments", "status", "order", "rootInvoice" }, allowSetters = true)
+    private Invoice rootInvoice;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -182,6 +202,37 @@ public class Invoice extends AbstractAuditingEntity<UUID> implements Serializabl
         return this;
     }
 
+    public Set<Invoice> getChildInvoices() {
+        return this.childInvoices;
+    }
+
+    public void setChildInvoices(Set<Invoice> invoices) {
+        if (this.childInvoices != null) {
+            this.childInvoices.forEach(i -> i.setRootInvoice(null));
+        }
+        if (invoices != null) {
+            invoices.forEach(i -> i.setRootInvoice(this));
+        }
+        this.childInvoices = invoices;
+    }
+
+    public Invoice childInvoices(Set<Invoice> invoices) {
+        this.setChildInvoices(invoices);
+        return this;
+    }
+
+    public Invoice addChildInvoice(Invoice invoice) {
+        this.childInvoices.add(invoice);
+        invoice.setRootInvoice(this);
+        return this;
+    }
+
+    public Invoice removeChildInvoice(Invoice invoice) {
+        this.childInvoices.remove(invoice);
+        invoice.setRootInvoice(null);
+        return this;
+    }
+
     public Set<Shipment> getShipments() {
         return this.shipments;
     }
@@ -236,6 +287,19 @@ public class Invoice extends AbstractAuditingEntity<UUID> implements Serializabl
 
     public Invoice order(Order order) {
         this.setOrder(order);
+        return this;
+    }
+
+    public Invoice getRootInvoice() {
+        return this.rootInvoice;
+    }
+
+    public void setRootInvoice(Invoice invoice) {
+        this.rootInvoice = invoice;
+    }
+
+    public Invoice rootInvoice(Invoice invoice) {
+        this.setRootInvoice(invoice);
         return this;
     }
 

@@ -1,0 +1,74 @@
+{
+  "annotations": {
+    "changelogDate": "20240826091731",
+    "dto": "mapstruct",
+    "paginate": "pagination",
+    "service": "serviceClass"
+  },
+  "applications": ["foursquareApp"],
+  "enableAudit": true,
+  "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "UUID"
+    },
+    {
+      "fieldName": "qty",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["required", "min"],
+      "fieldValidateRulesMin": "0"
+    },
+    {
+      "fieldName": "note",
+      "fieldType": "String"
+    },
+    {
+      "auditField": true,
+      "autoGenerate": true,
+      "columnType": "varchar(50)",
+      "fieldName": "createdBy",
+      "fieldType": "String",
+      "nullable": false,
+      "readonly": true
+    },
+    {
+      "auditField": true,
+      "autoGenerate": true,
+      "fieldName": "createdDate",
+      "fieldType": "Instant",
+      "nullable": false,
+      "readonly": true
+    },
+    {
+      "auditField": true,
+      "autoGenerate": true,
+      "columnType": "varchar(50)",
+      "fieldName": "lastModifiedBy",
+      "fieldType": "String",
+      "nullable": false,
+      "readonly": true
+    },
+    {
+      "auditField": true,
+      "autoGenerate": true,
+      "fieldName": "lastModifiedDate",
+      "fieldType": "Instant",
+      "nullable": false,
+      "readonly": true
+    }
+  ],
+  "jpaMetamodelFiltering": true,
+  "name": "InternalOrderItem",
+  "relationships": [
+    {
+      "otherEntityName": "orderItem",
+      "otherEntityRelationshipName": "internalOrderItem",
+      "relationshipName": "orderItem",
+      "relationshipSide": "right",
+      "relationshipType": "many-to-one",
+      "relationshipValidateRules": "required"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceClass"
+}

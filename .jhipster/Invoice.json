@@ -73,6 +73,13 @@
   "name": "Invoice",
   "relationships": [
     {
+      "otherEntityName": "invoice",
+      "otherEntityRelationshipName": "rootInvoice",
+      "relationshipName": "childInvoice",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    },
+    {
       "otherEntityName": "shipment",
       "otherEntityRelationshipName": "invoice",
       "relationshipName": "shipment",
@@ -94,6 +101,13 @@
       "relationshipSide": "right",
       "relationshipType": "many-to-one",
       "relationshipValidateRules": "required"
+    },
+    {
+      "otherEntityName": "invoice",
+      "otherEntityRelationshipName": "childInvoice",
+      "relationshipName": "rootInvoice",
+      "relationshipSide": "right",
+      "relationshipType": "many-to-one"
     }
   ],
   "searchEngine": "no",

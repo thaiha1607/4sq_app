@@ -46,6 +46,8 @@ public class ShipmentCriteria implements Serializable, Criteria {
 
     private InstantFilter shipmentDate;
 
+    private InstantFilter deliveryDate;
+
     private StringFilter note;
 
     private StringFilter createdBy;
@@ -74,6 +76,7 @@ public class ShipmentCriteria implements Serializable, Criteria {
         this.id = other.optionalId().map(UUIDFilter::copy).orElse(null);
         this.type = other.optionalType().map(ShipmentTypeFilter::copy).orElse(null);
         this.shipmentDate = other.optionalShipmentDate().map(InstantFilter::copy).orElse(null);
+        this.deliveryDate = other.optionalDeliveryDate().map(InstantFilter::copy).orElse(null);
         this.note = other.optionalNote().map(StringFilter::copy).orElse(null);
         this.createdBy = other.optionalCreatedBy().map(StringFilter::copy).orElse(null);
         this.createdDate = other.optionalCreatedDate().map(InstantFilter::copy).orElse(null);
@@ -147,6 +150,25 @@ public class ShipmentCriteria implements Serializable, Criteria {
 
     public void setShipmentDate(InstantFilter shipmentDate) {
         this.shipmentDate = shipmentDate;
+    }
+
+    public InstantFilter getDeliveryDate() {
+        return deliveryDate;
+    }
+
+    public Optional<InstantFilter> optionalDeliveryDate() {
+        return Optional.ofNullable(deliveryDate);
+    }
+
+    public InstantFilter deliveryDate() {
+        if (deliveryDate == null) {
+            setDeliveryDate(new InstantFilter());
+        }
+        return deliveryDate;
+    }
+
+    public void setDeliveryDate(InstantFilter deliveryDate) {
+        this.deliveryDate = deliveryDate;
     }
 
     public StringFilter getNote() {
@@ -371,6 +393,7 @@ public class ShipmentCriteria implements Serializable, Criteria {
             Objects.equals(id, that.id) &&
             Objects.equals(type, that.type) &&
             Objects.equals(shipmentDate, that.shipmentDate) &&
+            Objects.equals(deliveryDate, that.deliveryDate) &&
             Objects.equals(note, that.note) &&
             Objects.equals(createdBy, that.createdBy) &&
             Objects.equals(createdDate, that.createdDate) &&
@@ -391,6 +414,7 @@ public class ShipmentCriteria implements Serializable, Criteria {
             id,
             type,
             shipmentDate,
+            deliveryDate,
             note,
             createdBy,
             createdDate,
@@ -412,6 +436,7 @@ public class ShipmentCriteria implements Serializable, Criteria {
             optionalId().map(f -> "id=" + f + ", ").orElse("") +
             optionalType().map(f -> "type=" + f + ", ").orElse("") +
             optionalShipmentDate().map(f -> "shipmentDate=" + f + ", ").orElse("") +
+            optionalDeliveryDate().map(f -> "deliveryDate=" + f + ", ").orElse("") +
             optionalNote().map(f -> "note=" + f + ", ").orElse("") +
             optionalCreatedBy().map(f -> "createdBy=" + f + ", ").orElse("") +
             optionalCreatedDate().map(f -> "createdDate=" + f + ", ").orElse("") +

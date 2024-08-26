@@ -39,7 +39,7 @@ describe('Comment e2e test', () => {
     cy.authenticatedRequest({
       method: 'POST',
       url: '/api/products',
-      body: {"name":"meanwhile sans","description":"eek","price":15827.83,"provider":"office round"},
+      body: {"name":"meanwhile sans","description":"eek","expectedPrice":15827.83,"provider":"office round"},
     }).then(({ body }) => {
       product = body;
     });

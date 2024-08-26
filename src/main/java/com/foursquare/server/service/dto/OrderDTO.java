@@ -22,8 +22,6 @@ public class OrderDTO implements Serializable {
     @Max(value = 100)
     private Integer priority;
 
-    private Boolean isInternal;
-
     private String note;
 
     private String otherInfo;
@@ -44,7 +42,7 @@ public class OrderDTO implements Serializable {
 
     private AddressDTO address;
 
-    private OrderDTO parentOrder;
+    private OrderDTO rootOrder;
 
     public UUID getId() {
         return id;
@@ -68,14 +66,6 @@ public class OrderDTO implements Serializable {
 
     public void setPriority(Integer priority) {
         this.priority = priority;
-    }
-
-    public Boolean getIsInternal() {
-        return isInternal;
-    }
-
-    public void setIsInternal(Boolean isInternal) {
-        this.isInternal = isInternal;
     }
 
     public String getNote() {
@@ -150,12 +140,12 @@ public class OrderDTO implements Serializable {
         this.address = address;
     }
 
-    public OrderDTO getParentOrder() {
-        return parentOrder;
+    public OrderDTO getRootOrder() {
+        return rootOrder;
     }
 
-    public void setParentOrder(OrderDTO parentOrder) {
-        this.parentOrder = parentOrder;
+    public void setRootOrder(OrderDTO rootOrder) {
+        this.rootOrder = rootOrder;
     }
 
     @Override
@@ -186,7 +176,6 @@ public class OrderDTO implements Serializable {
             "id='" + getId() + "'" +
             ", type='" + getType() + "'" +
             ", priority=" + getPriority() +
-            ", isInternal='" + getIsInternal() + "'" +
             ", note='" + getNote() + "'" +
             ", otherInfo='" + getOtherInfo() + "'" +
             ", createdBy='" + getCreatedBy() + "'" +
@@ -196,7 +185,7 @@ public class OrderDTO implements Serializable {
             ", customer=" + getCustomer() +
             ", status=" + getStatus() +
             ", address=" + getAddress() +
-            ", parentOrder=" + getParentOrder() +
+            ", rootOrder=" + getRootOrder() +
             "}";
     }
 }

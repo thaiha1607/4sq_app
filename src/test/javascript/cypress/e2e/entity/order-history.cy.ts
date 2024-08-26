@@ -39,7 +39,7 @@ describe('OrderHistory e2e test', () => {
     cy.authenticatedRequest({
       method: 'POST',
       url: '/api/orders',
-      body: {"type":"RETURN","priority":32,"isInternal":false,"note":"equally","otherInfo":"urgently"},
+      body: {"type":"EXCHANGE","priority":11,"note":"pilot amongst cheerfully","otherInfo":"yuck oof hm"},
     }).then(({ body }) => {
       order = body;
     });
@@ -233,8 +233,8 @@ describe('OrderHistory e2e test', () => {
     });
 
     it.skip('should create an instance of OrderHistory', () => {
-      cy.get(`[data-cy="comments"]`).type('mmm idiom');
-      cy.get(`[data-cy="comments"]`).should('have.value', 'mmm idiom');
+      cy.get(`[data-cy="note"]`).type('mmm idiom');
+      cy.get(`[data-cy="note"]`).should('have.value', 'mmm idiom');
 
       cy.get(`[data-cy="status"]`).select(1);
       cy.get(`[data-cy="order"]`).select(1);

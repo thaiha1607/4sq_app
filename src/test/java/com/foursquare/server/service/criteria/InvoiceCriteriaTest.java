@@ -83,9 +83,11 @@ class InvoiceCriteriaTest {
         invoiceCriteria.createdDate();
         invoiceCriteria.lastModifiedBy();
         invoiceCriteria.lastModifiedDate();
+        invoiceCriteria.childInvoiceId();
         invoiceCriteria.shipmentId();
         invoiceCriteria.statusId();
         invoiceCriteria.orderId();
+        invoiceCriteria.rootInvoiceId();
         invoiceCriteria.distinct();
     }
 
@@ -101,9 +103,11 @@ class InvoiceCriteriaTest {
                 condition.apply(criteria.getCreatedDate()) &&
                 condition.apply(criteria.getLastModifiedBy()) &&
                 condition.apply(criteria.getLastModifiedDate()) &&
+                condition.apply(criteria.getChildInvoiceId()) &&
                 condition.apply(criteria.getShipmentId()) &&
                 condition.apply(criteria.getStatusId()) &&
                 condition.apply(criteria.getOrderId()) &&
+                condition.apply(criteria.getRootInvoiceId()) &&
                 condition.apply(criteria.getDistinct()),
             "every filter matches"
         );
@@ -121,9 +125,11 @@ class InvoiceCriteriaTest {
                 condition.apply(criteria.getCreatedDate(), copy.getCreatedDate()) &&
                 condition.apply(criteria.getLastModifiedBy(), copy.getLastModifiedBy()) &&
                 condition.apply(criteria.getLastModifiedDate(), copy.getLastModifiedDate()) &&
+                condition.apply(criteria.getChildInvoiceId(), copy.getChildInvoiceId()) &&
                 condition.apply(criteria.getShipmentId(), copy.getShipmentId()) &&
                 condition.apply(criteria.getStatusId(), copy.getStatusId()) &&
                 condition.apply(criteria.getOrderId(), copy.getOrderId()) &&
+                condition.apply(criteria.getRootInvoiceId(), copy.getRootInvoiceId()) &&
                 condition.apply(criteria.getDistinct(), copy.getDistinct()),
             "every filter matches"
         );

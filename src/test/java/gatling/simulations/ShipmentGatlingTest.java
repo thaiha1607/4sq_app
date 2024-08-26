@@ -70,6 +70,7 @@ public class ShipmentGatlingTest extends Simulation {
                                 "{" +
                                 "\"type\": \"OUTBOUND\"" +
                                 ", \"shipmentDate\": \"2020-01-01T00:00:00.000Z\"" +
+                                ", \"deliveryDate\": \"2020-01-01T00:00:00.000Z\"" +
                                 ", \"note\": \"SAMPLE_TEXT\"" +
                                 ", \"createdBy\": \"SAMPLE_TEXT\"" +
                                 ", \"createdDate\": \"2020-01-01T00:00:00.000Z\"" +

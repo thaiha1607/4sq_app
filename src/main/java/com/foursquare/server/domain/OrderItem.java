@@ -6,6 +6,8 @@ import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -53,6 +55,11 @@ public class OrderItem extends AbstractAuditingEntity<UUID> implements Serializa
     @Transient
     private boolean isPersisted;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "orderItem")
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @JsonIgnoreProperties(value = { "orderItem" }, allowSetters = true)
+    private Set<InternalOrderItem> internalOrderItems = new HashSet<>();
+
     @ManyToOne(optional = false)
     @NotNull
     @JsonIgnoreProperties(value = { "colour", "product" }, allowSetters = true)
@@ -61,7 +68,18 @@ public class OrderItem extends AbstractAuditingEntity<UUID> implements Serializa
     @ManyToOne(optional = false)
     @NotNull
     @JsonIgnoreProperties(
-        value = { "invoices", "orderItems", "childOrders", "shipments", "histories", "customer", "status", "address", "parentOrder" },
+        value = {
+            "invoices",
+            "orderItems",
+            "childOrders",
+            "internalOrders",
+            "shipments",
+            "histories",
+            "customer",
+            "status",
+            "address",
+            "rootOrder",
+        },
         allowSetters = true
     )
     private Order order;
@@ -171,6 +189,37 @@ public class OrderItem extends AbstractAuditingEntity<UUID> implements Serializa
 
     public OrderItem setIsPersisted() {
         this.isPersisted = true;
+        return this;
+    }
+
+    public Set<InternalOrderItem> getInternalOrderItems() {
+        return this.internalOrderItems;
+    }
+
+    public void setInternalOrderItems(Set<InternalOrderItem> internalOrderItems) {
+        if (this.internalOrderItems != null) {
+            this.internalOrderItems.forEach(i -> i.setOrderItem(null));
+        }
+        if (internalOrderItems != null) {
+            internalOrderItems.forEach(i -> i.setOrderItem(this));
+        }
+        this.internalOrderItems = internalOrderItems;
+    }
+
+    public OrderItem internalOrderItems(Set<InternalOrderItem> internalOrderItems) {
+        this.setInternalOrderItems(internalOrderItems);
+        return this;
+    }
+
+    public OrderItem addInternalOrderItem(InternalOrderItem internalOrderItem) {
+        this.internalOrderItems.add(internalOrderItem);
+        internalOrderItem.setOrderItem(this);
+        return this;
+    }
+
+    public OrderItem removeInternalOrderItem(InternalOrderItem internalOrderItem) {
+        this.internalOrderItems.remove(internalOrderItem);
+        internalOrderItem.setOrderItem(null);
         return this;
     }
 

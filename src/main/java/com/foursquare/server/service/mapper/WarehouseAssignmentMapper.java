@@ -1,10 +1,10 @@
 package com.foursquare.server.service.mapper;
 
-import com.foursquare.server.domain.Order;
+import com.foursquare.server.domain.InternalOrder;
 import com.foursquare.server.domain.User;
 import com.foursquare.server.domain.WarehouseAssignment;
 import com.foursquare.server.domain.WorkingUnit;
-import com.foursquare.server.service.dto.OrderDTO;
+import com.foursquare.server.service.dto.InternalOrderDTO;
 import com.foursquare.server.service.dto.UserDTO;
 import com.foursquare.server.service.dto.WarehouseAssignmentDTO;
 import com.foursquare.server.service.dto.WorkingUnitDTO;
@@ -20,7 +20,7 @@ public interface WarehouseAssignmentMapper extends EntityMapper<WarehouseAssignm
     @Mapping(target = "user", source = "user", qualifiedByName = "userLogin")
     @Mapping(target = "sourceWorkingUnit", source = "sourceWorkingUnit", qualifiedByName = "workingUnitName")
     @Mapping(target = "targetWorkingUnit", source = "targetWorkingUnit", qualifiedByName = "workingUnitName")
-    @Mapping(target = "order", source = "order", qualifiedByName = "orderId")
+    @Mapping(target = "internalOrder", source = "internalOrder", qualifiedByName = "internalOrderId")
     WarehouseAssignmentDTO toDto(WarehouseAssignment s);
 
     @Named("userLogin")
@@ -35,10 +35,10 @@ public interface WarehouseAssignmentMapper extends EntityMapper<WarehouseAssignm
     @Mapping(target = "name", source = "name")
     WorkingUnitDTO toDtoWorkingUnitName(WorkingUnit workingUnit);
 
-    @Named("orderId")
+    @Named("internalOrderId")
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
-    OrderDTO toDtoOrderId(Order order);
+    InternalOrderDTO toDtoInternalOrderId(InternalOrder internalOrder);
 
     default String map(UUID value) {
         return Objects.toString(value, null);

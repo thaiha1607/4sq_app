@@ -48,6 +48,7 @@ export default defineComponent({
       try {
         const res = await shipmentService().find(shipmentId);
         res.shipmentDate = new Date(res.shipmentDate);
+        res.deliveryDate = new Date(res.deliveryDate);
         res.createdDate = new Date(res.createdDate);
         res.lastModifiedDate = new Date(res.lastModifiedDate);
         shipment.value = res;
@@ -86,6 +87,9 @@ export default defineComponent({
         required: validations.required('This field is required.'),
       },
       shipmentDate: {
+        required: validations.required('This field is required.'),
+      },
+      deliveryDate: {
         required: validations.required('This field is required.'),
       },
       note: {},

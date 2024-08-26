@@ -28,7 +28,7 @@
         <thead>
           <tr>
             <th scope="row"><span>ID</span></th>
-            <th scope="row"><span>Comments</span></th>
+            <th scope="row"><span>Note</span></th>
             <th scope="row"><span>Created By</span></th>
             <th scope="row"><span>Created Date</span></th>
             <th scope="row"><span>Last Modified By</span></th>
@@ -45,7 +45,7 @@
                 orderHistory.id
               }}</router-link>
             </td>
-            <td>{{ orderHistory.comments }}</td>
+            <td>{{ orderHistory.note }}</td>
             <td>{{ orderHistory.createdBy }}</td>
             <td>{{ formatDateShort(orderHistory.createdDate) || '' }}</td>
             <td>{{ orderHistory.lastModifiedBy }}</td>

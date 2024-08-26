@@ -81,6 +81,9 @@ public class ShipmentQueryService extends QueryService<Shipment> {
             if (criteria.getShipmentDate() != null) {
                 specification = specification.and(buildRangeSpecification(criteria.getShipmentDate(), Shipment_.shipmentDate));
             }
+            if (criteria.getDeliveryDate() != null) {
+                specification = specification.and(buildRangeSpecification(criteria.getDeliveryDate(), Shipment_.deliveryDate));
+            }
             if (criteria.getNote() != null) {
                 specification = specification.and(buildStringSpecification(criteria.getNote(), Shipment_.note));
             }

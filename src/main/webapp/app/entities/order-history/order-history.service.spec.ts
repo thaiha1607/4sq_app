@@ -99,7 +99,7 @@ describe('Service Tests', () => {
       it('should update a OrderHistory', async () => {
         const returnedFromService = Object.assign(
           {
-            comments: 'BBBBBB',
+            note: 'BBBBBB',
             createdBy: 'BBBBBB',
             createdDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
             lastModifiedBy: 'BBBBBB',
@@ -136,7 +136,7 @@ describe('Service Tests', () => {
       it('should partial update a OrderHistory', async () => {
         const patchObject = Object.assign(
           {
-            comments: 'BBBBBB',
+            note: 'BBBBBB',
             createdBy: 'BBBBBB',
             createdDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
             lastModifiedBy: 'BBBBBB',
@@ -173,7 +173,7 @@ describe('Service Tests', () => {
       it('should return a list of OrderHistory', async () => {
         const returnedFromService = Object.assign(
           {
-            comments: 'BBBBBB',
+            note: 'BBBBBB',
             createdBy: 'BBBBBB',
             createdDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
             lastModifiedBy: 'BBBBBB',

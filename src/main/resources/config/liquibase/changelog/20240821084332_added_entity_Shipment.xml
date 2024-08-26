@@ -20,6 +20,9 @@
             <column name="shipment_date" type="${datetimeType}">
                 <constraints nullable="false" />
             </column>
+            <column name="delivery_date" type="${datetimeType}">
+                <constraints nullable="false" />
+            </column>
             <column name="note" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
@@ -47,6 +50,7 @@
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
         </createTable>
         <dropDefaultValue tableName="shipment" columnName="shipment_date" columnDataType="${datetimeType}"/>
+        <dropDefaultValue tableName="shipment" columnName="delivery_date" columnDataType="${datetimeType}"/>
         <dropDefaultValue tableName="shipment" columnName="created_date" columnDataType="${datetimeType}"/>
         <dropDefaultValue tableName="shipment" columnName="last_modified_date" columnDataType="${datetimeType}"/>
     </changeSet>
@@ -70,6 +74,7 @@
             <column name="id" type="${uuidType}"/>
             <column name="type" type="string"/>
             <column name="shipment_date" type="date"/>
+            <column name="delivery_date" type="date"/>
             <column name="note" type="string"/>
             <column name="created_by" type="string"/>
             <column name="created_date" type="date"/>

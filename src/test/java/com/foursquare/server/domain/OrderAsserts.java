@@ -51,7 +51,6 @@ public class OrderAsserts {
             .as("Verify Order relevant properties")
             .satisfies(e -> assertThat(e.getType()).as("check type").isEqualTo(actual.getType()))
             .satisfies(e -> assertThat(e.getPriority()).as("check priority").isEqualTo(actual.getPriority()))
-            .satisfies(e -> assertThat(e.getIsInternal()).as("check isInternal").isEqualTo(actual.getIsInternal()))
             .satisfies(e -> assertThat(e.getNote()).as("check note").isEqualTo(actual.getNote()))
             .satisfies(e -> assertThat(e.getOtherInfo()).as("check otherInfo").isEqualTo(actual.getOtherInfo()));
     }
@@ -67,6 +66,6 @@ public class OrderAsserts {
             .as("Verify Order relationships")
             .satisfies(e -> assertThat(e.getStatus()).as("check status").isEqualTo(actual.getStatus()))
             .satisfies(e -> assertThat(e.getAddress()).as("check address").isEqualTo(actual.getAddress()))
-            .satisfies(e -> assertThat(e.getParentOrder()).as("check parentOrder").isEqualTo(actual.getParentOrder()));
+            .satisfies(e -> assertThat(e.getRootOrder()).as("check rootOrder").isEqualTo(actual.getRootOrder()));
     }
 }

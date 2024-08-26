@@ -15,6 +15,7 @@ export interface IInvoice {
   lastModifiedDate?: Date;
   status?: IInvoiceStatus;
   order?: IOrder;
+  rootInvoice?: IInvoice | null;
 }
 
 export class Invoice implements IInvoice {
@@ -30,5 +31,6 @@ export class Invoice implements IInvoice {
     public lastModifiedDate?: Date,
     public status?: IInvoiceStatus,
     public order?: IOrder,
+    public rootInvoice?: IInvoice | null,
   ) {}
 }

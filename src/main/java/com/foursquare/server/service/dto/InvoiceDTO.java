@@ -43,6 +43,8 @@ public class InvoiceDTO implements Serializable {
     @NotNull
     private OrderDTO order;
 
+    private InvoiceDTO rootInvoice;
+
     public UUID getId() {
         return id;
     }
@@ -131,6 +133,14 @@ public class InvoiceDTO implements Serializable {
         this.order = order;
     }
 
+    public InvoiceDTO getRootInvoice() {
+        return rootInvoice;
+    }
+
+    public void setRootInvoice(InvoiceDTO rootInvoice) {
+        this.rootInvoice = rootInvoice;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -167,6 +177,7 @@ public class InvoiceDTO implements Serializable {
             ", lastModifiedDate='" + getLastModifiedDate() + "'" +
             ", status=" + getStatus() +
             ", order=" + getOrder() +
+            ", rootInvoice=" + getRootInvoice() +
             "}";
     }
 }

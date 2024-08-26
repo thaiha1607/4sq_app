@@ -70,6 +70,11 @@ describe('Order e2e test', () => {
       body: [],
     });
 
+    cy.intercept('GET', '/api/internal-orders', {
+      statusCode: 200,
+      body: [],
+    });
+
     cy.intercept('GET', '/api/shipments', {
       statusCode: 200,
       body: [],
@@ -263,20 +268,16 @@ describe('Order e2e test', () => {
     });
 
     it.skip('should create an instance of Order', () => {
-      cy.get(`[data-cy="type"]`).select('SALE');
+      cy.get(`[data-cy="type"]`).select('EXCHANGE');
 
-      cy.get(`[data-cy="priority"]`).type('30');
-      cy.get(`[data-cy="priority"]`).should('have.value', '30');
+      cy.get(`[data-cy="priority"]`).type('20');
+      cy.get(`[data-cy="priority"]`).should('have.value', '20');
 
-      cy.get(`[data-cy="isInternal"]`).should('not.be.checked');
-      cy.get(`[data-cy="isInternal"]`).click();
-      cy.get(`[data-cy="isInternal"]`).should('be.checked');
+      cy.get(`[data-cy="note"]`).type('since full yahoo');
+      cy.get(`[data-cy="note"]`).should('have.value', 'since full yahoo');
 
-      cy.get(`[data-cy="note"]`).type('colorfully famously');
-      cy.get(`[data-cy="note"]`).should('have.value', 'colorfully famously');
-
-      cy.get(`[data-cy="otherInfo"]`).type('aw mouth');
-      cy.get(`[data-cy="otherInfo"]`).should('have.value', 'aw mouth');
+      cy.get(`[data-cy="otherInfo"]`).type('yippee nor which');
+      cy.get(`[data-cy="otherInfo"]`).should('have.value', 'yippee nor which');
 
       cy.get(`[data-cy="customer"]`).select(1);
       cy.get(`[data-cy="status"]`).select(1);

@@ -77,6 +77,7 @@ class ShipmentCriteriaTest {
         shipmentCriteria.id();
         shipmentCriteria.type();
         shipmentCriteria.shipmentDate();
+        shipmentCriteria.deliveryDate();
         shipmentCriteria.note();
         shipmentCriteria.createdBy();
         shipmentCriteria.createdDate();
@@ -96,6 +97,7 @@ class ShipmentCriteriaTest {
                 condition.apply(criteria.getId()) &&
                 condition.apply(criteria.getType()) &&
                 condition.apply(criteria.getShipmentDate()) &&
+                condition.apply(criteria.getDeliveryDate()) &&
                 condition.apply(criteria.getNote()) &&
                 condition.apply(criteria.getCreatedBy()) &&
                 condition.apply(criteria.getCreatedDate()) &&
@@ -117,6 +119,7 @@ class ShipmentCriteriaTest {
                 condition.apply(criteria.getId(), copy.getId()) &&
                 condition.apply(criteria.getType(), copy.getType()) &&
                 condition.apply(criteria.getShipmentDate(), copy.getShipmentDate()) &&
+                condition.apply(criteria.getDeliveryDate(), copy.getDeliveryDate()) &&
                 condition.apply(criteria.getNote(), copy.getNote()) &&
                 condition.apply(criteria.getCreatedBy(), copy.getCreatedBy()) &&
                 condition.apply(criteria.getCreatedDate(), copy.getCreatedDate()) &&

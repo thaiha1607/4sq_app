@@ -68,7 +68,7 @@ public class OrderHistoryGatlingTest extends Simulation {
                         .body(
                             StringBody(
                                 "{" +
-                                "\"comments\": \"SAMPLE_TEXT\"" +
+                                "\"note\": \"SAMPLE_TEXT\"" +
                                 ", \"createdBy\": \"SAMPLE_TEXT\"" +
                                 ", \"createdDate\": \"2020-01-01T00:00:00.000Z\"" +
                                 ", \"lastModifiedBy\": \"SAMPLE_TEXT\"" +

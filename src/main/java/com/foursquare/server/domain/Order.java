@@ -40,9 +40,6 @@ public class Order extends AbstractAuditingEntity<UUID> implements Serializable,
     @Column(name = "priority")
     private Integer priority;
 
-    @Column(name = "is_internal")
-    private Boolean isInternal;
-
     @Column(name = "note")
     private String note;
 
@@ -58,21 +55,37 @@ public class Order extends AbstractAuditingEntity<UUID> implements Serializable,
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "order")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JsonIgnoreProperties(value = { "shipments", "status", "order" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "childInvoices", "shipments", "status", "order", "rootInvoice" }, allowSetters = true)
     private Set<Invoice> invoices = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "order")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JsonIgnoreProperties(value = { "productCategory", "order" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "internalOrderItems", "productCategory", "order" }, allowSetters = true)
     private Set<OrderItem> orderItems = new HashSet<>();
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "parentOrder")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "rootOrder")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonIgnoreProperties(
-        value = { "invoices", "orderItems", "childOrders", "shipments", "histories", "customer", "status", "address", "parentOrder" },
+        value = {
+            "invoices",
+            "orderItems",
+            "childOrders",
+            "internalOrders",
+            "shipments",
+            "histories",
+            "customer",
+            "status",
+            "address",
+            "rootOrder",
+        },
         allowSetters = true
     )
     private Set<Order> childOrders = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "rootOrder")
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @JsonIgnoreProperties(value = { "histories", "status", "rootOrder" }, allowSetters = true)
+    private Set<InternalOrder> internalOrders = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "order")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
@@ -97,10 +110,21 @@ public class Order extends AbstractAuditingEntity<UUID> implements Serializable,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties(
-        value = { "invoices", "orderItems", "childOrders", "shipments", "histories", "customer", "status", "address", "parentOrder" },
+        value = {
+            "invoices",
+            "orderItems",
+            "childOrders",
+            "internalOrders",
+            "shipments",
+            "histories",
+            "customer",
+            "status",
+            "address",
+            "rootOrder",
+        },
         allowSetters = true
     )
-    private Order parentOrder;
+    private Order rootOrder;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -141,19 +165,6 @@ public class Order extends AbstractAuditingEntity<UUID> implements Serializable,
 
     public void setPriority(Integer priority) {
         this.priority = priority;
-    }
-
-    public Boolean getIsInternal() {
-        return this.isInternal;
-    }
-
-    public Order isInternal(Boolean isInternal) {
-        this.setIsInternal(isInternal);
-        return this;
-    }
-
-    public void setIsInternal(Boolean isInternal) {
-        this.isInternal = isInternal;
     }
 
     public String getNote() {
@@ -291,10 +302,10 @@ public class Order extends AbstractAuditingEntity<UUID> implements Serializable,
 
     public void setChildOrders(Set<Order> orders) {
         if (this.childOrders != null) {
-            this.childOrders.forEach(i -> i.setParentOrder(null));
+            this.childOrders.forEach(i -> i.setRootOrder(null));
         }
         if (orders != null) {
-            orders.forEach(i -> i.setParentOrder(this));
+            orders.forEach(i -> i.setRootOrder(this));
         }
         this.childOrders = orders;
     }
@@ -306,13 +317,44 @@ public class Order extends AbstractAuditingEntity<UUID> implements Serializable,
 
     public Order addChildOrder(Order order) {
         this.childOrders.add(order);
-        order.setParentOrder(this);
+        order.setRootOrder(this);
         return this;
     }
 
     public Order removeChildOrder(Order order) {
         this.childOrders.remove(order);
-        order.setParentOrder(null);
+        order.setRootOrder(null);
+        return this;
+    }
+
+    public Set<InternalOrder> getInternalOrders() {
+        return this.internalOrders;
+    }
+
+    public void setInternalOrders(Set<InternalOrder> internalOrders) {
+        if (this.internalOrders != null) {
+            this.internalOrders.forEach(i -> i.setRootOrder(null));
+        }
+        if (internalOrders != null) {
+            internalOrders.forEach(i -> i.setRootOrder(this));
+        }
+        this.internalOrders = internalOrders;
+    }
+
+    public Order internalOrders(Set<InternalOrder> internalOrders) {
+        this.setInternalOrders(internalOrders);
+        return this;
+    }
+
+    public Order addInternalOrder(InternalOrder internalOrder) {
+        this.internalOrders.add(internalOrder);
+        internalOrder.setRootOrder(this);
+        return this;
+    }
+
+    public Order removeInternalOrder(InternalOrder internalOrder) {
+        this.internalOrders.remove(internalOrder);
+        internalOrder.setRootOrder(null);
         return this;
     }
 
@@ -417,16 +459,16 @@ public class Order extends AbstractAuditingEntity<UUID> implements Serializable,
         return this;
     }
 
-    public Order getParentOrder() {
-        return this.parentOrder;
+    public Order getRootOrder() {
+        return this.rootOrder;
     }
 
-    public void setParentOrder(Order order) {
-        this.parentOrder = order;
+    public void setRootOrder(Order order) {
+        this.rootOrder = order;
     }
 
-    public Order parentOrder(Order order) {
-        this.setParentOrder(order);
+    public Order rootOrder(Order order) {
+        this.setRootOrder(order);
         return this;
     }
 
@@ -456,7 +498,6 @@ public class Order extends AbstractAuditingEntity<UUID> implements Serializable,
             "id=" + getId() +
             ", type='" + getType() + "'" +
             ", priority=" + getPriority() +
-            ", isInternal='" + getIsInternal() + "'" +
             ", note='" + getNote() + "'" +
             ", otherInfo='" + getOtherInfo() + "'" +
             ", createdBy='" + getCreatedBy() + "'" +

@@ -15,7 +15,7 @@ describe('Shipment e2e test', () => {
   const shipmentPageUrlPattern = new RegExp('/shipment(\\?.*)?$');
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
-  // const shipmentSample = {"type":"TRANSFER","shipmentDate":"2024-08-21T04:18:07.533Z"};
+  // const shipmentSample = {"type":"OTHER","shipmentDate":"2024-08-21T00:52:01.562Z","deliveryDate":"2024-08-21T06:41:20.333Z"};
 
   let shipment;
   // let shipmentStatus;
@@ -40,7 +40,7 @@ describe('Shipment e2e test', () => {
     cy.authenticatedRequest({
       method: 'POST',
       url: '/api/orders',
-      body: {"type":"RETURN","priority":39,"isInternal":false,"note":"ick tube passbook","otherInfo":"at"},
+      body: {"type":"TRANSFER","priority":82,"note":"short","otherInfo":"times baobab"},
     }).then(({ body }) => {
       order = body;
     });
@@ -266,14 +266,18 @@ describe('Shipment e2e test', () => {
     });
 
     it.skip('should create an instance of Shipment', () => {
-      cy.get(`[data-cy="type"]`).select('OUTBOUND');
+      cy.get(`[data-cy="type"]`).select('EXCHANGE');
 
-      cy.get(`[data-cy="shipmentDate"]`).type('2024-08-20T16:38');
+      cy.get(`[data-cy="shipmentDate"]`).type('2024-08-20T10:34');
       cy.get(`[data-cy="shipmentDate"]`).blur();
-      cy.get(`[data-cy="shipmentDate"]`).should('have.value', '2024-08-20T16:38');
+      cy.get(`[data-cy="shipmentDate"]`).should('have.value', '2024-08-20T10:34');
 
-      cy.get(`[data-cy="note"]`).type('bottling mmm neatly');
-      cy.get(`[data-cy="note"]`).should('have.value', 'bottling mmm neatly');
+      cy.get(`[data-cy="deliveryDate"]`).type('2024-08-21T06:21');
+      cy.get(`[data-cy="deliveryDate"]`).blur();
+      cy.get(`[data-cy="deliveryDate"]`).should('have.value', '2024-08-21T06:21');
+
+      cy.get(`[data-cy="note"]`).type('under');
+      cy.get(`[data-cy="note"]`).should('have.value', 'under');
 
       cy.get(`[data-cy="status"]`).select(1);
       cy.get(`[data-cy="order"]`).select(1);

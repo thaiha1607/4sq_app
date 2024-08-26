@@ -54,6 +54,9 @@ class ShipmentResourceIT {
     private static final Instant DEFAULT_SHIPMENT_DATE = Instant.ofEpochMilli(0L);
     private static final Instant UPDATED_SHIPMENT_DATE = Instant.now().truncatedTo(ChronoUnit.MILLIS);
 
+    private static final Instant DEFAULT_DELIVERY_DATE = Instant.ofEpochMilli(0L);
+    private static final Instant UPDATED_DELIVERY_DATE = Instant.now().truncatedTo(ChronoUnit.MILLIS);
+
     private static final String DEFAULT_NOTE = "AAAAAAAAAA";
     private static final String UPDATED_NOTE = "BBBBBBBBBB";
 
@@ -92,7 +95,11 @@ class ShipmentResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Shipment createEntity(EntityManager em) {
-        Shipment shipment = new Shipment().type(DEFAULT_TYPE).shipmentDate(DEFAULT_SHIPMENT_DATE).note(DEFAULT_NOTE);
+        Shipment shipment = new Shipment()
+            .type(DEFAULT_TYPE)
+            .shipmentDate(DEFAULT_SHIPMENT_DATE)
+            .deliveryDate(DEFAULT_DELIVERY_DATE)
+            .note(DEFAULT_NOTE);
         // Add required entity
         ShipmentStatus shipmentStatus;
         if (TestUtil.findAll(em, ShipmentStatus.class).isEmpty()) {
@@ -133,7 +140,11 @@ class ShipmentResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Shipment createUpdatedEntity(EntityManager em) {
-        Shipment shipment = new Shipment().type(UPDATED_TYPE).shipmentDate(UPDATED_SHIPMENT_DATE).note(UPDATED_NOTE);
+        Shipment shipment = new Shipment()
+            .type(UPDATED_TYPE)
+            .shipmentDate(UPDATED_SHIPMENT_DATE)
+            .deliveryDate(UPDATED_DELIVERY_DATE)
+            .note(UPDATED_NOTE);
         // Add required entity
         ShipmentStatus shipmentStatus;
         if (TestUtil.findAll(em, ShipmentStatus.class).isEmpty()) {
@@ -258,6 +269,23 @@ class ShipmentResourceIT {
 
     @Test
     @Transactional
+    void checkDeliveryDateIsRequired() throws Exception {
+        long databaseSizeBeforeTest = getRepositoryCount();
+        // set the field null
+        shipment.setDeliveryDate(null);
+
+        // Create the Shipment, which fails.
+        ShipmentDTO shipmentDTO = shipmentMapper.toDto(shipment);
+
+        restShipmentMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(shipmentDTO)))
+            .andExpect(status().isBadRequest());
+
+        assertSameRepositoryCount(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
     void getAllShipments() throws Exception {
         // Initialize the database
         insertedShipment = shipmentRepository.saveAndFlush(shipment);
@@ -270,6 +298,7 @@ class ShipmentResourceIT {
             .andExpect(jsonPath("$.[*].id").value(hasItem(shipment.getId().toString())))
             .andExpect(jsonPath("$.[*].type").value(hasItem(DEFAULT_TYPE.toString())))
             .andExpect(jsonPath("$.[*].shipmentDate").value(hasItem(DEFAULT_SHIPMENT_DATE.toString())))
+            .andExpect(jsonPath("$.[*].deliveryDate").value(hasItem(DEFAULT_DELIVERY_DATE.toString())))
             .andExpect(jsonPath("$.[*].note").value(hasItem(DEFAULT_NOTE)));
     }
 
@@ -304,6 +333,7 @@ class ShipmentResourceIT {
             .andExpect(jsonPath("$.id").value(shipment.getId().toString()))
             .andExpect(jsonPath("$.type").value(DEFAULT_TYPE.toString()))
             .andExpect(jsonPath("$.shipmentDate").value(DEFAULT_SHIPMENT_DATE.toString()))
+            .andExpect(jsonPath("$.deliveryDate").value(DEFAULT_DELIVERY_DATE.toString()))
             .andExpect(jsonPath("$.note").value(DEFAULT_NOTE));
     }
 
@@ -379,6 +409,39 @@ class ShipmentResourceIT {
 
         // Get all the shipmentList where shipmentDate is not null
         defaultShipmentFiltering("shipmentDate.specified=true", "shipmentDate.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentsByDeliveryDateIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedShipment = shipmentRepository.saveAndFlush(shipment);
+
+        // Get all the shipmentList where deliveryDate equals to
+        defaultShipmentFiltering("deliveryDate.equals=" + DEFAULT_DELIVERY_DATE, "deliveryDate.equals=" + UPDATED_DELIVERY_DATE);
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentsByDeliveryDateIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedShipment = shipmentRepository.saveAndFlush(shipment);
+
+        // Get all the shipmentList where deliveryDate in
+        defaultShipmentFiltering(
+            "deliveryDate.in=" + DEFAULT_DELIVERY_DATE + "," + UPDATED_DELIVERY_DATE,
+            "deliveryDate.in=" + UPDATED_DELIVERY_DATE
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllShipmentsByDeliveryDateIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedShipment = shipmentRepository.saveAndFlush(shipment);
+
+        // Get all the shipmentList where deliveryDate is not null
+        defaultShipmentFiltering("deliveryDate.specified=true", "deliveryDate.specified=false");
     }
 
     @Test
@@ -513,6 +576,7 @@ class ShipmentResourceIT {
             .andExpect(jsonPath("$.[*].id").value(hasItem(shipment.getId().toString())))
             .andExpect(jsonPath("$.[*].type").value(hasItem(DEFAULT_TYPE.toString())))
             .andExpect(jsonPath("$.[*].shipmentDate").value(hasItem(DEFAULT_SHIPMENT_DATE.toString())))
+            .andExpect(jsonPath("$.[*].deliveryDate").value(hasItem(DEFAULT_DELIVERY_DATE.toString())))
             .andExpect(jsonPath("$.[*].note").value(hasItem(DEFAULT_NOTE)));
 
         // Check, that the count call also returns 1
@@ -561,7 +625,7 @@ class ShipmentResourceIT {
         Shipment updatedShipment = shipmentRepository.findById(shipment.getId()).orElseThrow();
         // Disconnect from session so that the updates on updatedShipment are not directly saved in db
         em.detach(updatedShipment);
-        updatedShipment.type(UPDATED_TYPE).shipmentDate(UPDATED_SHIPMENT_DATE).note(UPDATED_NOTE);
+        updatedShipment.type(UPDATED_TYPE).shipmentDate(UPDATED_SHIPMENT_DATE).deliveryDate(UPDATED_DELIVERY_DATE).note(UPDATED_NOTE);
         ShipmentDTO shipmentDTO = shipmentMapper.toDto(updatedShipment);
 
         restShipmentMockMvc
@@ -649,7 +713,7 @@ class ShipmentResourceIT {
         Shipment partialUpdatedShipment = new Shipment();
         partialUpdatedShipment.setId(shipment.getId());
 
-        partialUpdatedShipment.type(UPDATED_TYPE).shipmentDate(UPDATED_SHIPMENT_DATE);
+        partialUpdatedShipment.type(UPDATED_TYPE).shipmentDate(UPDATED_SHIPMENT_DATE).note(UPDATED_NOTE);
 
         restShipmentMockMvc
             .perform(
@@ -677,7 +741,11 @@ class ShipmentResourceIT {
         Shipment partialUpdatedShipment = new Shipment();
         partialUpdatedShipment.setId(shipment.getId());
 
-        partialUpdatedShipment.type(UPDATED_TYPE).shipmentDate(UPDATED_SHIPMENT_DATE).note(UPDATED_NOTE);
+        partialUpdatedShipment
+            .type(UPDATED_TYPE)
+            .shipmentDate(UPDATED_SHIPMENT_DATE)
+            .deliveryDate(UPDATED_DELIVERY_DATE)
+            .note(UPDATED_NOTE);
 
         restShipmentMockMvc
             .perform(

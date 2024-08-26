@@ -39,6 +39,10 @@ public class Shipment extends AbstractAuditingEntity<UUID> implements Serializab
     @Column(name = "shipment_date", nullable = false)
     private Instant shipmentDate;
 
+    @NotNull
+    @Column(name = "delivery_date", nullable = false)
+    private Instant deliveryDate;
+
     @Column(name = "note")
     private String note;
 
@@ -66,14 +70,25 @@ public class Shipment extends AbstractAuditingEntity<UUID> implements Serializab
     @ManyToOne(optional = false)
     @NotNull
     @JsonIgnoreProperties(
-        value = { "invoices", "orderItems", "childOrders", "shipments", "histories", "customer", "status", "address", "parentOrder" },
+        value = {
+            "invoices",
+            "orderItems",
+            "childOrders",
+            "internalOrders",
+            "shipments",
+            "histories",
+            "customer",
+            "status",
+            "address",
+            "rootOrder",
+        },
         allowSetters = true
     )
     private Order order;
 
     @ManyToOne(optional = false)
     @NotNull
-    @JsonIgnoreProperties(value = { "shipments", "status", "order" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "childInvoices", "shipments", "status", "order", "rootInvoice" }, allowSetters = true)
     private Invoice invoice;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
@@ -115,6 +130,19 @@ public class Shipment extends AbstractAuditingEntity<UUID> implements Serializab
 
     public void setShipmentDate(Instant shipmentDate) {
         this.shipmentDate = shipmentDate;
+    }
+
+    public Instant getDeliveryDate() {
+        return this.deliveryDate;
+    }
+
+    public Shipment deliveryDate(Instant deliveryDate) {
+        this.setDeliveryDate(deliveryDate);
+        return this;
+    }
+
+    public void setDeliveryDate(Instant deliveryDate) {
+        this.deliveryDate = deliveryDate;
     }
 
     public String getNote() {
@@ -298,6 +326,7 @@ public class Shipment extends AbstractAuditingEntity<UUID> implements Serializab
             "id=" + getId() +
             ", type='" + getType() + "'" +
             ", shipmentDate='" + getShipmentDate() + "'" +
+            ", deliveryDate='" + getDeliveryDate() + "'" +
             ", note='" + getNote() + "'" +
             ", createdBy='" + getCreatedBy() + "'" +
             ", createdDate='" + getCreatedDate() + "'" +

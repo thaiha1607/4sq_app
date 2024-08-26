@@ -76,11 +76,15 @@ public class InvoiceCriteria implements Serializable, Criteria {
 
     private InstantFilter lastModifiedDate;
 
+    private UUIDFilter childInvoiceId;
+
     private UUIDFilter shipmentId;
 
     private LongFilter statusId;
 
     private UUIDFilter orderId;
+
+    private UUIDFilter rootInvoiceId;
 
     private Boolean distinct;
 
@@ -96,9 +100,11 @@ public class InvoiceCriteria implements Serializable, Criteria {
         this.createdDate = other.optionalCreatedDate().map(InstantFilter::copy).orElse(null);
         this.lastModifiedBy = other.optionalLastModifiedBy().map(StringFilter::copy).orElse(null);
         this.lastModifiedDate = other.optionalLastModifiedDate().map(InstantFilter::copy).orElse(null);
+        this.childInvoiceId = other.optionalChildInvoiceId().map(UUIDFilter::copy).orElse(null);
         this.shipmentId = other.optionalShipmentId().map(UUIDFilter::copy).orElse(null);
         this.statusId = other.optionalStatusId().map(LongFilter::copy).orElse(null);
         this.orderId = other.optionalOrderId().map(UUIDFilter::copy).orElse(null);
+        this.rootInvoiceId = other.optionalRootInvoiceId().map(UUIDFilter::copy).orElse(null);
         this.distinct = other.distinct;
     }
 
@@ -278,6 +284,25 @@ public class InvoiceCriteria implements Serializable, Criteria {
         this.lastModifiedDate = lastModifiedDate;
     }
 
+    public UUIDFilter getChildInvoiceId() {
+        return childInvoiceId;
+    }
+
+    public Optional<UUIDFilter> optionalChildInvoiceId() {
+        return Optional.ofNullable(childInvoiceId);
+    }
+
+    public UUIDFilter childInvoiceId() {
+        if (childInvoiceId == null) {
+            setChildInvoiceId(new UUIDFilter());
+        }
+        return childInvoiceId;
+    }
+
+    public void setChildInvoiceId(UUIDFilter childInvoiceId) {
+        this.childInvoiceId = childInvoiceId;
+    }
+
     public UUIDFilter getShipmentId() {
         return shipmentId;
     }
@@ -335,6 +360,25 @@ public class InvoiceCriteria implements Serializable, Criteria {
         this.orderId = orderId;
     }
 
+    public UUIDFilter getRootInvoiceId() {
+        return rootInvoiceId;
+    }
+
+    public Optional<UUIDFilter> optionalRootInvoiceId() {
+        return Optional.ofNullable(rootInvoiceId);
+    }
+
+    public UUIDFilter rootInvoiceId() {
+        if (rootInvoiceId == null) {
+            setRootInvoiceId(new UUIDFilter());
+        }
+        return rootInvoiceId;
+    }
+
+    public void setRootInvoiceId(UUIDFilter rootInvoiceId) {
+        this.rootInvoiceId = rootInvoiceId;
+    }
+
     public Boolean getDistinct() {
         return distinct;
     }
@@ -373,9 +417,11 @@ public class InvoiceCriteria implements Serializable, Criteria {
             Objects.equals(createdDate, that.createdDate) &&
             Objects.equals(lastModifiedBy, that.lastModifiedBy) &&
             Objects.equals(lastModifiedDate, that.lastModifiedDate) &&
+            Objects.equals(childInvoiceId, that.childInvoiceId) &&
             Objects.equals(shipmentId, that.shipmentId) &&
             Objects.equals(statusId, that.statusId) &&
             Objects.equals(orderId, that.orderId) &&
+            Objects.equals(rootInvoiceId, that.rootInvoiceId) &&
             Objects.equals(distinct, that.distinct)
         );
     }
@@ -392,9 +438,11 @@ public class InvoiceCriteria implements Serializable, Criteria {
             createdDate,
             lastModifiedBy,
             lastModifiedDate,
+            childInvoiceId,
             shipmentId,
             statusId,
             orderId,
+            rootInvoiceId,
             distinct
         );
     }
@@ -412,9 +460,11 @@ public class InvoiceCriteria implements Serializable, Criteria {
             optionalCreatedDate().map(f -> "createdDate=" + f + ", ").orElse("") +
             optionalLastModifiedBy().map(f -> "lastModifiedBy=" + f + ", ").orElse("") +
             optionalLastModifiedDate().map(f -> "lastModifiedDate=" + f + ", ").orElse("") +
+            optionalChildInvoiceId().map(f -> "childInvoiceId=" + f + ", ").orElse("") +
             optionalShipmentId().map(f -> "shipmentId=" + f + ", ").orElse("") +
             optionalStatusId().map(f -> "statusId=" + f + ", ").orElse("") +
             optionalOrderId().map(f -> "orderId=" + f + ", ").orElse("") +
+            optionalRootInvoiceId().map(f -> "rootInvoiceId=" + f + ", ").orElse("") +
             optionalDistinct().map(f -> "distinct=" + f + ", ").orElse("") +
         "}";
     }

@@ -99,6 +99,14 @@ public class OrderItemQueryService extends QueryService<OrderItem> {
             if (criteria.getLastModifiedDate() != null) {
                 specification = specification.and(buildRangeSpecification(criteria.getLastModifiedDate(), OrderItem_.lastModifiedDate));
             }
+            if (criteria.getInternalOrderItemId() != null) {
+                specification = specification.and(
+                    buildSpecification(
+                        criteria.getInternalOrderItemId(),
+                        root -> root.join(OrderItem_.internalOrderItems, JoinType.LEFT).get(InternalOrderItem_.id)
+                    )
+                );
+            }
             if (criteria.getProductCategoryId() != null) {
                 specification = specification.and(
                     buildSpecification(

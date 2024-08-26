@@ -20,7 +20,7 @@ public interface OrderMapper extends EntityMapper<OrderDTO, Order> {
     @Mapping(target = "customer", source = "customer", qualifiedByName = "userLogin")
     @Mapping(target = "status", source = "status", qualifiedByName = "orderStatusStatusCode")
     @Mapping(target = "address", source = "address", qualifiedByName = "addressId")
-    @Mapping(target = "parentOrder", source = "parentOrder", qualifiedByName = "orderId")
+    @Mapping(target = "rootOrder", source = "rootOrder", qualifiedByName = "orderId")
     OrderDTO toDto(Order s);
 
     @Named("orderId")

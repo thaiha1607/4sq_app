@@ -77,7 +77,7 @@ class ProductCriteriaTest {
         productCriteria.id();
         productCriteria.name();
         productCriteria.description();
-        productCriteria.price();
+        productCriteria.expectedPrice();
         productCriteria.provider();
         productCriteria.createdBy();
         productCriteria.createdDate();
@@ -96,7 +96,7 @@ class ProductCriteriaTest {
                 condition.apply(criteria.getId()) &&
                 condition.apply(criteria.getName()) &&
                 condition.apply(criteria.getDescription()) &&
-                condition.apply(criteria.getPrice()) &&
+                condition.apply(criteria.getExpectedPrice()) &&
                 condition.apply(criteria.getProvider()) &&
                 condition.apply(criteria.getCreatedBy()) &&
                 condition.apply(criteria.getCreatedDate()) &&
@@ -117,7 +117,7 @@ class ProductCriteriaTest {
                 condition.apply(criteria.getId(), copy.getId()) &&
                 condition.apply(criteria.getName(), copy.getName()) &&
                 condition.apply(criteria.getDescription(), copy.getDescription()) &&
-                condition.apply(criteria.getPrice(), copy.getPrice()) &&
+                condition.apply(criteria.getExpectedPrice(), copy.getExpectedPrice()) &&
                 condition.apply(criteria.getProvider(), copy.getProvider()) &&
                 condition.apply(criteria.getCreatedBy(), copy.getCreatedBy()) &&
                 condition.apply(criteria.getCreatedDate(), copy.getCreatedDate()) &&

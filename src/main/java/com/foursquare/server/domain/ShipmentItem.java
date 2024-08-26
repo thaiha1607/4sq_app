@@ -52,7 +52,7 @@ public class ShipmentItem extends AbstractAuditingEntity<UUID> implements Serial
 
     @ManyToOne(optional = false)
     @NotNull
-    @JsonIgnoreProperties(value = { "productCategory", "order" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "internalOrderItems", "productCategory", "order" }, allowSetters = true)
     private OrderItem orderItem;
 
     @ManyToOne(optional = false)

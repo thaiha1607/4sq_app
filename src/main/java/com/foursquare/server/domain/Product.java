@@ -39,8 +39,8 @@ public class Product extends AbstractAuditingEntity<UUID> implements Serializabl
 
     @NotNull
     @DecimalMin(value = "0")
-    @Column(name = "price", precision = 21, scale = 2, nullable = false)
-    private BigDecimal price;
+    @Column(name = "expected_price", precision = 21, scale = 2, nullable = false)
+    private BigDecimal expectedPrice;
 
     @Column(name = "provider")
     private String provider;
@@ -114,17 +114,17 @@ public class Product extends AbstractAuditingEntity<UUID> implements Serializabl
         this.description = description;
     }
 
-    public BigDecimal getPrice() {
-        return this.price;
+    public BigDecimal getExpectedPrice() {
+        return this.expectedPrice;
     }
 
-    public Product price(BigDecimal price) {
-        this.setPrice(price);
+    public Product expectedPrice(BigDecimal expectedPrice) {
+        this.setExpectedPrice(expectedPrice);
         return this;
     }
 
-    public void setPrice(BigDecimal price) {
-        this.price = price;
+    public void setExpectedPrice(BigDecimal expectedPrice) {
+        this.expectedPrice = expectedPrice;
     }
 
     public String getProvider() {
@@ -323,7 +323,7 @@ public class Product extends AbstractAuditingEntity<UUID> implements Serializabl
             "id=" + getId() +
             ", name='" + getName() + "'" +
             ", description='" + getDescription() + "'" +
-            ", price=" + getPrice() +
+            ", expectedPrice=" + getExpectedPrice() +
             ", provider='" + getProvider() + "'" +
             ", createdBy='" + getCreatedBy() + "'" +
             ", createdDate='" + getCreatedDate() + "'" +

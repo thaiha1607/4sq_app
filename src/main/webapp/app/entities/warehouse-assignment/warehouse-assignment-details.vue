@@ -75,12 +75,12 @@
             </div>
           </dd>
           <dt>
-            <span>Order</span>
+            <span>Internal Order</span>
           </dt>
           <dd>
-            <div v-if="warehouseAssignment.order">
-              <router-link :to="{ name: 'OrderView', params: { orderId: warehouseAssignment.order.id } }">{{
-                warehouseAssignment.order.id
+            <div v-if="warehouseAssignment.internalOrder">
+              <router-link :to="{ name: 'InternalOrderView', params: { internalOrderId: warehouseAssignment.internalOrder.id } }">{{
+                warehouseAssignment.internalOrder.id
               }}</router-link>
             </div>
           </dd>

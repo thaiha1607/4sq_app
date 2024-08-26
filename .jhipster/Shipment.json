@@ -24,6 +24,11 @@
       "fieldValidateRules": ["required"]
     },
     {
+      "fieldName": "deliveryDate",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    },
+    {
       "fieldName": "note",
       "fieldType": "String"
     },

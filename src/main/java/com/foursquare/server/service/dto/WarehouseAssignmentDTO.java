@@ -38,7 +38,7 @@ public class WarehouseAssignmentDTO implements Serializable {
     private WorkingUnitDTO targetWorkingUnit;
 
     @NotNull
-    private OrderDTO order;
+    private InternalOrderDTO internalOrder;
 
     public UUID getId() {
         return id;
@@ -128,12 +128,12 @@ public class WarehouseAssignmentDTO implements Serializable {
         this.targetWorkingUnit = targetWorkingUnit;
     }
 
-    public OrderDTO getOrder() {
-        return order;
+    public InternalOrderDTO getInternalOrder() {
+        return internalOrder;
     }
 
-    public void setOrder(OrderDTO order) {
-        this.order = order;
+    public void setInternalOrder(InternalOrderDTO internalOrder) {
+        this.internalOrder = internalOrder;
     }
 
     @Override
@@ -172,7 +172,7 @@ public class WarehouseAssignmentDTO implements Serializable {
             ", user=" + getUser() +
             ", sourceWorkingUnit=" + getSourceWorkingUnit() +
             ", targetWorkingUnit=" + getTargetWorkingUnit() +
-            ", order=" + getOrder() +
+            ", internalOrder=" + getInternalOrder() +
             "}";
     }
 }

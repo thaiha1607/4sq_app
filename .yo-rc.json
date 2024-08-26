@@ -46,12 +46,15 @@
       "WarehouseAssignment",
       "WorkingUnit",
       "Comment",
-      "OrderHistory"
+      "OrderHistory",
+      "InternalOrder",
+      "InternalOrderItem",
+      "InternalOrderHistory"
     ],
     "jhipsterVersion": "8.6.0",
     "jwtSecretKey": "MjlkMjdlMzQ0YTA4NDQ5MWJkMWY1ZWZlYjM5NzVkMTZiNTFhMTM0ZGRjNDEyZWY1MjI1MDU4OGM3ZWZjODk5MmUwYWU5ZjBhZjIyYTUwMWNjYjFlNTY1ZGVhYzNmNjZkODZlN2M3MWQyMTYzMDExYWY1MjVlZjdkZDZmNGM4NGE=",
     "languages": ["en", "vi"],
-    "lastLiquibaseTimestamp": 1724330764000,
+    "lastLiquibaseTimestamp": 1724663852000,
     "nativeLanguage": "en",
     "packageFolder": "com/foursquare/server",
     "packageName": "com.foursquare.server",
@@ -63,6 +66,6 @@
   "generator-jhipster-entity-audit": {
     "auditFramework": "custom",
     "auditPage": true,
-    "entityAuditEventChangelogDate": "20240822124603"
+    "entityAuditEventChangelogDate": "20240826091729"
   }
 }

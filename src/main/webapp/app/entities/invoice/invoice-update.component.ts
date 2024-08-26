@@ -23,6 +23,8 @@ export default defineComponent({
 
     const invoice: Ref<IInvoice> = ref(new Invoice());
 
+    const invoices: Ref<IInvoice[]> = ref([]);
+
     const invoiceStatusService = inject('invoiceStatusService', () => new InvoiceStatusService());
 
     const invoiceStatuses: Ref<IInvoiceStatus[]> = ref([]);
@@ -56,6 +58,11 @@ export default defineComponent({
     }
 
     const initRelationships = () => {
+      invoiceService()
+        .retrieve()
+        .then(res => {
+          invoices.value = res.data;
+        });
       invoiceStatusService()
         .retrieve()
         .then(res => {
@@ -87,6 +94,7 @@ export default defineComponent({
       createdDate: {},
       lastModifiedBy: {},
       lastModifiedDate: {},
+      childInvoices: {},
       shipments: {},
       status: {
         required: validations.required('This field is required.'),
@@ -94,6 +102,7 @@ export default defineComponent({
       order: {
         required: validations.required('This field is required.'),
       },
+      rootInvoice: {},
     };
     const v$ = useVuelidate(validationRules, invoice as any);
     v$.value.$validate();
@@ -107,6 +116,7 @@ export default defineComponent({
       paymentMethodValues,
       isSaving,
       currentLanguage,
+      invoices,
       invoiceStatuses,
       orders,
       v$,

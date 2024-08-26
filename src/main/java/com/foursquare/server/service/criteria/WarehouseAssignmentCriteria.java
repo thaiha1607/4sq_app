@@ -62,7 +62,7 @@ public class WarehouseAssignmentCriteria implements Serializable, Criteria {
 
     private UUIDFilter targetWorkingUnitId;
 
-    private UUIDFilter orderId;
+    private UUIDFilter internalOrderId;
 
     private Boolean distinct;
 
@@ -80,7 +80,7 @@ public class WarehouseAssignmentCriteria implements Serializable, Criteria {
         this.userId = other.optionalUserId().map(LongFilter::copy).orElse(null);
         this.sourceWorkingUnitId = other.optionalSourceWorkingUnitId().map(UUIDFilter::copy).orElse(null);
         this.targetWorkingUnitId = other.optionalTargetWorkingUnitId().map(UUIDFilter::copy).orElse(null);
-        this.orderId = other.optionalOrderId().map(UUIDFilter::copy).orElse(null);
+        this.internalOrderId = other.optionalInternalOrderId().map(UUIDFilter::copy).orElse(null);
         this.distinct = other.distinct;
     }
 
@@ -298,23 +298,23 @@ public class WarehouseAssignmentCriteria implements Serializable, Criteria {
         this.targetWorkingUnitId = targetWorkingUnitId;
     }
 
-    public UUIDFilter getOrderId() {
-        return orderId;
+    public UUIDFilter getInternalOrderId() {
+        return internalOrderId;
     }
 
-    public Optional<UUIDFilter> optionalOrderId() {
-        return Optional.ofNullable(orderId);
+    public Optional<UUIDFilter> optionalInternalOrderId() {
+        return Optional.ofNullable(internalOrderId);
     }
 
-    public UUIDFilter orderId() {
-        if (orderId == null) {
-            setOrderId(new UUIDFilter());
+    public UUIDFilter internalOrderId() {
+        if (internalOrderId == null) {
+            setInternalOrderId(new UUIDFilter());
         }
-        return orderId;
+        return internalOrderId;
     }
 
-    public void setOrderId(UUIDFilter orderId) {
-        this.orderId = orderId;
+    public void setInternalOrderId(UUIDFilter internalOrderId) {
+        this.internalOrderId = internalOrderId;
     }
 
     public Boolean getDistinct() {
@@ -357,7 +357,7 @@ public class WarehouseAssignmentCriteria implements Serializable, Criteria {
             Objects.equals(userId, that.userId) &&
             Objects.equals(sourceWorkingUnitId, that.sourceWorkingUnitId) &&
             Objects.equals(targetWorkingUnitId, that.targetWorkingUnitId) &&
-            Objects.equals(orderId, that.orderId) &&
+            Objects.equals(internalOrderId, that.internalOrderId) &&
             Objects.equals(distinct, that.distinct)
         );
     }
@@ -376,7 +376,7 @@ public class WarehouseAssignmentCriteria implements Serializable, Criteria {
             userId,
             sourceWorkingUnitId,
             targetWorkingUnitId,
-            orderId,
+            internalOrderId,
             distinct
         );
     }
@@ -396,7 +396,7 @@ public class WarehouseAssignmentCriteria implements Serializable, Criteria {
             optionalUserId().map(f -> "userId=" + f + ", ").orElse("") +
             optionalSourceWorkingUnitId().map(f -> "sourceWorkingUnitId=" + f + ", ").orElse("") +
             optionalTargetWorkingUnitId().map(f -> "targetWorkingUnitId=" + f + ", ").orElse("") +
-            optionalOrderId().map(f -> "orderId=" + f + ", ").orElse("") +
+            optionalInternalOrderId().map(f -> "internalOrderId=" + f + ", ").orElse("") +
             optionalDistinct().map(f -> "distinct=" + f + ", ").orElse("") +
         "}";
     }

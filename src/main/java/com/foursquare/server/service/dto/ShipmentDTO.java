@@ -21,6 +21,9 @@ public class ShipmentDTO implements Serializable {
     @NotNull
     private Instant shipmentDate;
 
+    @NotNull
+    private Instant deliveryDate;
+
     private String note;
 
     private String createdBy;
@@ -62,6 +65,14 @@ public class ShipmentDTO implements Serializable {
 
     public void setShipmentDate(Instant shipmentDate) {
         this.shipmentDate = shipmentDate;
+    }
+
+    public Instant getDeliveryDate() {
+        return deliveryDate;
+    }
+
+    public void setDeliveryDate(Instant deliveryDate) {
+        this.deliveryDate = deliveryDate;
     }
 
     public String getNote() {
@@ -156,6 +167,7 @@ public class ShipmentDTO implements Serializable {
             "id='" + getId() + "'" +
             ", type='" + getType() + "'" +
             ", shipmentDate='" + getShipmentDate() + "'" +
+            ", deliveryDate='" + getDeliveryDate() + "'" +
             ", note='" + getNote() + "'" +
             ", createdBy='" + getCreatedBy() + "'" +
             ", createdDate='" + getCreatedDate() + "'" +

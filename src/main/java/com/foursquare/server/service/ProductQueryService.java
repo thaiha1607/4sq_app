@@ -81,8 +81,8 @@ public class ProductQueryService extends QueryService<Product> {
             if (criteria.getDescription() != null) {
                 specification = specification.and(buildStringSpecification(criteria.getDescription(), Product_.description));
             }
-            if (criteria.getPrice() != null) {
-                specification = specification.and(buildRangeSpecification(criteria.getPrice(), Product_.price));
+            if (criteria.getExpectedPrice() != null) {
+                specification = specification.and(buildRangeSpecification(criteria.getExpectedPrice(), Product_.expectedPrice));
             }
             if (criteria.getProvider() != null) {
                 specification = specification.and(buildStringSpecification(criteria.getProvider(), Product_.provider));

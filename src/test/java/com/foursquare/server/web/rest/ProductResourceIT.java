@@ -51,9 +51,9 @@ class ProductResourceIT {
     private static final String DEFAULT_DESCRIPTION = "AAAAAAAAAA";
     private static final String UPDATED_DESCRIPTION = "BBBBBBBBBB";
 
-    private static final BigDecimal DEFAULT_PRICE = new BigDecimal(0);
-    private static final BigDecimal UPDATED_PRICE = new BigDecimal(1);
-    private static final BigDecimal SMALLER_PRICE = new BigDecimal(0 - 1);
+    private static final BigDecimal DEFAULT_EXPECTED_PRICE = new BigDecimal(0);
+    private static final BigDecimal UPDATED_EXPECTED_PRICE = new BigDecimal(1);
+    private static final BigDecimal SMALLER_EXPECTED_PRICE = new BigDecimal(0 - 1);
 
     private static final String DEFAULT_PROVIDER = "AAAAAAAAAA";
     private static final String UPDATED_PROVIDER = "BBBBBBBBBB";
@@ -93,7 +93,11 @@ class ProductResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Product createEntity(EntityManager em) {
-        Product product = new Product().name(DEFAULT_NAME).description(DEFAULT_DESCRIPTION).price(DEFAULT_PRICE).provider(DEFAULT_PROVIDER);
+        Product product = new Product()
+            .name(DEFAULT_NAME)
+            .description(DEFAULT_DESCRIPTION)
+            .expectedPrice(DEFAULT_EXPECTED_PRICE)
+            .provider(DEFAULT_PROVIDER);
         return product;
     }
 
@@ -104,7 +108,11 @@ class ProductResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Product createUpdatedEntity(EntityManager em) {
-        Product product = new Product().name(UPDATED_NAME).description(UPDATED_DESCRIPTION).price(UPDATED_PRICE).provider(UPDATED_PROVIDER);
+        Product product = new Product()
+            .name(UPDATED_NAME)
+            .description(UPDATED_DESCRIPTION)
+            .expectedPrice(UPDATED_EXPECTED_PRICE)
+            .provider(UPDATED_PROVIDER);
         return product;
     }
 
@@ -182,10 +190,10 @@ class ProductResourceIT {
 
     @Test
     @Transactional
-    void checkPriceIsRequired() throws Exception {
+    void checkExpectedPriceIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
         // set the field null
-        product.setPrice(null);
+        product.setExpectedPrice(null);
 
         // Create the Product, which fails.
         ProductDTO productDTO = productMapper.toDto(product);
@@ -211,7 +219,7 @@ class ProductResourceIT {
             .andExpect(jsonPath("$.[*].id").value(hasItem(product.getId().toString())))
             .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
             .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION)))
-            .andExpect(jsonPath("$.[*].price").value(hasItem(sameNumber(DEFAULT_PRICE))))
+            .andExpect(jsonPath("$.[*].expectedPrice").value(hasItem(sameNumber(DEFAULT_EXPECTED_PRICE))))
             .andExpect(jsonPath("$.[*].provider").value(hasItem(DEFAULT_PROVIDER)));
     }
 
@@ -246,7 +254,7 @@ class ProductResourceIT {
             .andExpect(jsonPath("$.id").value(product.getId().toString()))
             .andExpect(jsonPath("$.name").value(DEFAULT_NAME))
             .andExpect(jsonPath("$.description").value(DEFAULT_DESCRIPTION))
-            .andExpect(jsonPath("$.price").value(sameNumber(DEFAULT_PRICE)))
+            .andExpect(jsonPath("$.expectedPrice").value(sameNumber(DEFAULT_EXPECTED_PRICE)))
             .andExpect(jsonPath("$.provider").value(DEFAULT_PROVIDER));
     }
 
@@ -366,72 +374,84 @@ class ProductResourceIT {
 
     @Test
     @Transactional
-    void getAllProductsByPriceIsEqualToSomething() throws Exception {
+    void getAllProductsByExpectedPriceIsEqualToSomething() throws Exception {
         // Initialize the database
         insertedProduct = productRepository.saveAndFlush(product);
 
-        // Get all the productList where price equals to
-        defaultProductFiltering("price.equals=" + DEFAULT_PRICE, "price.equals=" + UPDATED_PRICE);
+        // Get all the productList where expectedPrice equals to
+        defaultProductFiltering("expectedPrice.equals=" + DEFAULT_EXPECTED_PRICE, "expectedPrice.equals=" + UPDATED_EXPECTED_PRICE);
     }
 
     @Test
     @Transactional
-    void getAllProductsByPriceIsInShouldWork() throws Exception {
+    void getAllProductsByExpectedPriceIsInShouldWork() throws Exception {
         // Initialize the database
         insertedProduct = productRepository.saveAndFlush(product);
 
-        // Get all the productList where price in
-        defaultProductFiltering("price.in=" + DEFAULT_PRICE + "," + UPDATED_PRICE, "price.in=" + UPDATED_PRICE);
+        // Get all the productList where expectedPrice in
+        defaultProductFiltering(
+            "expectedPrice.in=" + DEFAULT_EXPECTED_PRICE + "," + UPDATED_EXPECTED_PRICE,
+            "expectedPrice.in=" + UPDATED_EXPECTED_PRICE
+        );
     }
 
     @Test
     @Transactional
-    void getAllProductsByPriceIsNullOrNotNull() throws Exception {
+    void getAllProductsByExpectedPriceIsNullOrNotNull() throws Exception {
         // Initialize the database
         insertedProduct = productRepository.saveAndFlush(product);
 
-        // Get all the productList where price is not null
-        defaultProductFiltering("price.specified=true", "price.specified=false");
+        // Get all the productList where expectedPrice is not null
+        defaultProductFiltering("expectedPrice.specified=true", "expectedPrice.specified=false");
     }
 
     @Test
     @Transactional
-    void getAllProductsByPriceIsGreaterThanOrEqualToSomething() throws Exception {
+    void getAllProductsByExpectedPriceIsGreaterThanOrEqualToSomething() throws Exception {
         // Initialize the database
         insertedProduct = productRepository.saveAndFlush(product);
 
-        // Get all the productList where price is greater than or equal to
-        defaultProductFiltering("price.greaterThanOrEqual=" + DEFAULT_PRICE, "price.greaterThanOrEqual=" + UPDATED_PRICE);
+        // Get all the productList where expectedPrice is greater than or equal to
+        defaultProductFiltering(
+            "expectedPrice.greaterThanOrEqual=" + DEFAULT_EXPECTED_PRICE,
+            "expectedPrice.greaterThanOrEqual=" + UPDATED_EXPECTED_PRICE
+        );
     }
 
     @Test
     @Transactional
-    void getAllProductsByPriceIsLessThanOrEqualToSomething() throws Exception {
+    void getAllProductsByExpectedPriceIsLessThanOrEqualToSomething() throws Exception {
         // Initialize the database
         insertedProduct = productRepository.saveAndFlush(product);
 
-        // Get all the productList where price is less than or equal to
-        defaultProductFiltering("price.lessThanOrEqual=" + DEFAULT_PRICE, "price.lessThanOrEqual=" + SMALLER_PRICE);
+        // Get all the productList where expectedPrice is less than or equal to
+        defaultProductFiltering(
+            "expectedPrice.lessThanOrEqual=" + DEFAULT_EXPECTED_PRICE,
+            "expectedPrice.lessThanOrEqual=" + SMALLER_EXPECTED_PRICE
+        );
     }
 
     @Test
     @Transactional
-    void getAllProductsByPriceIsLessThanSomething() throws Exception {
+    void getAllProductsByExpectedPriceIsLessThanSomething() throws Exception {
         // Initialize the database
         insertedProduct = productRepository.saveAndFlush(product);
 
-        // Get all the productList where price is less than
-        defaultProductFiltering("price.lessThan=" + UPDATED_PRICE, "price.lessThan=" + DEFAULT_PRICE);
+        // Get all the productList where expectedPrice is less than
+        defaultProductFiltering("expectedPrice.lessThan=" + UPDATED_EXPECTED_PRICE, "expectedPrice.lessThan=" + DEFAULT_EXPECTED_PRICE);
     }
 
     @Test
     @Transactional
-    void getAllProductsByPriceIsGreaterThanSomething() throws Exception {
+    void getAllProductsByExpectedPriceIsGreaterThanSomething() throws Exception {
         // Initialize the database
         insertedProduct = productRepository.saveAndFlush(product);
 
-        // Get all the productList where price is greater than
-        defaultProductFiltering("price.greaterThan=" + SMALLER_PRICE, "price.greaterThan=" + DEFAULT_PRICE);
+        // Get all the productList where expectedPrice is greater than
+        defaultProductFiltering(
+            "expectedPrice.greaterThan=" + SMALLER_EXPECTED_PRICE,
+            "expectedPrice.greaterThan=" + DEFAULT_EXPECTED_PRICE
+        );
     }
 
     @Test
@@ -522,7 +542,7 @@ class ProductResourceIT {
             .andExpect(jsonPath("$.[*].id").value(hasItem(product.getId().toString())))
             .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
             .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION)))
-            .andExpect(jsonPath("$.[*].price").value(hasItem(sameNumber(DEFAULT_PRICE))))
+            .andExpect(jsonPath("$.[*].expectedPrice").value(hasItem(sameNumber(DEFAULT_EXPECTED_PRICE))))
             .andExpect(jsonPath("$.[*].provider").value(hasItem(DEFAULT_PROVIDER)));
 
         // Check, that the count call also returns 1
@@ -571,7 +591,7 @@ class ProductResourceIT {
         Product updatedProduct = productRepository.findById(product.getId()).orElseThrow();
         // Disconnect from session so that the updates on updatedProduct are not directly saved in db
         em.detach(updatedProduct);
-        updatedProduct.name(UPDATED_NAME).description(UPDATED_DESCRIPTION).price(UPDATED_PRICE).provider(UPDATED_PROVIDER);
+        updatedProduct.name(UPDATED_NAME).description(UPDATED_DESCRIPTION).expectedPrice(UPDATED_EXPECTED_PRICE).provider(UPDATED_PROVIDER);
         ProductDTO productDTO = productMapper.toDto(updatedProduct);
 
         restProductMockMvc
@@ -683,7 +703,11 @@ class ProductResourceIT {
         Product partialUpdatedProduct = new Product();
         partialUpdatedProduct.setId(product.getId());
 
-        partialUpdatedProduct.name(UPDATED_NAME).description(UPDATED_DESCRIPTION).price(UPDATED_PRICE).provider(UPDATED_PROVIDER);
+        partialUpdatedProduct
+            .name(UPDATED_NAME)
+            .description(UPDATED_DESCRIPTION)
+            .expectedPrice(UPDATED_EXPECTED_PRICE)
+            .provider(UPDATED_PROVIDER);
 
         restProductMockMvc
             .perform(

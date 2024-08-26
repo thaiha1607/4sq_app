@@ -39,7 +39,7 @@ describe('OrderItem e2e test', () => {
     cy.authenticatedRequest({
       method: 'POST',
       url: '/api/orders',
-      body: {"type":"EXCHANGE","priority":31,"isInternal":false,"note":"promptly","otherInfo":"because who sin"},
+      body: {"type":"TRANSFER","priority":3,"note":"gosh flamboyant","otherInfo":"deform different"},
     }).then(({ body }) => {
       order = body;
     });
@@ -55,6 +55,11 @@ describe('OrderItem e2e test', () => {
   /* Disabled due to incompatibility
   beforeEach(() => {
     // Simulate relationships api for better performance and reproducibility.
+    cy.intercept('GET', '/api/internal-order-items', {
+      statusCode: 200,
+      body: [],
+    });
+
     cy.intercept('GET', '/api/product-categories', {
       statusCode: 200,
       body: [productCategory],

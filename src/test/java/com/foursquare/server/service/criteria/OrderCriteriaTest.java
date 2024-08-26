@@ -77,7 +77,6 @@ class OrderCriteriaTest {
         orderCriteria.id();
         orderCriteria.type();
         orderCriteria.priority();
-        orderCriteria.isInternal();
         orderCriteria.note();
         orderCriteria.otherInfo();
         orderCriteria.createdBy();
@@ -87,12 +86,13 @@ class OrderCriteriaTest {
         orderCriteria.invoiceId();
         orderCriteria.orderItemId();
         orderCriteria.childOrderId();
+        orderCriteria.internalOrderId();
         orderCriteria.shipmentId();
         orderCriteria.historyId();
         orderCriteria.customerId();
         orderCriteria.statusId();
         orderCriteria.addressId();
-        orderCriteria.parentOrderId();
+        orderCriteria.rootOrderId();
         orderCriteria.distinct();
     }
 
@@ -102,7 +102,6 @@ class OrderCriteriaTest {
                 condition.apply(criteria.getId()) &&
                 condition.apply(criteria.getType()) &&
                 condition.apply(criteria.getPriority()) &&
-                condition.apply(criteria.getIsInternal()) &&
                 condition.apply(criteria.getNote()) &&
                 condition.apply(criteria.getOtherInfo()) &&
                 condition.apply(criteria.getCreatedBy()) &&
@@ -112,12 +111,13 @@ class OrderCriteriaTest {
                 condition.apply(criteria.getInvoiceId()) &&
                 condition.apply(criteria.getOrderItemId()) &&
                 condition.apply(criteria.getChildOrderId()) &&
+                condition.apply(criteria.getInternalOrderId()) &&
                 condition.apply(criteria.getShipmentId()) &&
                 condition.apply(criteria.getHistoryId()) &&
                 condition.apply(criteria.getCustomerId()) &&
                 condition.apply(criteria.getStatusId()) &&
                 condition.apply(criteria.getAddressId()) &&
-                condition.apply(criteria.getParentOrderId()) &&
+                condition.apply(criteria.getRootOrderId()) &&
                 condition.apply(criteria.getDistinct()),
             "every filter matches"
         );
@@ -129,7 +129,6 @@ class OrderCriteriaTest {
                 condition.apply(criteria.getId(), copy.getId()) &&
                 condition.apply(criteria.getType(), copy.getType()) &&
                 condition.apply(criteria.getPriority(), copy.getPriority()) &&
-                condition.apply(criteria.getIsInternal(), copy.getIsInternal()) &&
                 condition.apply(criteria.getNote(), copy.getNote()) &&
                 condition.apply(criteria.getOtherInfo(), copy.getOtherInfo()) &&
                 condition.apply(criteria.getCreatedBy(), copy.getCreatedBy()) &&
@@ -139,12 +138,13 @@ class OrderCriteriaTest {
                 condition.apply(criteria.getInvoiceId(), copy.getInvoiceId()) &&
                 condition.apply(criteria.getOrderItemId(), copy.getOrderItemId()) &&
                 condition.apply(criteria.getChildOrderId(), copy.getChildOrderId()) &&
+                condition.apply(criteria.getInternalOrderId(), copy.getInternalOrderId()) &&
                 condition.apply(criteria.getShipmentId(), copy.getShipmentId()) &&
                 condition.apply(criteria.getHistoryId(), copy.getHistoryId()) &&
                 condition.apply(criteria.getCustomerId(), copy.getCustomerId()) &&
                 condition.apply(criteria.getStatusId(), copy.getStatusId()) &&
                 condition.apply(criteria.getAddressId(), copy.getAddressId()) &&
-                condition.apply(criteria.getParentOrderId(), copy.getParentOrderId()) &&
+                condition.apply(criteria.getRootOrderId(), copy.getRootOrderId()) &&
                 condition.apply(criteria.getDistinct(), copy.getDistinct()),
             "every filter matches"
         );

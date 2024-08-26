@@ -1,6 +1,6 @@
 package com.foursquare.server.domain;
 
-import static com.foursquare.server.domain.OrderTestSamples.*;
+import static com.foursquare.server.domain.InternalOrderTestSamples.*;
 import static com.foursquare.server.domain.WarehouseAssignmentTestSamples.*;
 import static com.foursquare.server.domain.WorkingUnitTestSamples.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,14 +49,14 @@ class WarehouseAssignmentTest {
     }
 
     @Test
-    void orderTest() {
+    void internalOrderTest() {
         WarehouseAssignment warehouseAssignment = getWarehouseAssignmentRandomSampleGenerator();
-        Order orderBack = getOrderRandomSampleGenerator();
+        InternalOrder internalOrderBack = getInternalOrderRandomSampleGenerator();
 
-        warehouseAssignment.setOrder(orderBack);
-        assertThat(warehouseAssignment.getOrder()).isEqualTo(orderBack);
+        warehouseAssignment.setInternalOrder(internalOrderBack);
+        assertThat(warehouseAssignment.getInternalOrder()).isEqualTo(internalOrderBack);
 
-        warehouseAssignment.order(null);
-        assertThat(warehouseAssignment.getOrder()).isNull();
+        warehouseAssignment.internalOrder(null);
+        assertThat(warehouseAssignment.getInternalOrder()).isNull();
     }
 }

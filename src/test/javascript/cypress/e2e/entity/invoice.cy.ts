@@ -39,7 +39,7 @@ describe('Invoice e2e test', () => {
     cy.authenticatedRequest({
       method: 'POST',
       url: '/api/orders',
-      body: {"type":"SALE","priority":35,"isInternal":false,"note":"funk colossal review","otherInfo":"mostly gosh flamboyant"},
+      body: {"type":"SALE","priority":31,"note":"restfully","otherInfo":"sensitive hmph worst"},
     }).then(({ body }) => {
       order = body;
     });
@@ -55,6 +55,11 @@ describe('Invoice e2e test', () => {
   /* Disabled due to incompatibility
   beforeEach(() => {
     // Simulate relationships api for better performance and reproducibility.
+    cy.intercept('GET', '/api/invoices', {
+      statusCode: 200,
+      body: [],
+    });
+
     cy.intercept('GET', '/api/shipments', {
       statusCode: 200,
       body: [],

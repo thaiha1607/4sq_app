@@ -87,6 +87,7 @@ export default defineComponent({
       createdDate: {},
       lastModifiedBy: {},
       lastModifiedDate: {},
+      internalOrderItems: {},
       productCategory: {
         required: validations.required('This field is required.'),
       },

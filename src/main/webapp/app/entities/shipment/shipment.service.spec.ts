@@ -37,6 +37,7 @@ describe('Service Tests', () => {
         '9fec3727-3421-4967-b213-ba36557ca194',
         'OUTBOUND',
         currentDate,
+        currentDate,
         'AAAAAAA',
         'AAAAAAA',
         currentDate,
@@ -50,6 +51,7 @@ describe('Service Tests', () => {
         const returnedFromService = Object.assign(
           {
             shipmentDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
+            deliveryDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
             createdDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
             lastModifiedDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
           },
@@ -77,6 +79,7 @@ describe('Service Tests', () => {
           {
             id: '9fec3727-3421-4967-b213-ba36557ca194',
             shipmentDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
+            deliveryDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
             createdDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
             lastModifiedDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
           },
@@ -85,6 +88,7 @@ describe('Service Tests', () => {
         const expected = Object.assign(
           {
             shipmentDate: currentDate,
+            deliveryDate: currentDate,
             createdDate: currentDate,
             lastModifiedDate: currentDate,
           },
@@ -113,6 +117,7 @@ describe('Service Tests', () => {
           {
             type: 'BBBBBB',
             shipmentDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
+            deliveryDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
             note: 'BBBBBB',
             createdBy: 'BBBBBB',
             createdDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
@@ -125,6 +130,7 @@ describe('Service Tests', () => {
         const expected = Object.assign(
           {
             shipmentDate: currentDate,
+            deliveryDate: currentDate,
             createdDate: currentDate,
             lastModifiedDate: currentDate,
           },
@@ -152,10 +158,10 @@ describe('Service Tests', () => {
         const patchObject = Object.assign(
           {
             type: 'BBBBBB',
-            shipmentDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
+            deliveryDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
             createdBy: 'BBBBBB',
+            createdDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
             lastModifiedBy: 'BBBBBB',
-            lastModifiedDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
           },
           new Shipment(),
         );
@@ -164,6 +170,7 @@ describe('Service Tests', () => {
         const expected = Object.assign(
           {
             shipmentDate: currentDate,
+            deliveryDate: currentDate,
             createdDate: currentDate,
             lastModifiedDate: currentDate,
           },
@@ -192,6 +199,7 @@ describe('Service Tests', () => {
           {
             type: 'BBBBBB',
             shipmentDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
+            deliveryDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
             note: 'BBBBBB',
             createdBy: 'BBBBBB',
             createdDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
@@ -203,6 +211,7 @@ describe('Service Tests', () => {
         const expected = Object.assign(
           {
             shipmentDate: currentDate,
+            deliveryDate: currentDate,
             createdDate: currentDate,
             lastModifiedDate: currentDate,
           },

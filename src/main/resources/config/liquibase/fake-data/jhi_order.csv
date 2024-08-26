@@ -1,11 +1,11 @@
-id;type;priority;is_internal;note;other_info;created_by;created_date;last_modified_by;last_modified_date;customer_id;status_id
-ca49b61c-6d77-472d-8cc6-690bfff04cb1;SALE;2;false;as nicely ordinary;phew what miaow;trusty serene;2024-08-20T17:39:24;hm torpedo meh;2024-08-20T18:58:19;1;1
-434fc7e0-3ada-48bf-a261-85a77bb38f38;OTHER;32;true;hm what since;riposte;mmm brr joshingly;2024-08-20T15:09:05;yum leader ick;2024-08-21T07:15:49;2;2
-18005c3d-45f6-4cdc-b3fe-cc4f95ae3c5c;OTHER;5;false;yet trample victoriously;geez stop past;mostly;2024-08-20T22:39:49;finally recklessly;2024-08-20T12:08:54;2;3
-075d24ab-36c3-4fb4-a6d4-0524b8e1f2c0;SALE;65;false;pace pay;worse versus inflict;eek hmph;2024-08-20T13:21:26;antique;2024-08-20T22:29:12;1;4
-f47a759d-3690-4d91-a4f1-6aa9f150b654;TRANSFER;55;true;ferret media off;presell cricket;mortally installation;2024-08-20T20:41:22;meh ugh;2024-08-21T02:49:08;1;5
-5882088b-052b-46ed-81c1-80249d590fe6;RETURN;35;false;influx anti section;wisely;geez while;2024-08-20T18:40:06;solidly gah;2024-08-21T08:15:06;1;6
-f6a0bdce-501d-462e-9424-d27e703ff6c0;TRANSFER;87;true;courageously cleverly;often gee unlike;incidentally;2024-08-20T20:08:58;failing wherever;2024-08-20T22:22:25;2;7
-c6b306ee-d6a9-43a7-9d48-2a4fa64d4bd1;SALE;55;false;though bah positively;beyond lest basics;given finally definite;2024-08-20T11:55:11;poncho;2024-08-20T20:03:24;1;8
-36204fe9-ae5a-4990-872d-dab2a216233a;SALE;82;true;that;painfully masonry defenseless;likewise ah sans;2024-08-20T23:50:00;upward;2024-08-20T10:33:46;1;9
-ea568830-04a9-4ec0-a644-f3b2cd93bd8e;OTHER;41;false;circa hammer phew;rigidly whereas;toward brave;2024-08-20T21:12:11;aw linen fondly;2024-08-21T08:30:45;1;10
+id;type;priority;note;other_info;created_by;created_date;last_modified_by;last_modified_date;customer_id;status_id
+ca49b61c-6d77-472d-8cc6-690bfff04cb1;SALE;2;beside handmaiden smile;wherever amused;miaow snappy secondary;2024-08-20T14:58:42;internal crest;2024-08-20T10:34:12;1;1
+2c0a7379-434f-4c7e-903a-da8bf26185a7;TRANSFER;74;explorer;where valiantly;since brr phew;2024-08-20T19:32:01;brr joshingly different;2024-08-20T15:36:20;2;2
+43d84708-5cfa-482e-b018-005c3d45f6cd;RETURN;95;though verifiable for;blossom;cumbersome profitable;2024-08-21T01:59:06;stop;2024-08-21T04:56:42;2;3
+72296b2a-bb2e-4486-b68e-f52e2aa0eb3a;SALE;50;geometry;fabulous tributary consequently;as sans;2024-08-21T00:12:36;playful mmm;2024-08-20T09:55:09;2;4
+2fd13675-1c23-46a9-8fed-0f8dc2a779d9;EXCHANGE;95;enchanting;yieldingly blather;off sight;2024-08-20T10:41:43;honestly;2024-08-20T19:21:37;1;5
+482a63a5-6f83-4dba-9440-5ba398d8b307;EXCHANGE;79;custom unless;muster alder;scorch;2024-08-21T06:16:47;newsprint brr;2024-08-20T14:02:56;1;6
+e876f977-9631-40d2-9188-5abc2aabac3f;OTHER;68;whoever;wobbly swim um;beyond if;2024-08-21T05:12:44;connection;2024-08-20T09:43:04;1;7
+f6c07cd3-876b-4121-a25d-ff321b252a21;OTHER;83;amused whenever;from bah hesitation;er inability within;2024-08-20T17:24:23;footstool as;2024-08-20T14:01:44;2;8
+3aa2b3a4-daea-43d4-a69e-091647527b40;EXCHANGE;8;huzzah;pack;uh-huh;2024-08-20T16:41:04;rankle aha off;2024-08-20T10:50:21;1;9
+5a99072d-dab2-4a21-a623-3a02d32a34d1;TRANSFER;83;pfft versus slacken;ew;now;2024-08-21T08:32:34;by pish;2024-08-20T16:37:52;1;10

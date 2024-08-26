@@ -72,6 +72,7 @@ public class InvoiceAsserts {
         assertThat(expected)
             .as("Verify Invoice relationships")
             .satisfies(e -> assertThat(e.getStatus()).as("check status").isEqualTo(actual.getStatus()))
-            .satisfies(e -> assertThat(e.getOrder()).as("check order").isEqualTo(actual.getOrder()));
+            .satisfies(e -> assertThat(e.getOrder()).as("check order").isEqualTo(actual.getOrder()))
+            .satisfies(e -> assertThat(e.getRootInvoice()).as("check rootInvoice").isEqualTo(actual.getRootInvoice()));
     }
 }

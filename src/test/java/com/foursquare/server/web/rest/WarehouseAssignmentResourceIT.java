@@ -10,7 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foursquare.server.IntegrationTest;
-import com.foursquare.server.domain.Order;
+import com.foursquare.server.domain.InternalOrder;
 import com.foursquare.server.domain.User;
 import com.foursquare.server.domain.WarehouseAssignment;
 import com.foursquare.server.domain.WorkingUnit;
@@ -109,15 +109,15 @@ class WarehouseAssignmentResourceIT {
         }
         warehouseAssignment.setSourceWorkingUnit(workingUnit);
         // Add required entity
-        Order order;
-        if (TestUtil.findAll(em, Order.class).isEmpty()) {
-            order = OrderResourceIT.createEntity(em);
-            em.persist(order);
+        InternalOrder internalOrder;
+        if (TestUtil.findAll(em, InternalOrder.class).isEmpty()) {
+            internalOrder = InternalOrderResourceIT.createEntity(em);
+            em.persist(internalOrder);
             em.flush();
         } else {
-            order = TestUtil.findAll(em, Order.class).get(0);
+            internalOrder = TestUtil.findAll(em, InternalOrder.class).get(0);
         }
-        warehouseAssignment.setOrder(order);
+        warehouseAssignment.setInternalOrder(internalOrder);
         return warehouseAssignment;
     }
 
@@ -143,15 +143,15 @@ class WarehouseAssignmentResourceIT {
         }
         warehouseAssignment.setSourceWorkingUnit(workingUnit);
         // Add required entity
-        Order order;
-        if (TestUtil.findAll(em, Order.class).isEmpty()) {
-            order = OrderResourceIT.createUpdatedEntity(em);
-            em.persist(order);
+        InternalOrder internalOrder;
+        if (TestUtil.findAll(em, InternalOrder.class).isEmpty()) {
+            internalOrder = InternalOrderResourceIT.createUpdatedEntity(em);
+            em.persist(internalOrder);
             em.flush();
         } else {
-            order = TestUtil.findAll(em, Order.class).get(0);
+            internalOrder = TestUtil.findAll(em, InternalOrder.class).get(0);
         }
-        warehouseAssignment.setOrder(order);
+        warehouseAssignment.setInternalOrder(internalOrder);
         return warehouseAssignment;
     }
 
@@ -496,24 +496,24 @@ class WarehouseAssignmentResourceIT {
 
     @Test
     @Transactional
-    void getAllWarehouseAssignmentsByOrderIsEqualToSomething() throws Exception {
-        Order order;
-        if (TestUtil.findAll(em, Order.class).isEmpty()) {
+    void getAllWarehouseAssignmentsByInternalOrderIsEqualToSomething() throws Exception {
+        InternalOrder internalOrder;
+        if (TestUtil.findAll(em, InternalOrder.class).isEmpty()) {
             warehouseAssignmentRepository.saveAndFlush(warehouseAssignment);
-            order = OrderResourceIT.createEntity(em);
+            internalOrder = InternalOrderResourceIT.createEntity(em);
         } else {
-            order = TestUtil.findAll(em, Order.class).get(0);
+            internalOrder = TestUtil.findAll(em, InternalOrder.class).get(0);
         }
-        em.persist(order);
+        em.persist(internalOrder);
         em.flush();
-        warehouseAssignment.setOrder(order);
+        warehouseAssignment.setInternalOrder(internalOrder);
         warehouseAssignmentRepository.saveAndFlush(warehouseAssignment);
-        UUID orderId = order.getId();
-        // Get all the warehouseAssignmentList where order equals to orderId
-        defaultWarehouseAssignmentShouldBeFound("orderId.equals=" + orderId);
+        UUID internalOrderId = internalOrder.getId();
+        // Get all the warehouseAssignmentList where internalOrder equals to internalOrderId
+        defaultWarehouseAssignmentShouldBeFound("internalOrderId.equals=" + internalOrderId);
 
-        // Get all the warehouseAssignmentList where order equals to UUID.randomUUID()
-        defaultWarehouseAssignmentShouldNotBeFound("orderId.equals=" + UUID.randomUUID());
+        // Get all the warehouseAssignmentList where internalOrder equals to UUID.randomUUID()
+        defaultWarehouseAssignmentShouldNotBeFound("internalOrderId.equals=" + UUID.randomUUID());
     }
 
     private void defaultWarehouseAssignmentFiltering(String shouldBeFound, String shouldNotBeFound) throws Exception {

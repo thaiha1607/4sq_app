@@ -33,11 +33,11 @@
                                  onDelete="SET NULL"
                                  />
 
-        <addForeignKeyConstraint baseColumnNames="order_id"
+        <addForeignKeyConstraint baseColumnNames="internal_order_id"
                                  baseTableName="warehouse_assignment"
-                                 constraintName="fk_warehouse_assignment__order_id"
+                                 constraintName="fk_warehouse_assignment__internal_order_id"
                                  referencedColumnNames="id"
-                                 referencedTableName="jhi_order"
+                                 referencedTableName="internal_order"
                                  />
     </changeSet>
 </databaseChangeLog>

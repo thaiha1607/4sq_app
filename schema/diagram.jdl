@@ -166,9 +166,24 @@ entity Order {
     id UUID
     type OrderType required
     @defaultValue(0) priority Integer min(0) max(100)
-    @defaultValue(false) isInternal Boolean
     note String
     otherInfo String
+}
+@dto(mapstruct)
+@service(serviceClass)
+@paginate(pagination)
+entity InternalOrder {
+    id UUID
+    type OrderType required
+    note String
+}
+@dto(mapstruct)
+@service(serviceClass)
+@paginate(pagination)
+entity InternalOrderItem {
+    id UUID
+    qty Integer required min(0)
+    note String
 }
 enum OrderType {
     SALE,
@@ -206,7 +221,7 @@ entity Product {
     name String required
     description String
     // We will let price here instead of in ProductCategory for simplicity.
-    price BigDecimal required min(0)
+    expectedPrice BigDecimal required min(0)
     // Provider is only String for the sake of simplicity. In real-world applications, it should be a separate entity with more details.
     provider String
 }
@@ -260,6 +275,7 @@ entity Shipment {
     // We won't include fields like tracking number, carrier, shipping method, etc. for simplicity.
     type ShipmentType required
     shipmentDate Instant required
+    deliveryDate Instant required
     note String
 }
 enum ShipmentType {
@@ -330,7 +346,14 @@ entity Comment {
 @paginate(pagination)
 entity OrderHistory {
     id UUID
-    comments String
+    note String
+}
+@dto(mapstruct)
+@service(serviceClass)
+@paginate(pagination)
+entity InternalOrderHistory {
+    id UUID
+    note String
 }
 /**
  * One to one relationship.
@@ -345,7 +368,9 @@ relationship OneToOne {
 relationship OneToMany {
     Order{invoice} to Invoice{order required}
     Order{orderItem} to OrderItem{order required}
-    Order{childOrder} to Order{parentOrder}
+    Order{childOrder} to Order{rootOrder}
+    Invoice{childInvoice} to Invoice{rootInvoice}
+    Order{internalOrder} to InternalOrder{rootOrder required}
     @OnDelete("CASCADE") Product{productCategory(name)} to ProductCategory{product(name) required}
     @OnDelete("CASCADE") Product{productImage} to ProductImage{product required}
     Shipment{assignment} to ShipmentAssignment{shipment required}
@@ -354,6 +379,8 @@ relationship OneToMany {
     Invoice{shipment} to Shipment{invoice required}
     @OnDelete("CASCADE") Product{comment} to Comment{product required}
     @OnDelete("CASCADE") Order{history} to OrderHistory{order required}
+    @OnDelete("CASCADE") InternalOrder{history} to InternalOrderHistory{order required}
+    OrderItem{internalOrderItem} to InternalOrderItem{orderItem required}
 }
 /**
  * Many to one relationship.
@@ -373,16 +400,18 @@ relationship ManyToOne {
     StaffInfo{workingUnit(name)} to @OnDelete("SET NULL") WorkingUnit
     Invoice{status(statusCode) required} to InvoiceStatus
     Order{status(statusCode) required} to OrderStatus
+    InternalOrder{status(statusCode) required} to OrderStatus
     Order{address} to Address
     ProductQuantity{workingUnit(name) required} to WorkingUnit
     ProductQuantity{productCategory(name) required} to ProductCategory
     ProductCategory{colour(hexCode) required} to Colour
     ShipmentItem{orderItem required} to OrderItem
     Shipment{status(statusCode) required} to ShipmentStatus
-    WarehouseAssignment{order required} to Order
+    WarehouseAssignment{internalOrder required} to InternalOrder
     WorkingUnit{address} to Address
     Comment{user(login) required} to @OnDelete("CASCADE") User with builtInEntity
     OrderHistory{status(statusCode) required} to OrderStatus
+    InternalOrderHistory{status(statusCode) required} to OrderStatus
 }
 /**
  * Many to many relationship.

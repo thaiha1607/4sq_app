@@ -2,6 +2,7 @@ package com.foursquare.server.domain;
 
 import static com.foursquare.server.domain.InvoiceStatusTestSamples.*;
 import static com.foursquare.server.domain.InvoiceTestSamples.*;
+import static com.foursquare.server.domain.InvoiceTestSamples.*;
 import static com.foursquare.server.domain.OrderTestSamples.*;
 import static com.foursquare.server.domain.ShipmentTestSamples.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,6 +26,28 @@ class InvoiceTest {
 
         invoice2 = getInvoiceSample2();
         assertThat(invoice1).isNotEqualTo(invoice2);
+    }
+
+    @Test
+    void childInvoiceTest() {
+        Invoice invoice = getInvoiceRandomSampleGenerator();
+        Invoice invoiceBack = getInvoiceRandomSampleGenerator();
+
+        invoice.addChildInvoice(invoiceBack);
+        assertThat(invoice.getChildInvoices()).containsOnly(invoiceBack);
+        assertThat(invoiceBack.getRootInvoice()).isEqualTo(invoice);
+
+        invoice.removeChildInvoice(invoiceBack);
+        assertThat(invoice.getChildInvoices()).doesNotContain(invoiceBack);
+        assertThat(invoiceBack.getRootInvoice()).isNull();
+
+        invoice.childInvoices(new HashSet<>(Set.of(invoiceBack)));
+        assertThat(invoice.getChildInvoices()).containsOnly(invoiceBack);
+        assertThat(invoiceBack.getRootInvoice()).isEqualTo(invoice);
+
+        invoice.setChildInvoices(new HashSet<>());
+        assertThat(invoice.getChildInvoices()).doesNotContain(invoiceBack);
+        assertThat(invoiceBack.getRootInvoice()).isNull();
     }
 
     @Test
@@ -71,5 +94,17 @@ class InvoiceTest {
 
         invoice.order(null);
         assertThat(invoice.getOrder()).isNull();
+    }
+
+    @Test
+    void rootInvoiceTest() {
+        Invoice invoice = getInvoiceRandomSampleGenerator();
+        Invoice invoiceBack = getInvoiceRandomSampleGenerator();
+
+        invoice.setRootInvoice(invoiceBack);
+        assertThat(invoice.getRootInvoice()).isEqualTo(invoiceBack);
+
+        invoice.rootInvoice(null);
+        assertThat(invoice.getRootInvoice()).isNull();
     }
 }

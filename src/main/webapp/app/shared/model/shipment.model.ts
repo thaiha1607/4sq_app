@@ -7,6 +7,7 @@ export interface IShipment {
   id?: string;
   type?: keyof typeof ShipmentType;
   shipmentDate?: Date;
+  deliveryDate?: Date;
   note?: string | null;
   createdBy?: string;
   createdDate?: Date;
@@ -22,6 +23,7 @@ export class Shipment implements IShipment {
     public id?: string,
     public type?: keyof typeof ShipmentType,
     public shipmentDate?: Date,
+    public deliveryDate?: Date,
     public note?: string | null,
     public createdBy?: string,
     public createdDate?: Date,

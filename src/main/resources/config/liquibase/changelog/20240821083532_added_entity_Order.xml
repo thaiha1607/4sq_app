@@ -20,9 +20,6 @@
             <column name="priority" type="integer" defaultValueNumeric="0">
                 <constraints nullable="true" />
             </column>
-            <column name="is_internal" type="boolean" defaultValueBoolean="false">
-                <constraints nullable="true" />
-            </column>
             <column name="note" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
@@ -50,7 +47,7 @@
             <column name="address_id" type="${uuidType}">
                 <constraints nullable="true" />
             </column>
-            <column name="parent_order_id" type="${uuidType}">
+            <column name="root_order_id" type="${uuidType}">
                 <constraints nullable="true" />
             </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
@@ -78,7 +75,6 @@
             <column name="id" type="${uuidType}"/>
             <column name="type" type="string"/>
             <column name="priority" type="numeric"/>
-            <column name="is_internal" type="boolean"/>
             <column name="note" type="string"/>
             <column name="other_info" type="string"/>
             <column name="created_by" type="string"/>

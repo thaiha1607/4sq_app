@@ -73,6 +73,13 @@
   "name": "OrderItem",
   "relationships": [
     {
+      "otherEntityName": "internalOrderItem",
+      "otherEntityRelationshipName": "orderItem",
+      "relationshipName": "internalOrderItem",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    },
+    {
       "otherEntityField": "name",
       "otherEntityName": "productCategory",
       "relationshipName": "productCategory",

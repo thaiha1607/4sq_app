@@ -60,11 +60,8 @@ public class WarehouseAssignment extends AbstractAuditingEntity<UUID> implements
 
     @ManyToOne(optional = false)
     @NotNull
-    @JsonIgnoreProperties(
-        value = { "invoices", "orderItems", "childOrders", "shipments", "histories", "customer", "status", "address", "parentOrder" },
-        allowSetters = true
-    )
-    private Order order;
+    @JsonIgnoreProperties(value = { "histories", "status", "rootOrder" }, allowSetters = true)
+    private InternalOrder internalOrder;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -200,16 +197,16 @@ public class WarehouseAssignment extends AbstractAuditingEntity<UUID> implements
         return this;
     }
 
-    public Order getOrder() {
-        return this.order;
+    public InternalOrder getInternalOrder() {
+        return this.internalOrder;
     }
 
-    public void setOrder(Order order) {
-        this.order = order;
+    public void setInternalOrder(InternalOrder internalOrder) {
+        this.internalOrder = internalOrder;
     }
 
-    public WarehouseAssignment order(Order order) {
-        this.setOrder(order);
+    public WarehouseAssignment internalOrder(InternalOrder internalOrder) {
+        this.setInternalOrder(internalOrder);
         return this;
     }
 

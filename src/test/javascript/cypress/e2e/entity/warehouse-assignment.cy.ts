@@ -19,7 +19,7 @@ describe('WarehouseAssignment e2e test', () => {
 
   let warehouseAssignment;
   // let workingUnit;
-  // let order;
+  // let internalOrder;
 
   beforeEach(() => {
     cy.login(username, password);
@@ -38,10 +38,10 @@ describe('WarehouseAssignment e2e test', () => {
     // create an instance at the required relationship entity:
     cy.authenticatedRequest({
       method: 'POST',
-      url: '/api/orders',
-      body: {"type":"TRANSFER","priority":73,"isInternal":true,"note":"amongst cheerfully","otherInfo":"yuck oof hm"},
+      url: '/api/internal-orders',
+      body: {"type":"TRANSFER","note":"amidst cavort frail"},
     }).then(({ body }) => {
-      order = body;
+      internalOrder = body;
     });
   });
    */
@@ -65,9 +65,9 @@ describe('WarehouseAssignment e2e test', () => {
       body: [workingUnit],
     });
 
-    cy.intercept('GET', '/api/orders', {
+    cy.intercept('GET', '/api/internal-orders', {
       statusCode: 200,
-      body: [order],
+      body: [internalOrder],
     });
 
   });
@@ -94,12 +94,12 @@ describe('WarehouseAssignment e2e test', () => {
         workingUnit = undefined;
       });
     }
-    if (order) {
+    if (internalOrder) {
       cy.authenticatedRequest({
         method: 'DELETE',
-        url: `/api/orders/${order.id}`,
+        url: `/api/internal-orders/${internalOrder.id}`,
       }).then(() => {
-        order = undefined;
+        internalOrder = undefined;
       });
     }
   });
@@ -148,7 +148,7 @@ describe('WarehouseAssignment e2e test', () => {
           body: {
             ...warehouseAssignmentSample,
             sourceWorkingUnit: workingUnit,
-            order: order,
+            internalOrder: internalOrder,
           },
         }).then(({ body }) => {
           warehouseAssignment = body;
@@ -247,7 +247,7 @@ describe('WarehouseAssignment e2e test', () => {
       cy.get(`[data-cy="otherInfo"]`).should('have.value', 'equalize rusty extremely');
 
       cy.get(`[data-cy="sourceWorkingUnit"]`).select(1);
-      cy.get(`[data-cy="order"]`).select(1);
+      cy.get(`[data-cy="internalOrder"]`).select(1);
 
       cy.get(entityCreateSaveButtonSelector).click();
 

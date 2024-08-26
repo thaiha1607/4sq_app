@@ -85,7 +85,7 @@ class WarehouseAssignmentCriteriaTest {
         warehouseAssignmentCriteria.userId();
         warehouseAssignmentCriteria.sourceWorkingUnitId();
         warehouseAssignmentCriteria.targetWorkingUnitId();
-        warehouseAssignmentCriteria.orderId();
+        warehouseAssignmentCriteria.internalOrderId();
         warehouseAssignmentCriteria.distinct();
     }
 
@@ -103,7 +103,7 @@ class WarehouseAssignmentCriteriaTest {
                 condition.apply(criteria.getUserId()) &&
                 condition.apply(criteria.getSourceWorkingUnitId()) &&
                 condition.apply(criteria.getTargetWorkingUnitId()) &&
-                condition.apply(criteria.getOrderId()) &&
+                condition.apply(criteria.getInternalOrderId()) &&
                 condition.apply(criteria.getDistinct()),
             "every filter matches"
         );
@@ -126,7 +126,7 @@ class WarehouseAssignmentCriteriaTest {
                 condition.apply(criteria.getUserId(), copy.getUserId()) &&
                 condition.apply(criteria.getSourceWorkingUnitId(), copy.getSourceWorkingUnitId()) &&
                 condition.apply(criteria.getTargetWorkingUnitId(), copy.getTargetWorkingUnitId()) &&
-                condition.apply(criteria.getOrderId(), copy.getOrderId()) &&
+                condition.apply(criteria.getInternalOrderId(), copy.getInternalOrderId()) &&
                 condition.apply(criteria.getDistinct(), copy.getDistinct()),
             "every filter matches"
         );

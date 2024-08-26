@@ -94,8 +94,8 @@
       "relationshipType": "many-to-one"
     },
     {
-      "otherEntityName": "order",
-      "relationshipName": "order",
+      "otherEntityName": "internalOrder",
+      "relationshipName": "internalOrder",
       "relationshipSide": "left",
       "relationshipType": "many-to-one",
       "relationshipValidateRules": "required"

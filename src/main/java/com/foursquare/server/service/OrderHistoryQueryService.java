@@ -75,8 +75,8 @@ public class OrderHistoryQueryService extends QueryService<OrderHistory> {
             if (criteria.getId() != null) {
                 specification = specification.and(buildSpecification(criteria.getId(), OrderHistory_.id));
             }
-            if (criteria.getComments() != null) {
-                specification = specification.and(buildStringSpecification(criteria.getComments(), OrderHistory_.comments));
+            if (criteria.getNote() != null) {
+                specification = specification.and(buildStringSpecification(criteria.getNote(), OrderHistory_.note));
             }
             if (criteria.getCreatedBy() != null) {
                 specification = specification.and(buildStringSpecification(criteria.getCreatedBy(), OrderHistory_.createdBy));

@@ -68,7 +68,7 @@ export default defineComponent({
 
     const validations = useValidation();
     const validationRules = {
-      comments: {},
+      note: {},
       createdBy: {},
       createdDate: {},
       lastModifiedBy: {},

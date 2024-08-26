@@ -1,11 +1,14 @@
 package com.foursquare.server.domain;
 
+import static com.foursquare.server.domain.InternalOrderItemTestSamples.*;
 import static com.foursquare.server.domain.OrderItemTestSamples.*;
 import static com.foursquare.server.domain.OrderTestSamples.*;
 import static com.foursquare.server.domain.ProductCategoryTestSamples.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.foursquare.server.web.rest.TestUtil;
+import java.util.HashSet;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 class OrderItemTest {
@@ -22,6 +25,28 @@ class OrderItemTest {
 
         orderItem2 = getOrderItemSample2();
         assertThat(orderItem1).isNotEqualTo(orderItem2);
+    }
+
+    @Test
+    void internalOrderItemTest() {
+        OrderItem orderItem = getOrderItemRandomSampleGenerator();
+        InternalOrderItem internalOrderItemBack = getInternalOrderItemRandomSampleGenerator();
+
+        orderItem.addInternalOrderItem(internalOrderItemBack);
+        assertThat(orderItem.getInternalOrderItems()).containsOnly(internalOrderItemBack);
+        assertThat(internalOrderItemBack.getOrderItem()).isEqualTo(orderItem);
+
+        orderItem.removeInternalOrderItem(internalOrderItemBack);
+        assertThat(orderItem.getInternalOrderItems()).doesNotContain(internalOrderItemBack);
+        assertThat(internalOrderItemBack.getOrderItem()).isNull();
+
+        orderItem.internalOrderItems(new HashSet<>(Set.of(internalOrderItemBack)));
+        assertThat(orderItem.getInternalOrderItems()).containsOnly(internalOrderItemBack);
+        assertThat(internalOrderItemBack.getOrderItem()).isEqualTo(orderItem);
+
+        orderItem.setInternalOrderItems(new HashSet<>());
+        assertThat(orderItem.getInternalOrderItems()).doesNotContain(internalOrderItemBack);
+        assertThat(internalOrderItemBack.getOrderItem()).isNull();
     }
 
     @Test

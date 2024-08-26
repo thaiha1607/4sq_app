@@ -1,6 +1,7 @@
 package com.foursquare.server.domain;
 
 import static com.foursquare.server.domain.AddressTestSamples.*;
+import static com.foursquare.server.domain.InternalOrderTestSamples.*;
 import static com.foursquare.server.domain.InvoiceTestSamples.*;
 import static com.foursquare.server.domain.OrderHistoryTestSamples.*;
 import static com.foursquare.server.domain.OrderItemTestSamples.*;
@@ -82,19 +83,41 @@ class OrderTest {
 
         order.addChildOrder(orderBack);
         assertThat(order.getChildOrders()).containsOnly(orderBack);
-        assertThat(orderBack.getParentOrder()).isEqualTo(order);
+        assertThat(orderBack.getRootOrder()).isEqualTo(order);
 
         order.removeChildOrder(orderBack);
         assertThat(order.getChildOrders()).doesNotContain(orderBack);
-        assertThat(orderBack.getParentOrder()).isNull();
+        assertThat(orderBack.getRootOrder()).isNull();
 
         order.childOrders(new HashSet<>(Set.of(orderBack)));
         assertThat(order.getChildOrders()).containsOnly(orderBack);
-        assertThat(orderBack.getParentOrder()).isEqualTo(order);
+        assertThat(orderBack.getRootOrder()).isEqualTo(order);
 
         order.setChildOrders(new HashSet<>());
         assertThat(order.getChildOrders()).doesNotContain(orderBack);
-        assertThat(orderBack.getParentOrder()).isNull();
+        assertThat(orderBack.getRootOrder()).isNull();
+    }
+
+    @Test
+    void internalOrderTest() {
+        Order order = getOrderRandomSampleGenerator();
+        InternalOrder internalOrderBack = getInternalOrderRandomSampleGenerator();
+
+        order.addInternalOrder(internalOrderBack);
+        assertThat(order.getInternalOrders()).containsOnly(internalOrderBack);
+        assertThat(internalOrderBack.getRootOrder()).isEqualTo(order);
+
+        order.removeInternalOrder(internalOrderBack);
+        assertThat(order.getInternalOrders()).doesNotContain(internalOrderBack);
+        assertThat(internalOrderBack.getRootOrder()).isNull();
+
+        order.internalOrders(new HashSet<>(Set.of(internalOrderBack)));
+        assertThat(order.getInternalOrders()).containsOnly(internalOrderBack);
+        assertThat(internalOrderBack.getRootOrder()).isEqualTo(order);
+
+        order.setInternalOrders(new HashSet<>());
+        assertThat(order.getInternalOrders()).doesNotContain(internalOrderBack);
+        assertThat(internalOrderBack.getRootOrder()).isNull();
     }
 
     @Test
@@ -166,14 +189,14 @@ class OrderTest {
     }
 
     @Test
-    void parentOrderTest() {
+    void rootOrderTest() {
         Order order = getOrderRandomSampleGenerator();
         Order orderBack = getOrderRandomSampleGenerator();
 
-        order.setParentOrder(orderBack);
-        assertThat(order.getParentOrder()).isEqualTo(orderBack);
+        order.setRootOrder(orderBack);
+        assertThat(order.getRootOrder()).isEqualTo(orderBack);
 
-        order.parentOrder(null);
-        assertThat(order.getParentOrder()).isNull();
+        order.rootOrder(null);
+        assertThat(order.getRootOrder()).isNull();
     }
 }

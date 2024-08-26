@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foursquare.server.IntegrationTest;
 import com.foursquare.server.domain.Invoice;
+import com.foursquare.server.domain.Invoice;
 import com.foursquare.server.domain.InvoiceStatus;
 import com.foursquare.server.domain.Order;
 import com.foursquare.server.domain.enumeration.InvoiceType;
@@ -563,6 +564,28 @@ class InvoiceResourceIT {
 
         // Get all the invoiceList where order equals to UUID.randomUUID()
         defaultInvoiceShouldNotBeFound("orderId.equals=" + UUID.randomUUID());
+    }
+
+    @Test
+    @Transactional
+    void getAllInvoicesByRootInvoiceIsEqualToSomething() throws Exception {
+        Invoice rootInvoice;
+        if (TestUtil.findAll(em, Invoice.class).isEmpty()) {
+            invoiceRepository.saveAndFlush(invoice);
+            rootInvoice = InvoiceResourceIT.createEntity(em);
+        } else {
+            rootInvoice = TestUtil.findAll(em, Invoice.class).get(0);
+        }
+        em.persist(rootInvoice);
+        em.flush();
+        invoice.setRootInvoice(rootInvoice);
+        invoiceRepository.saveAndFlush(invoice);
+        UUID rootInvoiceId = rootInvoice.getId();
+        // Get all the invoiceList where rootInvoice equals to rootInvoiceId
+        defaultInvoiceShouldBeFound("rootInvoiceId.equals=" + rootInvoiceId);
+
+        // Get all the invoiceList where rootInvoice equals to UUID.randomUUID()
+        defaultInvoiceShouldNotBeFound("rootInvoiceId.equals=" + UUID.randomUUID());
     }
 
     private void defaultInvoiceFiltering(String shouldBeFound, String shouldNotBeFound) throws Exception {

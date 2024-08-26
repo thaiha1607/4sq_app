@@ -81,9 +81,6 @@ public class OrderQueryService extends QueryService<Order> {
             if (criteria.getPriority() != null) {
                 specification = specification.and(buildRangeSpecification(criteria.getPriority(), Order_.priority));
             }
-            if (criteria.getIsInternal() != null) {
-                specification = specification.and(buildSpecification(criteria.getIsInternal(), Order_.isInternal));
-            }
             if (criteria.getNote() != null) {
                 specification = specification.and(buildStringSpecification(criteria.getNote(), Order_.note));
             }
@@ -117,6 +114,14 @@ public class OrderQueryService extends QueryService<Order> {
                     buildSpecification(criteria.getChildOrderId(), root -> root.join(Order_.childOrders, JoinType.LEFT).get(Order_.id))
                 );
             }
+            if (criteria.getInternalOrderId() != null) {
+                specification = specification.and(
+                    buildSpecification(
+                        criteria.getInternalOrderId(),
+                        root -> root.join(Order_.internalOrders, JoinType.LEFT).get(InternalOrder_.id)
+                    )
+                );
+            }
             if (criteria.getShipmentId() != null) {
                 specification = specification.and(
                     buildSpecification(criteria.getShipmentId(), root -> root.join(Order_.shipments, JoinType.LEFT).get(Shipment_.id))
@@ -142,9 +147,9 @@ public class OrderQueryService extends QueryService<Order> {
                     buildSpecification(criteria.getAddressId(), root -> root.join(Order_.address, JoinType.LEFT).get(Address_.id))
                 );
             }
-            if (criteria.getParentOrderId() != null) {
+            if (criteria.getRootOrderId() != null) {
                 specification = specification.and(
-                    buildSpecification(criteria.getParentOrderId(), root -> root.join(Order_.parentOrder, JoinType.LEFT).get(Order_.id))
+                    buildSpecification(criteria.getRootOrderId(), root -> root.join(Order_.rootOrder, JoinType.LEFT).get(Order_.id))
                 );
             }
         }

@@ -17,6 +17,12 @@
             <span v-if="shipment.shipmentDate">{{ formatDateLong(shipment.shipmentDate) }}</span>
           </dd>
           <dt>
+            <span>Delivery Date</span>
+          </dt>
+          <dd>
+            <span v-if="shipment.deliveryDate">{{ formatDateLong(shipment.deliveryDate) }}</span>
+          </dd>
+          <dt>
             <span>Note</span>
           </dt>
           <dd>

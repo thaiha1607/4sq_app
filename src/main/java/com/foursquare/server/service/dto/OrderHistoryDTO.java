@@ -14,7 +14,7 @@ public class OrderHistoryDTO implements Serializable {
 
     private UUID id;
 
-    private String comments;
+    private String note;
 
     private String createdBy;
 
@@ -38,12 +38,12 @@ public class OrderHistoryDTO implements Serializable {
         this.id = id;
     }
 
-    public String getComments() {
-        return comments;
+    public String getNote() {
+        return note;
     }
 
-    public void setComments(String comments) {
-        this.comments = comments;
+    public void setNote(String note) {
+        this.note = note;
     }
 
     public String getCreatedBy() {
@@ -120,7 +120,7 @@ public class OrderHistoryDTO implements Serializable {
     public String toString() {
         return "OrderHistoryDTO{" +
             "id='" + getId() + "'" +
-            ", comments='" + getComments() + "'" +
+            ", note='" + getNote() + "'" +
             ", createdBy='" + getCreatedBy() + "'" +
             ", createdDate='" + getCreatedDate() + "'" +
             ", lastModifiedBy='" + getLastModifiedBy() + "'" +

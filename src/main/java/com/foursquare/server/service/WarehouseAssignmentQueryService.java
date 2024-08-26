@@ -124,9 +124,12 @@ public class WarehouseAssignmentQueryService extends QueryService<WarehouseAssig
                     )
                 );
             }
-            if (criteria.getOrderId() != null) {
+            if (criteria.getInternalOrderId() != null) {
                 specification = specification.and(
-                    buildSpecification(criteria.getOrderId(), root -> root.join(WarehouseAssignment_.order, JoinType.LEFT).get(Order_.id))
+                    buildSpecification(
+                        criteria.getInternalOrderId(),
+                        root -> root.join(WarehouseAssignment_.internalOrder, JoinType.LEFT).get(InternalOrder_.id)
+                    )
                 );
             }
         }

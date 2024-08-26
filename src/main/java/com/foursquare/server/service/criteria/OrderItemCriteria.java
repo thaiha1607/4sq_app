@@ -40,6 +40,8 @@ public class OrderItemCriteria implements Serializable, Criteria {
 
     private InstantFilter lastModifiedDate;
 
+    private UUIDFilter internalOrderItemId;
+
     private UUIDFilter productCategoryId;
 
     private UUIDFilter orderId;
@@ -58,6 +60,7 @@ public class OrderItemCriteria implements Serializable, Criteria {
         this.createdDate = other.optionalCreatedDate().map(InstantFilter::copy).orElse(null);
         this.lastModifiedBy = other.optionalLastModifiedBy().map(StringFilter::copy).orElse(null);
         this.lastModifiedDate = other.optionalLastModifiedDate().map(InstantFilter::copy).orElse(null);
+        this.internalOrderItemId = other.optionalInternalOrderItemId().map(UUIDFilter::copy).orElse(null);
         this.productCategoryId = other.optionalProductCategoryId().map(UUIDFilter::copy).orElse(null);
         this.orderId = other.optionalOrderId().map(UUIDFilter::copy).orElse(null);
         this.distinct = other.distinct;
@@ -239,6 +242,25 @@ public class OrderItemCriteria implements Serializable, Criteria {
         this.lastModifiedDate = lastModifiedDate;
     }
 
+    public UUIDFilter getInternalOrderItemId() {
+        return internalOrderItemId;
+    }
+
+    public Optional<UUIDFilter> optionalInternalOrderItemId() {
+        return Optional.ofNullable(internalOrderItemId);
+    }
+
+    public UUIDFilter internalOrderItemId() {
+        if (internalOrderItemId == null) {
+            setInternalOrderItemId(new UUIDFilter());
+        }
+        return internalOrderItemId;
+    }
+
+    public void setInternalOrderItemId(UUIDFilter internalOrderItemId) {
+        this.internalOrderItemId = internalOrderItemId;
+    }
+
     public UUIDFilter getProductCategoryId() {
         return productCategoryId;
     }
@@ -315,6 +337,7 @@ public class OrderItemCriteria implements Serializable, Criteria {
             Objects.equals(createdDate, that.createdDate) &&
             Objects.equals(lastModifiedBy, that.lastModifiedBy) &&
             Objects.equals(lastModifiedDate, that.lastModifiedDate) &&
+            Objects.equals(internalOrderItemId, that.internalOrderItemId) &&
             Objects.equals(productCategoryId, that.productCategoryId) &&
             Objects.equals(orderId, that.orderId) &&
             Objects.equals(distinct, that.distinct)
@@ -333,6 +356,7 @@ public class OrderItemCriteria implements Serializable, Criteria {
             createdDate,
             lastModifiedBy,
             lastModifiedDate,
+            internalOrderItemId,
             productCategoryId,
             orderId,
             distinct
@@ -352,6 +376,7 @@ public class OrderItemCriteria implements Serializable, Criteria {
             optionalCreatedDate().map(f -> "createdDate=" + f + ", ").orElse("") +
             optionalLastModifiedBy().map(f -> "lastModifiedBy=" + f + ", ").orElse("") +
             optionalLastModifiedDate().map(f -> "lastModifiedDate=" + f + ", ").orElse("") +
+            optionalInternalOrderItemId().map(f -> "internalOrderItemId=" + f + ", ").orElse("") +
             optionalProductCategoryId().map(f -> "productCategoryId=" + f + ", ").orElse("") +
             optionalOrderId().map(f -> "orderId=" + f + ", ").orElse("") +
             optionalDistinct().map(f -> "distinct=" + f + ", ").orElse("") +

@@ -9,8 +9,8 @@ import { useAlertService } from '@/shared/alert/alert.service';
 import UserService from '@/entities/user/user.service';
 import WorkingUnitService from '@/entities/working-unit/working-unit.service';
 import { type IWorkingUnit } from '@/shared/model/working-unit.model';
-import OrderService from '@/entities/order/order.service';
-import { type IOrder } from '@/shared/model/order.model';
+import InternalOrderService from '@/entities/internal-order/internal-order.service';
+import { type IInternalOrder } from '@/shared/model/internal-order.model';
 import { type IWarehouseAssignment, WarehouseAssignment } from '@/shared/model/warehouse-assignment.model';
 import { AssignmentStatus } from '@/shared/model/enumerations/assignment-status.model';
 
@@ -29,9 +29,9 @@ export default defineComponent({
 
     const workingUnits: Ref<IWorkingUnit[]> = ref([]);
 
-    const orderService = inject('orderService', () => new OrderService());
+    const internalOrderService = inject('internalOrderService', () => new InternalOrderService());
 
-    const orders: Ref<IOrder[]> = ref([]);
+    const internalOrders: Ref<IInternalOrder[]> = ref([]);
     const assignmentStatusValues: Ref<string[]> = ref(Object.keys(AssignmentStatus));
     const isSaving = ref(false);
     const currentLanguage = inject('currentLanguage', () => computed(() => navigator.language ?? 'en'), true);
@@ -67,10 +67,10 @@ export default defineComponent({
         .then(res => {
           workingUnits.value = res.data;
         });
-      orderService()
+      internalOrderService()
         .retrieve()
         .then(res => {
-          orders.value = res.data;
+          internalOrders.value = res.data;
         });
     };
 
@@ -92,7 +92,7 @@ export default defineComponent({
         required: validations.required('This field is required.'),
       },
       targetWorkingUnit: {},
-      order: {
+      internalOrder: {
         required: validations.required('This field is required.'),
       },
     };
@@ -109,7 +109,7 @@ export default defineComponent({
       currentLanguage,
       users,
       workingUnits,
-      orders,
+      internalOrders,
       v$,
       ...useDateFormat({ entityRef: warehouseAssignment }),
     };

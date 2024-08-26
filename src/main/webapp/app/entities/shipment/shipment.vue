@@ -30,6 +30,7 @@
             <th scope="row"><span>ID</span></th>
             <th scope="row"><span>Type</span></th>
             <th scope="row"><span>Shipment Date</span></th>
+            <th scope="row"><span>Delivery Date</span></th>
             <th scope="row"><span>Note</span></th>
             <th scope="row"><span>Created By</span></th>
             <th scope="row"><span>Created Date</span></th>
@@ -48,6 +49,7 @@
             </td>
             <td>{{ shipment.type }}</td>
             <td>{{ formatDateShort(shipment.shipmentDate) || '' }}</td>
+            <td>{{ formatDateShort(shipment.deliveryDate) || '' }}</td>
             <td>{{ shipment.note }}</td>
             <td>{{ shipment.createdBy }}</td>
             <td>{{ formatDateShort(shipment.createdDate) || '' }}</td>

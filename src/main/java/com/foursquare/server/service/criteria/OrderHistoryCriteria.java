@@ -24,7 +24,7 @@ public class OrderHistoryCriteria implements Serializable, Criteria {
 
     private UUIDFilter id;
 
-    private StringFilter comments;
+    private StringFilter note;
 
     private StringFilter createdBy;
 
@@ -44,7 +44,7 @@ public class OrderHistoryCriteria implements Serializable, Criteria {
 
     public OrderHistoryCriteria(OrderHistoryCriteria other) {
         this.id = other.optionalId().map(UUIDFilter::copy).orElse(null);
-        this.comments = other.optionalComments().map(StringFilter::copy).orElse(null);
+        this.note = other.optionalNote().map(StringFilter::copy).orElse(null);
         this.createdBy = other.optionalCreatedBy().map(StringFilter::copy).orElse(null);
         this.createdDate = other.optionalCreatedDate().map(InstantFilter::copy).orElse(null);
         this.lastModifiedBy = other.optionalLastModifiedBy().map(StringFilter::copy).orElse(null);
@@ -78,23 +78,23 @@ public class OrderHistoryCriteria implements Serializable, Criteria {
         this.id = id;
     }
 
-    public StringFilter getComments() {
-        return comments;
+    public StringFilter getNote() {
+        return note;
     }
 
-    public Optional<StringFilter> optionalComments() {
-        return Optional.ofNullable(comments);
+    public Optional<StringFilter> optionalNote() {
+        return Optional.ofNullable(note);
     }
 
-    public StringFilter comments() {
-        if (comments == null) {
-            setComments(new StringFilter());
+    public StringFilter note() {
+        if (note == null) {
+            setNote(new StringFilter());
         }
-        return comments;
+        return note;
     }
 
-    public void setComments(StringFilter comments) {
-        this.comments = comments;
+    public void setNote(StringFilter note) {
+        this.note = note;
     }
 
     public StringFilter getCreatedBy() {
@@ -241,7 +241,7 @@ public class OrderHistoryCriteria implements Serializable, Criteria {
         final OrderHistoryCriteria that = (OrderHistoryCriteria) o;
         return (
             Objects.equals(id, that.id) &&
-            Objects.equals(comments, that.comments) &&
+            Objects.equals(note, that.note) &&
             Objects.equals(createdBy, that.createdBy) &&
             Objects.equals(createdDate, that.createdDate) &&
             Objects.equals(lastModifiedBy, that.lastModifiedBy) &&
@@ -254,7 +254,7 @@ public class OrderHistoryCriteria implements Serializable, Criteria {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, comments, createdBy, createdDate, lastModifiedBy, lastModifiedDate, statusId, orderId, distinct);
+        return Objects.hash(id, note, createdBy, createdDate, lastModifiedBy, lastModifiedDate, statusId, orderId, distinct);
     }
 
     // prettier-ignore
@@ -262,7 +262,7 @@ public class OrderHistoryCriteria implements Serializable, Criteria {
     public String toString() {
         return "OrderHistoryCriteria{" +
             optionalId().map(f -> "id=" + f + ", ").orElse("") +
-            optionalComments().map(f -> "comments=" + f + ", ").orElse("") +
+            optionalNote().map(f -> "note=" + f + ", ").orElse("") +
             optionalCreatedBy().map(f -> "createdBy=" + f + ", ").orElse("") +
             optionalCreatedDate().map(f -> "createdDate=" + f + ", ").orElse("") +
             optionalLastModifiedBy().map(f -> "lastModifiedBy=" + f + ", ").orElse("") +

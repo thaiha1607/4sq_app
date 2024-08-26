@@ -24,7 +24,7 @@ public class ProductDTO implements Serializable {
 
     @NotNull
     @DecimalMin(value = "0")
-    private BigDecimal price;
+    private BigDecimal expectedPrice;
 
     private String provider;
 
@@ -62,12 +62,12 @@ public class ProductDTO implements Serializable {
         this.description = description;
     }
 
-    public BigDecimal getPrice() {
-        return price;
+    public BigDecimal getExpectedPrice() {
+        return expectedPrice;
     }
 
-    public void setPrice(BigDecimal price) {
-        this.price = price;
+    public void setExpectedPrice(BigDecimal expectedPrice) {
+        this.expectedPrice = expectedPrice;
     }
 
     public String getProvider() {
@@ -146,7 +146,7 @@ public class ProductDTO implements Serializable {
             "id='" + getId() + "'" +
             ", name='" + getName() + "'" +
             ", description='" + getDescription() + "'" +
-            ", price=" + getPrice() +
+            ", expectedPrice=" + getExpectedPrice() +
             ", provider='" + getProvider() + "'" +
             ", createdBy='" + getCreatedBy() + "'" +
             ", createdDate='" + getCreatedDate() + "'" +

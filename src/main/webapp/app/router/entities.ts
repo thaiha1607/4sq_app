@@ -107,6 +107,18 @@ const OrderHistory = () => import('@/entities/order-history/order-history.vue');
 const OrderHistoryUpdate = () => import('@/entities/order-history/order-history-update.vue');
 const OrderHistoryDetails = () => import('@/entities/order-history/order-history-details.vue');
 
+const InternalOrder = () => import('@/entities/internal-order/internal-order.vue');
+const InternalOrderUpdate = () => import('@/entities/internal-order/internal-order-update.vue');
+const InternalOrderDetails = () => import('@/entities/internal-order/internal-order-details.vue');
+
+const InternalOrderItem = () => import('@/entities/internal-order-item/internal-order-item.vue');
+const InternalOrderItemUpdate = () => import('@/entities/internal-order-item/internal-order-item-update.vue');
+const InternalOrderItemDetails = () => import('@/entities/internal-order-item/internal-order-item-details.vue');
+
+const InternalOrderHistory = () => import('@/entities/internal-order-history/internal-order-history.vue');
+const InternalOrderHistoryUpdate = () => import('@/entities/internal-order-history/internal-order-history-update.vue');
+const InternalOrderHistoryDetails = () => import('@/entities/internal-order-history/internal-order-history-details.vue');
+
 // jhipster-needle-add-entity-to-router-import - JHipster will import entities to the router here
 
 export default {
@@ -735,6 +747,78 @@ export default {
       path: 'order-history/:orderHistoryId/view',
       name: 'OrderHistoryView',
       component: OrderHistoryDetails,
+      meta: { authorities: [Authority.USER] },
+    },
+    {
+      path: 'internal-order',
+      name: 'InternalOrder',
+      component: InternalOrder,
+      meta: { authorities: [Authority.USER] },
+    },
+    {
+      path: 'internal-order/new',
+      name: 'InternalOrderCreate',
+      component: InternalOrderUpdate,
+      meta: { authorities: [Authority.USER] },
+    },
+    {
+      path: 'internal-order/:internalOrderId/edit',
+      name: 'InternalOrderEdit',
+      component: InternalOrderUpdate,
+      meta: { authorities: [Authority.USER] },
+    },
+    {
+      path: 'internal-order/:internalOrderId/view',
+      name: 'InternalOrderView',
+      component: InternalOrderDetails,
+      meta: { authorities: [Authority.USER] },
+    },
+    {
+      path: 'internal-order-item',
+      name: 'InternalOrderItem',
+      component: InternalOrderItem,
+      meta: { authorities: [Authority.USER] },
+    },
+    {
+      path: 'internal-order-item/new',
+      name: 'InternalOrderItemCreate',
+      component: InternalOrderItemUpdate,
+      meta: { authorities: [Authority.USER] },
+    },
+    {
+      path: 'internal-order-item/:internalOrderItemId/edit',
+      name: 'InternalOrderItemEdit',
+      component: InternalOrderItemUpdate,
+      meta: { authorities: [Authority.USER] },
+    },
+    {
+      path: 'internal-order-item/:internalOrderItemId/view',
+      name: 'InternalOrderItemView',
+      component: InternalOrderItemDetails,
+      meta: { authorities: [Authority.USER] },
+    },
+    {
+      path: 'internal-order-history',
+      name: 'InternalOrderHistory',
+      component: InternalOrderHistory,
+      meta: { authorities: [Authority.USER] },
+    },
+    {
+      path: 'internal-order-history/new',
+      name: 'InternalOrderHistoryCreate',
+      component: InternalOrderHistoryUpdate,
+      meta: { authorities: [Authority.USER] },
+    },
+    {
+      path: 'internal-order-history/:internalOrderHistoryId/edit',
+      name: 'InternalOrderHistoryEdit',
+      component: InternalOrderHistoryUpdate,
+      meta: { authorities: [Authority.USER] },
+    },
+    {
+      path: 'internal-order-history/:internalOrderHistoryId/view',
+      name: 'InternalOrderHistoryView',
+      component: InternalOrderHistoryDetails,
       meta: { authorities: [Authority.USER] },
     },
     // jhipster-needle-add-entity-to-router - JHipster will add entities to the router here

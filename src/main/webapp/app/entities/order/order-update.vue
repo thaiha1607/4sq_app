@@ -41,18 +41,6 @@
             </div>
           </div>
           <div class="form-group">
-            <label class="form-control-label" for="order-isInternal">Is Internal</label>
-            <input
-              type="checkbox"
-              class="form-check"
-              name="isInternal"
-              id="order-isInternal"
-              data-cy="isInternal"
-              :class="{ valid: !v$.isInternal.$invalid, invalid: v$.isInternal.$invalid }"
-              v-model="v$.isInternal.$model"
-            />
-          </div>
-          <div class="form-group">
             <label class="form-control-label" for="order-note">Note</label>
             <input
               type="text"
@@ -176,11 +164,11 @@
             </select>
           </div>
           <div class="form-group">
-            <label class="form-control-label" for="order-parentOrder">Parent Order</label>
-            <select class="form-control" id="order-parentOrder" data-cy="parentOrder" name="parentOrder" v-model="order.parentOrder">
+            <label class="form-control-label" for="order-rootOrder">Root Order</label>
+            <select class="form-control" id="order-rootOrder" data-cy="rootOrder" name="rootOrder" v-model="order.rootOrder">
               <option v-bind:value="null"></option>
               <option
-                v-bind:value="order.parentOrder && orderOption.id === order.parentOrder.id ? order.parentOrder : orderOption"
+                v-bind:value="order.rootOrder && orderOption.id === order.rootOrder.id ? order.rootOrder : orderOption"
                 v-for="orderOption in orders"
                 :key="orderOption.id"
               >

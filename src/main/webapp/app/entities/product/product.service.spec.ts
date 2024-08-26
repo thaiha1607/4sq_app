@@ -111,7 +111,7 @@ describe('Service Tests', () => {
           {
             name: 'BBBBBB',
             description: 'BBBBBB',
-            price: 1,
+            expectedPrice: 1,
             provider: 'BBBBBB',
             createdBy: 'BBBBBB',
             createdDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
@@ -151,7 +151,7 @@ describe('Service Tests', () => {
           {
             name: 'BBBBBB',
             description: 'BBBBBB',
-            price: 1,
+            expectedPrice: 1,
             createdDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
             lastModifiedBy: 'BBBBBB',
             lastModifiedDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
@@ -190,7 +190,7 @@ describe('Service Tests', () => {
           {
             name: 'BBBBBB',
             description: 'BBBBBB',
-            price: 1,
+            expectedPrice: 1,
             provider: 'BBBBBB',
             createdBy: 'BBBBBB',
             createdDate: dayjs(currentDate).format(DATE_TIME_FORMAT),

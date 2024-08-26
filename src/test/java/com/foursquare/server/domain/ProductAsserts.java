@@ -52,7 +52,13 @@ public class ProductAsserts {
             .as("Verify Product relevant properties")
             .satisfies(e -> assertThat(e.getName()).as("check name").isEqualTo(actual.getName()))
             .satisfies(e -> assertThat(e.getDescription()).as("check description").isEqualTo(actual.getDescription()))
-            .satisfies(e -> assertThat(e.getPrice()).as("check price").usingComparator(bigDecimalCompareTo).isEqualTo(actual.getPrice()))
+            .satisfies(
+                e ->
+                    assertThat(e.getExpectedPrice())
+                        .as("check expectedPrice")
+                        .usingComparator(bigDecimalCompareTo)
+                        .isEqualTo(actual.getExpectedPrice())
+            )
             .satisfies(e -> assertThat(e.getProvider()).as("check provider").isEqualTo(actual.getProvider()));
     }
 

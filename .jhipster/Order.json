@@ -30,13 +30,6 @@
       }
     },
     {
-      "fieldName": "isInternal",
-      "fieldType": "Boolean",
-      "options": {
-        "defaultValue": true
-      }
-    },
-    {
       "fieldName": "note",
       "fieldType": "String"
     },
@@ -98,8 +91,15 @@
     },
     {
       "otherEntityName": "order",
-      "otherEntityRelationshipName": "parentOrder",
+      "otherEntityRelationshipName": "rootOrder",
       "relationshipName": "childOrder",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "internalOrder",
+      "otherEntityRelationshipName": "rootOrder",
+      "relationshipName": "internalOrder",
       "relationshipSide": "left",
       "relationshipType": "one-to-many"
     },
@@ -143,7 +143,7 @@
     {
       "otherEntityName": "order",
       "otherEntityRelationshipName": "childOrder",
-      "relationshipName": "parentOrder",
+      "relationshipName": "rootOrder",
       "relationshipSide": "right",
       "relationshipType": "many-to-one"
     }

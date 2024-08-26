@@ -38,6 +38,7 @@
             <th scope="row"><span>Last Modified Date</span></th>
             <th scope="row"><span>Status</span></th>
             <th scope="row"><span>Order</span></th>
+            <th scope="row"><span>Root Invoice</span></th>
             <th scope="row"></th>
           </tr>
         </thead>
@@ -64,6 +65,13 @@
             <td>
               <div v-if="invoice.order">
                 <router-link :to="{ name: 'OrderView', params: { orderId: invoice.order.id } }">{{ invoice.order.id }}</router-link>
+              </div>
+            </td>
+            <td>
+              <div v-if="invoice.rootInvoice">
+                <router-link :to="{ name: 'InvoiceView', params: { invoiceId: invoice.rootInvoice.id } }">{{
+                  invoice.rootInvoice.id
+                }}</router-link>
               </div>
             </td>
             <td class="text-right">

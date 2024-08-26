@@ -99,6 +99,14 @@ public class InvoiceQueryService extends QueryService<Invoice> {
             if (criteria.getLastModifiedDate() != null) {
                 specification = specification.and(buildRangeSpecification(criteria.getLastModifiedDate(), Invoice_.lastModifiedDate));
             }
+            if (criteria.getChildInvoiceId() != null) {
+                specification = specification.and(
+                    buildSpecification(
+                        criteria.getChildInvoiceId(),
+                        root -> root.join(Invoice_.childInvoices, JoinType.LEFT).get(Invoice_.id)
+                    )
+                );
+            }
             if (criteria.getShipmentId() != null) {
                 specification = specification.and(
                     buildSpecification(criteria.getShipmentId(), root -> root.join(Invoice_.shipments, JoinType.LEFT).get(Shipment_.id))
@@ -112,6 +120,11 @@ public class InvoiceQueryService extends QueryService<Invoice> {
             if (criteria.getOrderId() != null) {
                 specification = specification.and(
                     buildSpecification(criteria.getOrderId(), root -> root.join(Invoice_.order, JoinType.LEFT).get(Order_.id))
+                );
+            }
+            if (criteria.getRootInvoiceId() != null) {
+                specification = specification.and(
+                    buildSpecification(criteria.getRootInvoiceId(), root -> root.join(Invoice_.rootInvoice, JoinType.LEFT).get(Invoice_.id))
                 );
             }
         }

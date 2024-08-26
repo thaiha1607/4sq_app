@@ -83,6 +83,7 @@ class OrderItemCriteriaTest {
         orderItemCriteria.createdDate();
         orderItemCriteria.lastModifiedBy();
         orderItemCriteria.lastModifiedDate();
+        orderItemCriteria.internalOrderItemId();
         orderItemCriteria.productCategoryId();
         orderItemCriteria.orderId();
         orderItemCriteria.distinct();
@@ -100,6 +101,7 @@ class OrderItemCriteriaTest {
                 condition.apply(criteria.getCreatedDate()) &&
                 condition.apply(criteria.getLastModifiedBy()) &&
                 condition.apply(criteria.getLastModifiedDate()) &&
+                condition.apply(criteria.getInternalOrderItemId()) &&
                 condition.apply(criteria.getProductCategoryId()) &&
                 condition.apply(criteria.getOrderId()) &&
                 condition.apply(criteria.getDistinct()),
@@ -119,6 +121,7 @@ class OrderItemCriteriaTest {
                 condition.apply(criteria.getCreatedDate(), copy.getCreatedDate()) &&
                 condition.apply(criteria.getLastModifiedBy(), copy.getLastModifiedBy()) &&
                 condition.apply(criteria.getLastModifiedDate(), copy.getLastModifiedDate()) &&
+                condition.apply(criteria.getInternalOrderItemId(), copy.getInternalOrderItemId()) &&
                 condition.apply(criteria.getProductCategoryId(), copy.getProductCategoryId()) &&
                 condition.apply(criteria.getOrderId(), copy.getOrderId()) &&
                 condition.apply(criteria.getDistinct(), copy.getDistinct()),

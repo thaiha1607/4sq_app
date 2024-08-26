@@ -45,6 +45,25 @@
             </div>
           </div>
           <div class="form-group">
+            <label class="form-control-label" for="shipment-deliveryDate">Delivery Date</label>
+            <div class="d-flex">
+              <input
+                id="shipment-deliveryDate"
+                data-cy="deliveryDate"
+                type="datetime-local"
+                class="form-control"
+                name="deliveryDate"
+                :class="{ valid: !v$.deliveryDate.$invalid, invalid: v$.deliveryDate.$invalid }"
+                required
+                :value="convertDateTimeFromServer(v$.deliveryDate.$model)"
+                @change="updateInstantField('deliveryDate', $event)"
+              />
+            </div>
+            <div v-if="v$.deliveryDate.$anyDirty && v$.deliveryDate.$invalid">
+              <small class="form-text text-danger" v-for="error of v$.deliveryDate.$errors" :key="error.$uid">{{ error.$message }}</small>
+            </div>
+          </div>
+          <div class="form-group">
             <label class="form-control-label" for="shipment-note">Note</label>
             <input
               type="text"

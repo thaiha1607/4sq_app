@@ -104,6 +104,18 @@
       <font-awesome-icon icon="asterisk" />
       <span>Order History</span>
     </b-dropdown-item>
+    <b-dropdown-item to="/internal-order">
+      <font-awesome-icon icon="asterisk" />
+      <span>Internal Order</span>
+    </b-dropdown-item>
+    <b-dropdown-item to="/internal-order-item">
+      <font-awesome-icon icon="asterisk" />
+      <span>Internal Order Item</span>
+    </b-dropdown-item>
+    <b-dropdown-item to="/internal-order-history">
+      <font-awesome-icon icon="asterisk" />
+      <span>Internal Order History</span>
+    </b-dropdown-item>
     <!-- jhipster-needle-add-entity-to-menu - JHipster will add entities to the menu here -->
   </div>
 </template>

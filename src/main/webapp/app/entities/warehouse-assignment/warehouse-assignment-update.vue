@@ -175,29 +175,31 @@
             </select>
           </div>
           <div class="form-group">
-            <label class="form-control-label" for="warehouse-assignment-order">Order</label>
+            <label class="form-control-label" for="warehouse-assignment-internalOrder">Internal Order</label>
             <select
               class="form-control"
-              id="warehouse-assignment-order"
-              data-cy="order"
-              name="order"
-              v-model="warehouseAssignment.order"
+              id="warehouse-assignment-internalOrder"
+              data-cy="internalOrder"
+              name="internalOrder"
+              v-model="warehouseAssignment.internalOrder"
               required
             >
-              <option v-if="!warehouseAssignment.order" v-bind:value="null" selected></option>
+              <option v-if="!warehouseAssignment.internalOrder" v-bind:value="null" selected></option>
               <option
                 v-bind:value="
-                  warehouseAssignment.order && orderOption.id === warehouseAssignment.order.id ? warehouseAssignment.order : orderOption
+                  warehouseAssignment.internalOrder && internalOrderOption.id === warehouseAssignment.internalOrder.id
+                    ? warehouseAssignment.internalOrder
+                    : internalOrderOption
                 "
-                v-for="orderOption in orders"
-                :key="orderOption.id"
+                v-for="internalOrderOption in internalOrders"
+                :key="internalOrderOption.id"
               >
-                {{ orderOption.id }}
+                {{ internalOrderOption.id }}
               </option>
             </select>
           </div>
-          <div v-if="v$.order.$anyDirty && v$.order.$invalid">
-            <small class="form-text text-danger" v-for="error of v$.order.$errors" :key="error.$uid">{{ error.$message }}</small>
+          <div v-if="v$.internalOrder.$anyDirty && v$.internalOrder.$invalid">
+            <small class="form-text text-danger" v-for="error of v$.internalOrder.$errors" :key="error.$uid">{{ error.$message }}</small>
           </div>
         </div>
         <div>

@@ -5,10 +5,10 @@
         <h2 class="jh-entity-heading" data-cy="orderHistoryDetailsHeading"><span>Order History</span> {{ orderHistory.id }}</h2>
         <dl class="row jh-entity-details">
           <dt>
-            <span>Comments</span>
+            <span>Note</span>
           </dt>
           <dd>
-            <span>{{ orderHistory.comments }}</span>
+            <span>{{ orderHistory.note }}</span>
           </dd>
           <dt>
             <span>Created By</span>

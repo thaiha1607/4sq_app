@@ -55,9 +55,6 @@ class OrderResourceIT {
     private static final Integer UPDATED_PRIORITY = 1;
     private static final Integer SMALLER_PRIORITY = 0 - 1;
 
-    private static final Boolean DEFAULT_IS_INTERNAL = false;
-    private static final Boolean UPDATED_IS_INTERNAL = true;
-
     private static final String DEFAULT_NOTE = "AAAAAAAAAA";
     private static final String UPDATED_NOTE = "BBBBBBBBBB";
 
@@ -102,12 +99,7 @@ class OrderResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Order createEntity(EntityManager em) {
-        Order order = new Order()
-            .type(DEFAULT_TYPE)
-            .priority(DEFAULT_PRIORITY)
-            .isInternal(DEFAULT_IS_INTERNAL)
-            .note(DEFAULT_NOTE)
-            .otherInfo(DEFAULT_OTHER_INFO);
+        Order order = new Order().type(DEFAULT_TYPE).priority(DEFAULT_PRIORITY).note(DEFAULT_NOTE).otherInfo(DEFAULT_OTHER_INFO);
         // Add required entity
         User user = UserResourceIT.createEntity(em);
         em.persist(user);
@@ -133,12 +125,7 @@ class OrderResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Order createUpdatedEntity(EntityManager em) {
-        Order order = new Order()
-            .type(UPDATED_TYPE)
-            .priority(UPDATED_PRIORITY)
-            .isInternal(UPDATED_IS_INTERNAL)
-            .note(UPDATED_NOTE)
-            .otherInfo(UPDATED_OTHER_INFO);
+        Order order = new Order().type(UPDATED_TYPE).priority(UPDATED_PRIORITY).note(UPDATED_NOTE).otherInfo(UPDATED_OTHER_INFO);
         // Add required entity
         User user = UserResourceIT.createEntity(em);
         em.persist(user);
@@ -243,7 +230,6 @@ class OrderResourceIT {
             .andExpect(jsonPath("$.[*].id").value(hasItem(order.getId().toString())))
             .andExpect(jsonPath("$.[*].type").value(hasItem(DEFAULT_TYPE.toString())))
             .andExpect(jsonPath("$.[*].priority").value(hasItem(DEFAULT_PRIORITY)))
-            .andExpect(jsonPath("$.[*].isInternal").value(hasItem(DEFAULT_IS_INTERNAL.booleanValue())))
             .andExpect(jsonPath("$.[*].note").value(hasItem(DEFAULT_NOTE)))
             .andExpect(jsonPath("$.[*].otherInfo").value(hasItem(DEFAULT_OTHER_INFO)));
     }
@@ -279,7 +265,6 @@ class OrderResourceIT {
             .andExpect(jsonPath("$.id").value(order.getId().toString()))
             .andExpect(jsonPath("$.type").value(DEFAULT_TYPE.toString()))
             .andExpect(jsonPath("$.priority").value(DEFAULT_PRIORITY))
-            .andExpect(jsonPath("$.isInternal").value(DEFAULT_IS_INTERNAL.booleanValue()))
             .andExpect(jsonPath("$.note").value(DEFAULT_NOTE))
             .andExpect(jsonPath("$.otherInfo").value(DEFAULT_OTHER_INFO));
     }
@@ -393,36 +378,6 @@ class OrderResourceIT {
 
         // Get all the orderList where priority is greater than
         defaultOrderFiltering("priority.greaterThan=" + SMALLER_PRIORITY, "priority.greaterThan=" + DEFAULT_PRIORITY);
-    }
-
-    @Test
-    @Transactional
-    void getAllOrdersByIsInternalIsEqualToSomething() throws Exception {
-        // Initialize the database
-        insertedOrder = orderRepository.saveAndFlush(order);
-
-        // Get all the orderList where isInternal equals to
-        defaultOrderFiltering("isInternal.equals=" + DEFAULT_IS_INTERNAL, "isInternal.equals=" + UPDATED_IS_INTERNAL);
-    }
-
-    @Test
-    @Transactional
-    void getAllOrdersByIsInternalIsInShouldWork() throws Exception {
-        // Initialize the database
-        insertedOrder = orderRepository.saveAndFlush(order);
-
-        // Get all the orderList where isInternal in
-        defaultOrderFiltering("isInternal.in=" + DEFAULT_IS_INTERNAL + "," + UPDATED_IS_INTERNAL, "isInternal.in=" + UPDATED_IS_INTERNAL);
-    }
-
-    @Test
-    @Transactional
-    void getAllOrdersByIsInternalIsNullOrNotNull() throws Exception {
-        // Initialize the database
-        insertedOrder = orderRepository.saveAndFlush(order);
-
-        // Get all the orderList where isInternal is not null
-        defaultOrderFiltering("isInternal.specified=true", "isInternal.specified=false");
     }
 
     @Test
@@ -593,24 +548,24 @@ class OrderResourceIT {
 
     @Test
     @Transactional
-    void getAllOrdersByParentOrderIsEqualToSomething() throws Exception {
-        Order parentOrder;
+    void getAllOrdersByRootOrderIsEqualToSomething() throws Exception {
+        Order rootOrder;
         if (TestUtil.findAll(em, Order.class).isEmpty()) {
             orderRepository.saveAndFlush(order);
-            parentOrder = OrderResourceIT.createEntity(em);
+            rootOrder = OrderResourceIT.createEntity(em);
         } else {
-            parentOrder = TestUtil.findAll(em, Order.class).get(0);
+            rootOrder = TestUtil.findAll(em, Order.class).get(0);
         }
-        em.persist(parentOrder);
+        em.persist(rootOrder);
         em.flush();
-        order.setParentOrder(parentOrder);
+        order.setRootOrder(rootOrder);
         orderRepository.saveAndFlush(order);
-        UUID parentOrderId = parentOrder.getId();
-        // Get all the orderList where parentOrder equals to parentOrderId
-        defaultOrderShouldBeFound("parentOrderId.equals=" + parentOrderId);
+        UUID rootOrderId = rootOrder.getId();
+        // Get all the orderList where rootOrder equals to rootOrderId
+        defaultOrderShouldBeFound("rootOrderId.equals=" + rootOrderId);
 
-        // Get all the orderList where parentOrder equals to UUID.randomUUID()
-        defaultOrderShouldNotBeFound("parentOrderId.equals=" + UUID.randomUUID());
+        // Get all the orderList where rootOrder equals to UUID.randomUUID()
+        defaultOrderShouldNotBeFound("rootOrderId.equals=" + UUID.randomUUID());
     }
 
     private void defaultOrderFiltering(String shouldBeFound, String shouldNotBeFound) throws Exception {
@@ -629,7 +584,6 @@ class OrderResourceIT {
             .andExpect(jsonPath("$.[*].id").value(hasItem(order.getId().toString())))
             .andExpect(jsonPath("$.[*].type").value(hasItem(DEFAULT_TYPE.toString())))
             .andExpect(jsonPath("$.[*].priority").value(hasItem(DEFAULT_PRIORITY)))
-            .andExpect(jsonPath("$.[*].isInternal").value(hasItem(DEFAULT_IS_INTERNAL.booleanValue())))
             .andExpect(jsonPath("$.[*].note").value(hasItem(DEFAULT_NOTE)))
             .andExpect(jsonPath("$.[*].otherInfo").value(hasItem(DEFAULT_OTHER_INFO)));
 
@@ -679,12 +633,7 @@ class OrderResourceIT {
         Order updatedOrder = orderRepository.findById(order.getId()).orElseThrow();
         // Disconnect from session so that the updates on updatedOrder are not directly saved in db
         em.detach(updatedOrder);
-        updatedOrder
-            .type(UPDATED_TYPE)
-            .priority(UPDATED_PRIORITY)
-            .isInternal(UPDATED_IS_INTERNAL)
-            .note(UPDATED_NOTE)
-            .otherInfo(UPDATED_OTHER_INFO);
+        updatedOrder.type(UPDATED_TYPE).priority(UPDATED_PRIORITY).note(UPDATED_NOTE).otherInfo(UPDATED_OTHER_INFO);
         OrderDTO orderDTO = orderMapper.toDto(updatedOrder);
 
         restOrderMockMvc
@@ -794,12 +743,7 @@ class OrderResourceIT {
         Order partialUpdatedOrder = new Order();
         partialUpdatedOrder.setId(order.getId());
 
-        partialUpdatedOrder
-            .type(UPDATED_TYPE)
-            .priority(UPDATED_PRIORITY)
-            .isInternal(UPDATED_IS_INTERNAL)
-            .note(UPDATED_NOTE)
-            .otherInfo(UPDATED_OTHER_INFO);
+        partialUpdatedOrder.type(UPDATED_TYPE).priority(UPDATED_PRIORITY).note(UPDATED_NOTE).otherInfo(UPDATED_OTHER_INFO);
 
         restOrderMockMvc
             .perform(

@@ -70,6 +70,16 @@
               <router-link :to="{ name: 'OrderView', params: { orderId: invoice.order.id } }">{{ invoice.order.id }}</router-link>
             </div>
           </dd>
+          <dt>
+            <span>Root Invoice</span>
+          </dt>
+          <dd>
+            <div v-if="invoice.rootInvoice">
+              <router-link :to="{ name: 'InvoiceView', params: { invoiceId: invoice.rootInvoice.id } }">{{
+                invoice.rootInvoice.id
+              }}</router-link>
+            </div>
+          </dd>
         </dl>
         <button type="submit" v-on:click.prevent="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
           <font-awesome-icon icon="arrow-left"></font-awesome-icon>&nbsp;<span>Back</span>

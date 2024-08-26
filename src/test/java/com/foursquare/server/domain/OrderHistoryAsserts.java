@@ -49,7 +49,7 @@ public class OrderHistoryAsserts {
     public static void assertOrderHistoryUpdatableFieldsEquals(OrderHistory expected, OrderHistory actual) {
         assertThat(expected)
             .as("Verify OrderHistory relevant properties")
-            .satisfies(e -> assertThat(e.getComments()).as("check comments").isEqualTo(actual.getComments()));
+            .satisfies(e -> assertThat(e.getNote()).as("check note").isEqualTo(actual.getNote()));
     }
 
     /**

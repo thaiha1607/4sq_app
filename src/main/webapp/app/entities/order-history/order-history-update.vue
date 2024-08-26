@@ -11,15 +11,15 @@
             <input type="text" class="form-control" id="id" name="id" v-model="orderHistory.id" readonly />
           </div>
           <div class="form-group">
-            <label class="form-control-label" for="order-history-comments">Comments</label>
+            <label class="form-control-label" for="order-history-note">Note</label>
             <input
               type="text"
               class="form-control"
-              name="comments"
-              id="order-history-comments"
-              data-cy="comments"
-              :class="{ valid: !v$.comments.$invalid, invalid: v$.comments.$invalid }"
-              v-model="v$.comments.$model"
+              name="note"
+              id="order-history-note"
+              data-cy="note"
+              :class="{ valid: !v$.note.$invalid, invalid: v$.note.$invalid }"
+              v-model="v$.note.$model"
             />
           </div>
           <div class="form-group">

@@ -17,12 +17,6 @@
             <span>{{ order.priority }}</span>
           </dd>
           <dt>
-            <span>Is Internal</span>
-          </dt>
-          <dd>
-            <span>{{ order.isInternal }}</span>
-          </dd>
-          <dt>
             <span>Note</span>
           </dt>
           <dd>
@@ -83,11 +77,11 @@
             </div>
           </dd>
           <dt>
-            <span>Parent Order</span>
+            <span>Root Order</span>
           </dt>
           <dd>
-            <div v-if="order.parentOrder">
-              <router-link :to="{ name: 'OrderView', params: { orderId: order.parentOrder.id } }">{{ order.parentOrder.id }}</router-link>
+            <div v-if="order.rootOrder">
+              <router-link :to="{ name: 'OrderView', params: { orderId: order.rootOrder.id } }">{{ order.rootOrder.id }}</router-link>
             </div>
           </dd>
         </dl>

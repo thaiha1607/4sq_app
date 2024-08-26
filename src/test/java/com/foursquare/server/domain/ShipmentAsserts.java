@@ -51,6 +51,7 @@ public class ShipmentAsserts {
             .as("Verify Shipment relevant properties")
             .satisfies(e -> assertThat(e.getType()).as("check type").isEqualTo(actual.getType()))
             .satisfies(e -> assertThat(e.getShipmentDate()).as("check shipmentDate").isEqualTo(actual.getShipmentDate()))
+            .satisfies(e -> assertThat(e.getDeliveryDate()).as("check deliveryDate").isEqualTo(actual.getDeliveryDate()))
             .satisfies(e -> assertThat(e.getNote()).as("check note").isEqualTo(actual.getNote()));
     }
 

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    <!--
+        Added the constraints for entity InternalOrder.
+    -->
+    <changeSet id="20240826091730-2" author="jhipster">
+
+        <addForeignKeyConstraint baseColumnNames="status_id"
+                                 baseTableName="internal_order"
+                                 constraintName="fk_internal_order__status_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="order_status"
+                                 />
+
+        <addForeignKeyConstraint baseColumnNames="root_order_id"
+                                 baseTableName="internal_order"
+                                 constraintName="fk_internal_order__root_order_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="jhi_order"
+                                 />
+    </changeSet>
+</databaseChangeLog>

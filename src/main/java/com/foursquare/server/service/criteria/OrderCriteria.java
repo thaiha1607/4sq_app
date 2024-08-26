@@ -46,8 +46,6 @@ public class OrderCriteria implements Serializable, Criteria {
 
     private IntegerFilter priority;
 
-    private BooleanFilter isInternal;
-
     private StringFilter note;
 
     private StringFilter otherInfo;
@@ -66,6 +64,8 @@ public class OrderCriteria implements Serializable, Criteria {
 
     private UUIDFilter childOrderId;
 
+    private UUIDFilter internalOrderId;
+
     private UUIDFilter shipmentId;
 
     private UUIDFilter historyId;
@@ -76,7 +76,7 @@ public class OrderCriteria implements Serializable, Criteria {
 
     private UUIDFilter addressId;
 
-    private UUIDFilter parentOrderId;
+    private UUIDFilter rootOrderId;
 
     private Boolean distinct;
 
@@ -86,7 +86,6 @@ public class OrderCriteria implements Serializable, Criteria {
         this.id = other.optionalId().map(UUIDFilter::copy).orElse(null);
         this.type = other.optionalType().map(OrderTypeFilter::copy).orElse(null);
         this.priority = other.optionalPriority().map(IntegerFilter::copy).orElse(null);
-        this.isInternal = other.optionalIsInternal().map(BooleanFilter::copy).orElse(null);
         this.note = other.optionalNote().map(StringFilter::copy).orElse(null);
         this.otherInfo = other.optionalOtherInfo().map(StringFilter::copy).orElse(null);
         this.createdBy = other.optionalCreatedBy().map(StringFilter::copy).orElse(null);
@@ -96,12 +95,13 @@ public class OrderCriteria implements Serializable, Criteria {
         this.invoiceId = other.optionalInvoiceId().map(UUIDFilter::copy).orElse(null);
         this.orderItemId = other.optionalOrderItemId().map(UUIDFilter::copy).orElse(null);
         this.childOrderId = other.optionalChildOrderId().map(UUIDFilter::copy).orElse(null);
+        this.internalOrderId = other.optionalInternalOrderId().map(UUIDFilter::copy).orElse(null);
         this.shipmentId = other.optionalShipmentId().map(UUIDFilter::copy).orElse(null);
         this.historyId = other.optionalHistoryId().map(UUIDFilter::copy).orElse(null);
         this.customerId = other.optionalCustomerId().map(LongFilter::copy).orElse(null);
         this.statusId = other.optionalStatusId().map(LongFilter::copy).orElse(null);
         this.addressId = other.optionalAddressId().map(UUIDFilter::copy).orElse(null);
-        this.parentOrderId = other.optionalParentOrderId().map(UUIDFilter::copy).orElse(null);
+        this.rootOrderId = other.optionalRootOrderId().map(UUIDFilter::copy).orElse(null);
         this.distinct = other.distinct;
     }
 
@@ -165,25 +165,6 @@ public class OrderCriteria implements Serializable, Criteria {
 
     public void setPriority(IntegerFilter priority) {
         this.priority = priority;
-    }
-
-    public BooleanFilter getIsInternal() {
-        return isInternal;
-    }
-
-    public Optional<BooleanFilter> optionalIsInternal() {
-        return Optional.ofNullable(isInternal);
-    }
-
-    public BooleanFilter isInternal() {
-        if (isInternal == null) {
-            setIsInternal(new BooleanFilter());
-        }
-        return isInternal;
-    }
-
-    public void setIsInternal(BooleanFilter isInternal) {
-        this.isInternal = isInternal;
     }
 
     public StringFilter getNote() {
@@ -357,6 +338,25 @@ public class OrderCriteria implements Serializable, Criteria {
         this.childOrderId = childOrderId;
     }
 
+    public UUIDFilter getInternalOrderId() {
+        return internalOrderId;
+    }
+
+    public Optional<UUIDFilter> optionalInternalOrderId() {
+        return Optional.ofNullable(internalOrderId);
+    }
+
+    public UUIDFilter internalOrderId() {
+        if (internalOrderId == null) {
+            setInternalOrderId(new UUIDFilter());
+        }
+        return internalOrderId;
+    }
+
+    public void setInternalOrderId(UUIDFilter internalOrderId) {
+        this.internalOrderId = internalOrderId;
+    }
+
     public UUIDFilter getShipmentId() {
         return shipmentId;
     }
@@ -452,23 +452,23 @@ public class OrderCriteria implements Serializable, Criteria {
         this.addressId = addressId;
     }
 
-    public UUIDFilter getParentOrderId() {
-        return parentOrderId;
+    public UUIDFilter getRootOrderId() {
+        return rootOrderId;
     }
 
-    public Optional<UUIDFilter> optionalParentOrderId() {
-        return Optional.ofNullable(parentOrderId);
+    public Optional<UUIDFilter> optionalRootOrderId() {
+        return Optional.ofNullable(rootOrderId);
     }
 
-    public UUIDFilter parentOrderId() {
-        if (parentOrderId == null) {
-            setParentOrderId(new UUIDFilter());
+    public UUIDFilter rootOrderId() {
+        if (rootOrderId == null) {
+            setRootOrderId(new UUIDFilter());
         }
-        return parentOrderId;
+        return rootOrderId;
     }
 
-    public void setParentOrderId(UUIDFilter parentOrderId) {
-        this.parentOrderId = parentOrderId;
+    public void setRootOrderId(UUIDFilter rootOrderId) {
+        this.rootOrderId = rootOrderId;
     }
 
     public Boolean getDistinct() {
@@ -503,7 +503,6 @@ public class OrderCriteria implements Serializable, Criteria {
             Objects.equals(id, that.id) &&
             Objects.equals(type, that.type) &&
             Objects.equals(priority, that.priority) &&
-            Objects.equals(isInternal, that.isInternal) &&
             Objects.equals(note, that.note) &&
             Objects.equals(otherInfo, that.otherInfo) &&
             Objects.equals(createdBy, that.createdBy) &&
@@ -513,12 +512,13 @@ public class OrderCriteria implements Serializable, Criteria {
             Objects.equals(invoiceId, that.invoiceId) &&
             Objects.equals(orderItemId, that.orderItemId) &&
             Objects.equals(childOrderId, that.childOrderId) &&
+            Objects.equals(internalOrderId, that.internalOrderId) &&
             Objects.equals(shipmentId, that.shipmentId) &&
             Objects.equals(historyId, that.historyId) &&
             Objects.equals(customerId, that.customerId) &&
             Objects.equals(statusId, that.statusId) &&
             Objects.equals(addressId, that.addressId) &&
-            Objects.equals(parentOrderId, that.parentOrderId) &&
+            Objects.equals(rootOrderId, that.rootOrderId) &&
             Objects.equals(distinct, that.distinct)
         );
     }
@@ -529,7 +529,6 @@ public class OrderCriteria implements Serializable, Criteria {
             id,
             type,
             priority,
-            isInternal,
             note,
             otherInfo,
             createdBy,
@@ -539,12 +538,13 @@ public class OrderCriteria implements Serializable, Criteria {
             invoiceId,
             orderItemId,
             childOrderId,
+            internalOrderId,
             shipmentId,
             historyId,
             customerId,
             statusId,
             addressId,
-            parentOrderId,
+            rootOrderId,
             distinct
         );
     }
@@ -556,7 +556,6 @@ public class OrderCriteria implements Serializable, Criteria {
             optionalId().map(f -> "id=" + f + ", ").orElse("") +
             optionalType().map(f -> "type=" + f + ", ").orElse("") +
             optionalPriority().map(f -> "priority=" + f + ", ").orElse("") +
-            optionalIsInternal().map(f -> "isInternal=" + f + ", ").orElse("") +
             optionalNote().map(f -> "note=" + f + ", ").orElse("") +
             optionalOtherInfo().map(f -> "otherInfo=" + f + ", ").orElse("") +
             optionalCreatedBy().map(f -> "createdBy=" + f + ", ").orElse("") +
@@ -566,12 +565,13 @@ public class OrderCriteria implements Serializable, Criteria {
             optionalInvoiceId().map(f -> "invoiceId=" + f + ", ").orElse("") +
             optionalOrderItemId().map(f -> "orderItemId=" + f + ", ").orElse("") +
             optionalChildOrderId().map(f -> "childOrderId=" + f + ", ").orElse("") +
+            optionalInternalOrderId().map(f -> "internalOrderId=" + f + ", ").orElse("") +
             optionalShipmentId().map(f -> "shipmentId=" + f + ", ").orElse("") +
             optionalHistoryId().map(f -> "historyId=" + f + ", ").orElse("") +
             optionalCustomerId().map(f -> "customerId=" + f + ", ").orElse("") +
             optionalStatusId().map(f -> "statusId=" + f + ", ").orElse("") +
             optionalAddressId().map(f -> "addressId=" + f + ", ").orElse("") +
-            optionalParentOrderId().map(f -> "parentOrderId=" + f + ", ").orElse("") +
+            optionalRootOrderId().map(f -> "rootOrderId=" + f + ", ").orElse("") +
             optionalDistinct().map(f -> "distinct=" + f + ", ").orElse("") +
         "}";
     }

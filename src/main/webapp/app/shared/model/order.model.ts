@@ -7,7 +7,6 @@ export interface IOrder {
   id?: string;
   type?: keyof typeof OrderType;
   priority?: number | null;
-  isInternal?: boolean | null;
   note?: string | null;
   otherInfo?: string | null;
   createdBy?: string;
@@ -17,7 +16,7 @@ export interface IOrder {
   customer?: IUser;
   status?: IOrderStatus;
   address?: IAddress | null;
-  parentOrder?: IOrder | null;
+  rootOrder?: IOrder | null;
 }
 
 export class Order implements IOrder {
@@ -25,7 +24,6 @@ export class Order implements IOrder {
     public id?: string,
     public type?: keyof typeof OrderType,
     public priority?: number | null,
-    public isInternal?: boolean | null,
     public note?: string | null,
     public otherInfo?: string | null,
     public createdBy?: string,
@@ -35,8 +33,6 @@ export class Order implements IOrder {
     public customer?: IUser,
     public status?: IOrderStatus,
     public address?: IAddress | null,
-    public parentOrder?: IOrder | null,
-  ) {
-    this.isInternal = this.isInternal ?? false;
-  }
+    public rootOrder?: IOrder | null,
+  ) {}
 }

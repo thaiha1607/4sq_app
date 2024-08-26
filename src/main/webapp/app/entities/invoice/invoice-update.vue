@@ -158,6 +158,19 @@
           <div v-if="v$.order.$anyDirty && v$.order.$invalid">
             <small class="form-text text-danger" v-for="error of v$.order.$errors" :key="error.$uid">{{ error.$message }}</small>
           </div>
+          <div class="form-group">
+            <label class="form-control-label" for="invoice-rootInvoice">Root Invoice</label>
+            <select class="form-control" id="invoice-rootInvoice" data-cy="rootInvoice" name="rootInvoice" v-model="invoice.rootInvoice">
+              <option v-bind:value="null"></option>
+              <option
+                v-bind:value="invoice.rootInvoice && invoiceOption.id === invoice.rootInvoice.id ? invoice.rootInvoice : invoiceOption"
+                v-for="invoiceOption in invoices"
+                :key="invoiceOption.id"
+              >
+                {{ invoiceOption.id }}
+              </option>
+            </select>
+          </div>
         </div>
         <div>
           <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" v-on:click="previousState()">

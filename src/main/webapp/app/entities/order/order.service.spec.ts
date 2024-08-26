@@ -37,7 +37,6 @@ describe('Service Tests', () => {
         '9fec3727-3421-4967-b213-ba36557ca194',
         'SALE',
         0,
-        false,
         'AAAAAAA',
         'AAAAAAA',
         'AAAAAAA',
@@ -112,7 +111,6 @@ describe('Service Tests', () => {
           {
             type: 'BBBBBB',
             priority: 1,
-            isInternal: true,
             note: 'BBBBBB',
             otherInfo: 'BBBBBB',
             createdBy: 'BBBBBB',
@@ -151,12 +149,11 @@ describe('Service Tests', () => {
       it('should partial update a Order', async () => {
         const patchObject = Object.assign(
           {
-            priority: 1,
-            isInternal: true,
+            type: 'BBBBBB',
             note: 'BBBBBB',
+            otherInfo: 'BBBBBB',
             createdBy: 'BBBBBB',
             lastModifiedBy: 'BBBBBB',
-            lastModifiedDate: dayjs(currentDate).format(DATE_TIME_FORMAT),
           },
           new Order(),
         );
@@ -192,7 +189,6 @@ describe('Service Tests', () => {
           {
             type: 'BBBBBB',
             priority: 1,
-            isInternal: true,
             note: 'BBBBBB',
             otherInfo: 'BBBBBB',
             createdBy: 'BBBBBB',

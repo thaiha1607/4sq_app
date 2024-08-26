@@ -26,6 +26,9 @@ import WarehouseAssignmentService from './warehouse-assignment/warehouse-assignm
 import WorkingUnitService from './working-unit/working-unit.service';
 import CommentService from './comment/comment.service';
 import OrderHistoryService from './order-history/order-history.service';
+import InternalOrderService from './internal-order/internal-order.service';
+import InternalOrderItemService from './internal-order-item/internal-order-item.service';
+import InternalOrderHistoryService from './internal-order-history/internal-order-history.service';
 import UserService from '@/entities/user/user.service';
 // jhipster-needle-add-entity-service-to-entities-component-import - JHipster will import entities services here
 
@@ -60,6 +63,9 @@ export default defineComponent({
     provide('workingUnitService', () => new WorkingUnitService());
     provide('commentService', () => new CommentService());
     provide('orderHistoryService', () => new OrderHistoryService());
+    provide('internalOrderService', () => new InternalOrderService());
+    provide('internalOrderItemService', () => new InternalOrderItemService());
+    provide('internalOrderHistoryService', () => new InternalOrderHistoryService());
     // jhipster-needle-add-entity-service-to-entities-component - JHipster will import entities services here
   },
 });

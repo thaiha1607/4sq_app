@@ -12,7 +12,7 @@ import AlertService from '@/shared/alert/alert.service';
 
 import UserService from '@/entities/user/user.service';
 import WorkingUnitService from '@/entities/working-unit/working-unit.service';
-import OrderService from '@/entities/order/order.service';
+import InternalOrderService from '@/entities/internal-order/internal-order.service';
 
 type WarehouseAssignmentUpdateComponentType = InstanceType<typeof WarehouseAssignmentUpdate>;
 
@@ -65,8 +65,8 @@ describe('Component Tests', () => {
             sinon.createStubInstance<WorkingUnitService>(WorkingUnitService, {
               retrieve: sinon.stub().resolves({}),
             } as any),
-          orderService: () =>
-            sinon.createStubInstance<OrderService>(OrderService, {
+          internalOrderService: () =>
+            sinon.createStubInstance<InternalOrderService>(InternalOrderService, {
               retrieve: sinon.stub().resolves({}),
             } as any),
         },

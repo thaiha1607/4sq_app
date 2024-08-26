@@ -3,7 +3,7 @@ import { type IOrder } from '@/shared/model/order.model';
 
 export interface IOrderHistory {
   id?: string;
-  comments?: string | null;
+  note?: string | null;
   createdBy?: string;
   createdDate?: Date;
   lastModifiedBy?: string;
@@ -15,7 +15,7 @@ export interface IOrderHistory {
 export class OrderHistory implements IOrderHistory {
   constructor(
     public id?: string,
-    public comments?: string | null,
+    public note?: string | null,
     public createdBy?: string,
     public createdDate?: Date,
     public lastModifiedBy?: string,

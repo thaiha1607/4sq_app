@@ -38,7 +38,7 @@
             <th scope="row"><span>User</span></th>
             <th scope="row"><span>Source Working Unit</span></th>
             <th scope="row"><span>Target Working Unit</span></th>
-            <th scope="row"><span>Order</span></th>
+            <th scope="row"><span>Internal Order</span></th>
             <th scope="row"></th>
           </tr>
         </thead>
@@ -74,9 +74,9 @@
               </div>
             </td>
             <td>
-              <div v-if="warehouseAssignment.order">
-                <router-link :to="{ name: 'OrderView', params: { orderId: warehouseAssignment.order.id } }">{{
-                  warehouseAssignment.order.id
+              <div v-if="warehouseAssignment.internalOrder">
+                <router-link :to="{ name: 'InternalOrderView', params: { internalOrderId: warehouseAssignment.internalOrder.id } }">{{
+                  warehouseAssignment.internalOrder.id
                 }}</router-link>
               </div>
             </td>

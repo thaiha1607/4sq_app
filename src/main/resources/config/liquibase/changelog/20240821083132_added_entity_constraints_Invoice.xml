@@ -23,5 +23,12 @@
                                  referencedColumnNames="id"
                                  referencedTableName="jhi_order"
                                  />
+
+        <addForeignKeyConstraint baseColumnNames="root_invoice_id"
+                                 baseTableName="invoice"
+                                 constraintName="fk_invoice__root_invoice_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="invoice"
+                                 />
     </changeSet>
 </databaseChangeLog>

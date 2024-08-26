@@ -17,7 +17,13 @@ import org.mapstruct.*;
 public interface InvoiceMapper extends EntityMapper<InvoiceDTO, Invoice> {
     @Mapping(target = "status", source = "status", qualifiedByName = "invoiceStatusStatusCode")
     @Mapping(target = "order", source = "order", qualifiedByName = "orderId")
+    @Mapping(target = "rootInvoice", source = "rootInvoice", qualifiedByName = "invoiceId")
     InvoiceDTO toDto(Invoice s);
+
+    @Named("invoiceId")
+    @BeanMapping(ignoreByDefault = true)
+    @Mapping(target = "id", source = "id")
+    InvoiceDTO toDtoInvoiceId(Invoice invoice);
 
     @Named("invoiceStatusStatusCode")
     @BeanMapping(ignoreByDefault = true)
